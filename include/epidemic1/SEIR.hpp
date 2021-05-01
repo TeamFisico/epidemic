@@ -1,23 +1,25 @@
 #include <vector>
 
 struct State {
-    unsigned int S;
-    unsigned int E;
-    unsigned int I;
-    unsigned int R;
+    double S;
+    double E;
+    double I;
+    double R;
+    int N;
 };
 
 class sim {
 private:
     State state0;
-    double alpha;
-    double beta;
-    double gamma;
-    int time_in_days;
+    double alpha; //inverse of incubation period
+    double beta; //average number of people infected by an infected in a day
+    double gamma; //probability of recovery(or death) of an infected
 public:
-    sim(State state0, double alpha, double beta, double gamma, int time_in_days);
-    State generate_next_point();
-    std::vector<State> generate_all_points();
+    sim(State const& initial_state, double a, double b, double c)
+    : state0{initial_state}, alpha{a}, beta{b}, gamma{c}
+    {
+    }
+    std::vector<State> generate_all_points(int time_in_days);
 };
 
 
