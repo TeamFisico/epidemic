@@ -21,12 +21,14 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set(CMAKE_CXX_STANDARD 17)
     set(CXX_STANDARD_REQUIRED ON)
     set(CXX_EXTENSIONS OFF)
+
+    configure_file(epidemicConfig.h.in epidemicConfig.h)
+
+
     #support IDE to show all the folders
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-    # Testing only available if this is the main app. Note this needs to be done
-    # in the main CMakeLists since it calls enable_testing, which must be in the
-    # main CMakeLists.
+    ################ TESTING HERE #############
 
     #doxygen for documentation generation(LaTeX)
 #    find_package(Doxygen)
@@ -53,3 +55,4 @@ add_subdirectory(apps)
 if(BUILD_TESTING)
     add_subdirectory(tests)
 endif()
+
