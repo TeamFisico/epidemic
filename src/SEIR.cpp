@@ -10,7 +10,7 @@ inline std::vector<State> sim::generate_all_points(int time_in_days) {
     std::vector<State> result{state0};
     for(int i = 1; i < time_in_days; ++i)
     {
-        State prev = result.back();
+        State prev = result.back(); //previous State
         State new_state{0,0,0,0,0};
         new_state.S = prev.S - (beta*(prev.I)*(prev.S))/(prev.N);
         new_state.E = prev.E + (beta*(prev.I)*(prev.S))/(prev.N) - alpha*(prev.E);
