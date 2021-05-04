@@ -1,5 +1,5 @@
 #include <fstream>
-#include "../src/SEIR.cpp"
+#include "SEIR.hpp"
 
 int main ()
 {
