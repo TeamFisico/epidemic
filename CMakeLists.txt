@@ -21,6 +21,9 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set(CMAKE_CXX_STANDARD 17)
     set(CXX_STANDARD_REQUIRED ON)
     set(CXX_EXTENSIONS OFF)
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+    set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
+    set (CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
 
     configure_file(epidemicConfig.h.in epidemicConfig.h)
 
@@ -44,6 +47,11 @@ find_package(SFML 2.5 COMPONENTS system window graphics network audio)
 
 if(SFML_FOUND)
     message(STATUS "SFML package found")
+endif()
+
+find_package(ROOT 6.16 CONFIG REQUIRED)
+if(ROOT_FOUND)
+    message(STATUS "ROOT package found")
 endif()
 # The compiled library code is here
 add_subdirectory(src)

@@ -9,6 +9,7 @@ FetchContent_MakeAvailable(doctest)
 add_executable(testlib testlib.cpp)
 
 target_compile_features(test PRIVATE cxx_std_17)
+target_compile_options(test PRIVATE -Wall -Wextra -fsanitize=address)
 target_link_libraries(test PRIVATE doctest::doctest)
 
 # If you register a test, then ctest and make test will run it. You can also run

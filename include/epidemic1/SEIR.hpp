@@ -1,3 +1,6 @@
+#ifndef SEIR_HPP
+#define SEIR_HPP
+
 #include <vector>
 
 struct State {
@@ -21,3 +24,4 @@ public:
 
 
 
+#endif

@@ -14,6 +14,7 @@ target_include_directories(modern_library PUBLIC ../include)
 
 # All users of this library will need at least C++17
 target_compile_features(modern_library PUBLIC cxx_std_17)
+target_compile_options(modern_library PRIVATE -Wall -Wextra -fsanitize=address)
 
 # IDEs should put the headers in a nice place
 source_group(
