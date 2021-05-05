@@ -9,7 +9,7 @@ separate_arguments(ROOT_EXE_LINKER_FLAGS)
 target_compile_features(app1.0 PRIVATE cxx_std_17)
 target_compile_options(app1.0 PRIVATE -Wall -Wextra -fsanitize=address)
 target_link_options(app1.0 PRIVATE -fsanitize=address)
-target_link_libraries(app1.0 PRIVATE modern_library)
+target_link_libraries(app1.0 PRIVATE standard_solver)
 target_link_libraries(app1.0 PUBLIC ${ROOT_LIBRARIES} ${ROOT_EXE_LINKER_FLAGS})
 
 target_include_directories(app1.0 PUBLIC "${PROJECT_BINARY_DIR}"
@@ -19,7 +19,7 @@ target_include_directories(app1.0 PUBLIC "${PROJECT_BINARY_DIR}"
 target_compile_features(app1.1 PRIVATE cxx_std_17)
 target_compile_options(app1.1 PRIVATE -Wall -Wextra -fsanitize=address)
 target_link_options(app1.1 PRIVATE -fsanitize=address)
-target_link_libraries(app1.1 PRIVATE modern_library)
+target_link_libraries(app1.1 PRIVATE runge_kutta_solver)
 target_link_libraries(app1.1 PUBLIC ${ROOT_LIBRARIES} ${ROOT_EXE_LINKER_FLAGS})
 
 target_include_directories(app1.1 PUBLIC "${PROJECT_BINARY_DIR}"

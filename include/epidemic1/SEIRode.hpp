@@ -12,13 +12,13 @@ namespace seir {
         double I;
         double R;
 
-        double dS_dt (double beta, unsigned int N) const
+        double dS_dt (double beta,int N) const
         {     return -(beta/N)*S*I;       }
-        double dE_dt (double beta,double alpha, unsigned int N) const
+        double dE_dt (double beta,double alpha,int N) const
         {     return +beta*S*I/N-alpha*E; }
-        double dI_dt (double alpha, double gamma, unsigned int N) const
+        double dI_dt (double alpha, double gamma) const
         {     return alpha*E-gamma*I;     }
-        double dR_dt (double gamma, unsigned int N) const
+        double dR_dt (double gamma) const
         {     return +gamma*I;            }
     };
 
@@ -30,13 +30,13 @@ namespace seir {
         double beta;
         double alpha;
         double gamma;
-        unsigned int N; //population
-        unsigned int t; //time of the simulation(days)
+        int N; //population
+        int t; //time of the simulation(days)
         double step;
     public:
         //constructor of the class
-        ode(unsigned int time, unsigned int population, State S0, double beta, double alpha, double gamma,
-            double step_time);
+        ode( int population, State S0, double beta, double alpha, double gamma,
+            double step_time,int time);
         ode(); //default constructor
 
         static bool is_valid (ode obj) ; //check whether the object is valid or not

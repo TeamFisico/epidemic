@@ -1,5 +1,5 @@
 
-#include "epidemic1/SEIR.hpp"
+#include <epidemic1/SEIR.hpp>
 
 sim::sim(const State &initial_state, double a, double b, double c)
         : state0{initial_state}, alpha{a}, beta{b}, gamma{c}

@@ -1,20 +1,19 @@
 
 
-set(HEADER_LIST "${epidemic_SOURCE_DIR}/include/epidemic1/SEIR.hpp")
+set(HEADER_LIST "${epidemic_SOURCE_DIR}/include/epidemic1/SEIR.hpp"
+        "${epidemic_SOURCE_DIR}/include/epidemic1/SEIRode.hpp")
 
-# Make an automatic library - will be static or dynamic based on user setting
-# nome da dare
-add_library(modern_library SEIR.cpp ${HEADER_LIST})
+########## STANDARD ODE DISCRETIZATION LIBRARY #############
+add_library(standard_solver SEIR.cpp ${HEADER_LIST})
+target_include_directories(standard_solver PUBLIC ../include)
+target_compile_features(standard_solver PUBLIC cxx_std_17)
+target_compile_options(standard_solver PRIVATE -Wall -Wextra -fsanitize=address)
 
-# We need this directory, and users of our library will need it too
-target_include_directories(modern_library PUBLIC ../include)
-
-# This depends on (header only) boost
-#target_link_libraries(modern_library PRIVATE Boost::boost)
-
-# All users of this library will need at least C++17
-target_compile_features(modern_library PUBLIC cxx_std_17)
-target_compile_options(modern_library PRIVATE -Wall -Wextra -fsanitize=address)
+########## RUNGE-KUTTA 4TH ORDER METHOD LIBRARY #############
+add_library(runge_kutta_solver SEIRode.cpp ${HEADER_LIST})
+target_include_directories(runge_kutta_solver PUBLIC ../include)
+target_compile_features(runge_kutta_solver PUBLIC cxx_std_17)
+target_compile_options(runge_kutta_solver PRIVATE -Wall -Wextra -fsanitize=address)
 
 # IDEs should put the headers in a nice place
 source_group(

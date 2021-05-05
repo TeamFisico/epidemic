@@ -12,7 +12,7 @@ int main (int argc, char* argv[])
     using namespace seir;
 
     State start{100000,1,1,0};
-    ode conditions{100,100000,start,0.9,0.5,0.2,1};
+    ode conditions{100000,start,0.9,0.5,0.2,1,100};
 
     Simulation mysimulation;
 

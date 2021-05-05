@@ -1,4 +1,4 @@
-#include "SEIRode.hpp"
+#include <epidemic1/SEIRode.hpp>
 #include <stdexcept>
 #include <iostream>
 
@@ -7,8 +7,8 @@ namespace seir {
 ////////////////////////////////
 //         CONSTRUCTOR        //
 ////////////////////////////////
-    ode::ode(unsigned int time, unsigned int population, State initial_state,
-             double beta, double alpha, double gamma, double step_time)
+    ode::ode(int population, State initial_state,
+             double beta, double alpha, double gamma, double step_time, int time)
             : t{time}, N{population}, S_0{initial_state},
               beta{beta}, alpha{alpha}, gamma{gamma}, step{step_time}
     {
@@ -17,7 +17,7 @@ namespace seir {
    const ode& default_ode()
    {
         State df {1000000-1,0,1,0}; //one is infected and
-        static ode def {150,1000000,df,0.5,0.37,0.2,1};
+        static ode def {1000000,df,0.5,0.37,0.2,1,150};
         return def;
    }
    ode::ode()
@@ -84,8 +84,8 @@ namespace seir {
         std::vector<double>k1 (4);
         k1[0] = step*oldState.dS_dt(beta,N);
         k1[1] = step*oldState.dE_dt(beta,alpha,N);
-        k1[2] = step*oldState.dI_dt(alpha,gamma,N);
-        k1[3] = step*oldState.dR_dt(gamma,N);
+        k1[2] = step*oldState.dI_dt(alpha,gamma);
+        k1[3] = step*oldState.dR_dt(gamma);
 
         //update the state by half a step
         updatedState.S = oldState.S + k1[0]/2.0;
@@ -98,8 +98,8 @@ namespace seir {
         std::vector<double>k2 (4);
         k2[0] = step*updatedState.dS_dt(beta,N);
         k2[1] = step*updatedState.dE_dt(beta,alpha,N);
-        k2[2] = step*updatedState.dI_dt(alpha,gamma,N);
-        k2[3] = step*updatedState.dR_dt(gamma,N);
+        k2[2] = step*updatedState.dI_dt(alpha,gamma);
+        k2[3] = step*updatedState.dR_dt(gamma);
 
         //update the state by half a step
         updatedState.S = oldState.S + k2[0]/2.0;
@@ -112,8 +112,8 @@ namespace seir {
         std::vector<double>k3 (4);
         k3[0] = step*updatedState.dS_dt(beta,N);
         k3[1] = step*updatedState.dE_dt(beta,alpha,N);
-        k3[2] = step*updatedState.dI_dt(alpha,gamma,N);
-        k3[3] = step*updatedState.dR_dt(gamma,N);
+        k3[2] = step*updatedState.dI_dt(alpha,gamma);
+        k3[3] = step*updatedState.dR_dt(gamma);
 
         //update the state by the whole step
         updatedState.S = oldState.S + k3[0];
@@ -126,8 +126,8 @@ namespace seir {
         std::vector<double>k4 (4);
         k4[0] = step*updatedState.dS_dt(beta,N);
         k4[1] = step*updatedState.dE_dt(beta,alpha,N);
-        k4[2] = step*updatedState.dI_dt(alpha,gamma,N);
-        k4[3] = step*updatedState.dR_dt(gamma,N);
+        k4[2] = step*updatedState.dI_dt(alpha,gamma);
+        k4[3] = step*updatedState.dR_dt(gamma);
 
         //calculating the values of S,E,I,R for the new state
         // yn+1= yn + 1/6(k1+2k2+2k3+k4)
