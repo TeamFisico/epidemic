@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 #include "epidemic1/SEIR.hpp"
 
 #include <TApplication.h>
@@ -17,12 +18,17 @@ int main (int argc, char* argv[])
 
 
     std::ofstream out {"output.txt"};
-
+    std::cout << "┌─────┬───────────────┬───────────────┬───────────────┬───────────────┐" << std::endl;
+    std::cout << "│ Day │       S       │       E       │       I       │       R       │" << std::endl;
+    std::cout << "├─────├───────────────├───────────────├───────────────├───────────────├" << std::endl;
+    int t1 = 0;
     for (auto& a: result) {
+      out << "S = " << a.S << " E = " << a.E << " I = " << a.I << " R = " << a.R << std::endl;
 
-        out << "S = " << a.S << " E = " << a.E << " I = " << a.I << " R = " << a.R << std::endl;
-
+      std::cout << std::setprecision(9) << std::left << "│" << std::setw(5) << t1 << "│" << std::setw(15) << a.S << "│" << std::setw(15) << a.E << "│" << std::setw(15) << a.I << "│" << std::setw(15) << a.R << "│" << std::endl;
+      t1++;
     }
+    std::cout << "└─────┴───────────────┴───────────────┴───────────────┴───────────────┘" << std::endl;
     //ROOT CODE
 
     TApplication app("app", &argc, argv);
@@ -40,13 +46,13 @@ int main (int argc, char* argv[])
     gR->SetLineColor(kRed);
     mg->SetTitle("Evolution; time (days); number of people");
 
-    int t = 0;
-    for(auto a: result){
-        gS->SetPoint(t,t, a.S);
-        gE->SetPoint(t,t, a.E);
-        gI->SetPoint(t,t, a.I);
-        gR->SetPoint(t,t, a.R);
-        t++;
+    int t2 = 0;
+    for(auto& a: result){
+        gS->SetPoint(t2,t2, a.S);
+        gE->SetPoint(t2,t2, a.E);
+        gI->SetPoint(t2,t2, a.I);
+        gR->SetPoint(t2,t2, a.R);
+        t2++;
     }
 
     mg->Add(gS); gS->SetTitle("S");
