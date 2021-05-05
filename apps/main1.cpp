@@ -1,6 +1,11 @@
 #include <fstream>
 #include <iostream>
-#include "SEIR.hpp"
+#include "epidemic1/SEIR.hpp"
+/*
+#include <TGraph.h>
+#include <TMultiGraph.h>
+#include <TCanvas.h>
+*/
 
 int main ()
 {
@@ -17,5 +22,33 @@ int main ()
         out << "S = " << a.S << " E = " << a.E << " I = " << a.I << " R = " << a.R << std::endl;
 
     }
+/*
+    auto c0 = new TCanvas("c0", "Evoluzione");
+    auto mg = new TMultiGraph();
+    auto gS = new TGraph();
+    auto gE = new TGraph();
+    auto gI = new TGraph();
+    auto gR = new TGraph();
+    gS->SetLineColor(kBlue);
+    gE->SetLineColor(kOrange);
+    gI->SetLineColor(kGreen);
+    gR->SetLineColor(kRed);
+
+    int t = 0;
+    for(auto a: result){
+        gS->AddPoint(t, a.S);
+        gE->AddPoint(t, a.E);
+        gI->AddPoint(t, a.I);
+        gR->AddPoint(t, a.R);
+        t++;
+    }
+
+    mg->Add(gS); gS->SetTitle("S");
+    mg->Add(gE); gE->SetTitle("E");
+    mg->Add(gI); gI->SetTitle("I");
+    mg->Add(gR); gR->SetTitle("R");
+
+    mg->Draw();
+*/
     return 0;
 }
