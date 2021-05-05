@@ -41,10 +41,10 @@ int main (int argc, char* argv[])
 
     int t = 0;
     for(auto a: result){
-        gS->AddPoint(t, a.S);
-        gE->AddPoint(t, a.E);
-        gI->AddPoint(t, a.I);
-        gR->AddPoint(t, a.R);
+        gS->SetPoint(t,t, a.S);
+        gE->SetPoint(t,t, a.E);
+        gI->SetPoint(t,t, a.I);
+        gR->SetPoint(t,t, a.R);
         t++;
     }
 
@@ -53,12 +53,12 @@ int main (int argc, char* argv[])
     mg->Add(gI); gI->SetTitle("I");
     mg->Add(gR); gR->SetTitle("R");
 
-    mg->Draw();
+    mg->Draw("AL");
 
     c0->Modified();
     c0->Update();
-    TRootCanvas *rc = (TRootCanvas *)c0->GetCanvasImp();
-    rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
+//    TRootCanvas *rc = (TRootCanvas *)c0->GetCanvasImp();
+//    rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
     app.Run();
 
     return 0;

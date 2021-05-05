@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(epidemic
         VERSION 1.0
-        DESCRIPTION "SIR model for an epidemic"
+        DESCRIPTION "SEIR model for an epidemic"
         LANGUAGES CXX)
 
 
@@ -19,27 +19,14 @@ endif()
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
     set(CMAKE_CXX_STANDARD 17)
-    set(CXX_STANDARD_REQUIRED ON)
-    set(CXX_EXTENSIONS OFF)
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
-    set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
-    set (CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+    set(CMAKE_CXX_EXTENSIONS OFF)
 
     configure_file(epidemicConfig.h.in epidemicConfig.h)
 
 
     #support IDE to show all the folders
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-    ################ TESTING HERE #############
-
-    #doxygen for documentation generation(LaTeX)
-#    find_package(Doxygen)
-#    if(Doxygen_FOUND)
-#        add_subdirectory(docs)
-#    else()
-#        message(STATUS "Doxygen not found, not building docs")
-#    endif()
 
 endif()
 
