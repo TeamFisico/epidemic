@@ -1,6 +1,7 @@
 build
 cmake-build-debug
 .idea
+*.swp
 *.DS_Store
 ########################## PRE-MADE############
 CMakeLists.txt.user
