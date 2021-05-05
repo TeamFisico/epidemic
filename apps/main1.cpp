@@ -38,6 +38,7 @@ int main (int argc, char* argv[])
     gE->SetLineColor(kOrange);
     gI->SetLineColor(kGreen);
     gR->SetLineColor(kRed);
+    mg->SetTitle("Evolution; time (days); number of people");
 
     int t = 0;
     for(auto a: result){
@@ -54,6 +55,7 @@ int main (int argc, char* argv[])
     mg->Add(gR); gR->SetTitle("R");
 
     mg->Draw("AL");
+    c0->BuildLegend();
 
     c0->Modified();
     c0->Update();
