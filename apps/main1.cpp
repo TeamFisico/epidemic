@@ -1,13 +1,14 @@
 #include <fstream>
 #include <iostream>
 #include "epidemic1/SEIR.hpp"
-/*
+
+#include <TApplication.h>
 #include <TGraph.h>
 #include <TMultiGraph.h>
 #include <TCanvas.h>
-*/
+#include <TRootCanvas.h>
 
-int main ()
+int main (int argc, char* argv[])
 {
 
     State state0{10000,10,2,0,10012};
@@ -22,7 +23,11 @@ int main ()
         out << "S = " << a.S << " E = " << a.E << " I = " << a.I << " R = " << a.R << std::endl;
 
     }
-/*
+    //ROOT CODE
+
+    TApplication app("app", &argc, argv);
+
+
     auto c0 = new TCanvas("c0", "Evoluzione");
     auto mg = new TMultiGraph();
     auto gS = new TGraph();
@@ -49,6 +54,12 @@ int main ()
     mg->Add(gR); gR->SetTitle("R");
 
     mg->Draw();
-*/
+
+    c0->Modified();
+    c0->Update();
+    TRootCanvas *rc = (TRootCanvas *)c0->GetCanvasImp();
+    rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
+    app.Run();
+
     return 0;
 }

@@ -53,6 +53,15 @@ find_package(ROOT 6.16 CONFIG REQUIRED)
 if(ROOT_FOUND)
     message(STATUS "ROOT package found")
 endif()
+
+# Get the generate dictionary command from ROOT
+if(ROOT_VERSION VERSION_LESS 6.20)
+    include("${ROOT_DIR}/modules/RootNewMacros.cmake")
+else()
+    include("${ROOT_DIR}/RootMacros.cmake")
+endif()
+
+
 # The compiled library code is here
 add_subdirectory(src)
 
