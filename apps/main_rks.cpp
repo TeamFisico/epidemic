@@ -1,11 +1,18 @@
+
+#include "SEIRode.hpp"
+
+////////STANDARD ///////
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+
+
+/////////  ROOT  ///////
 #include "TF1.h"
 #include "TApplication.h"
 #include "TGraph.h"
 #include "TCanvas.h"
-#include "TRootCanvas.h"
 #include "TMultiGraph.h"
-
-#include "SEIRode.hpp"
 
 int main (int argc, char* argv[])
 {
@@ -17,8 +24,21 @@ int main (int argc, char* argv[])
     Simulation mysimulation;
 
     simulation(conditions,mysimulation);
+     std::ofstream out{"output.txt"};
 
+  std::cout << "┌─────┬───────────────┬───────────────┬───────────────┬───────────────┐" << std::endl;
+  std::cout << "│ Day │       S       │       E       │       I       │       R       │" << std::endl;
+  std::cout << "├─────├───────────────├───────────────├───────────────├───────────────├" << std::endl;
+  int t1 = 0;
+  for (auto& a: mysimulation) {
+    out << "S = " << a.S << " E = " << a.E << " I = " << a.I << " R = " << a.R << std::endl;
 
+    std::cout << std::setprecision(9) << std::left << "│" << std::setw(5) << t1 << "│" << std::setw(15) << a.S << "│" << std::setw(15) << a.E << "│" << std::setw(15) << a.I << "│" << std::setw(15) << a.R << "│" << std::endl;
+    t1++;
+  }
+  std::cout << "└─────┴───────────────┴───────────────┴───────────────┴───────────────┘" << std::endl;
+
+    //ROOT CODE
     TApplication app("app", &argc, argv);
 
 
