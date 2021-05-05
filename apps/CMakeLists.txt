@@ -1,20 +1,34 @@
 
-add_executable(app1 main1.cpp)
-add_executable(app2 main2.cpp)
+add_executable(app1.0 main_std1.cpp)
+add_executable(app1.1 main_rks.cpp)
 
 include("${ROOT_USE_FILE}")
 
 separate_arguments(ROOT_EXE_LINKER_FLAGS)
 
-target_compile_features(app1 PRIVATE cxx_std_17)
-target_compile_options(app1 PRIVATE -Wall -Wextra -fsanitize=address)
-target_link_options(app1 PRIVATE -fsanitize=address)
-target_link_libraries(app1 PRIVATE modern_library)
-target_link_libraries(app1 PUBLIC ${ROOT_LIBRARIES} ${ROOT_EXE_LINKER_FLAGS})
+target_compile_features(app1.0 PRIVATE cxx_std_17)
+target_compile_options(app1.0 PRIVATE -Wall -Wextra -fsanitize=address)
+target_link_options(app1.0 PRIVATE -fsanitize=address)
+target_link_libraries(app1.0 PRIVATE modern_library)
+target_link_libraries(app1.0 PUBLIC ${ROOT_LIBRARIES} ${ROOT_EXE_LINKER_FLAGS})
 
-target_include_directories(app1 PUBLIC "${PROJECT_BINARY_DIR}"
+target_include_directories(app1.0 PUBLIC "${PROJECT_BINARY_DIR}"
                                          ../include/epidemic1)
 
+
+target_compile_features(app1.1 PRIVATE cxx_std_17)
+target_compile_options(app1.1 PRIVATE -Wall -Wextra -fsanitize=address)
+target_link_options(app1.1 PRIVATE -fsanitize=address)
+target_link_libraries(app1.1 PRIVATE modern_library)
+target_link_libraries(app1.1 PUBLIC ${ROOT_LIBRARIES} ${ROOT_EXE_LINKER_FLAGS})
+
+target_include_directories(app1.1 PUBLIC "${PROJECT_BINARY_DIR}"
+        ../include/epidemic1)
+
+##############################
+##      SECOND PART        ###
+##############################
+add_executable(app2 main2.cpp)
 
 target_compile_features(app2 PRIVATE cxx_std_17)
 target_compile_options(app2 PRIVATE -Wall -Wextra -fsanitize=address)
