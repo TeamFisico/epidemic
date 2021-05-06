@@ -26,22 +26,22 @@ namespace seir {
 //class to solve SEIR characteristic system of differential equations
     class ode {
     private:
+        int N;     //population
+        int t;     //time of the simulation(days)
+        double step;
         State S_0;
         double beta;
         double alpha;
         double gamma;
-        int N; //population
-        int t; //time of the simulation(days)
-        double step;
     public:
         //constructor of the class
-        ode( int population, State S0, double beta, double alpha, double gamma,
-            double step_time,int time);
+        ode( int population,int time, double step_time, State S0, double beta,
+          double alpha, double gamma);
         ode(); //default constructor
 
         static bool is_valid (ode obj) ; //check whether the object is valid or not
-        unsigned int population() const { return N; }
-        unsigned int simulation_time() const { return t; }
+        uint population() const { return N; }
+        int simulation_time() const { return t; }
         double time_step() const { return step; }
         State initial_state() const { return S_0; }
 
@@ -54,7 +54,7 @@ namespace seir {
 
     void simulation(ode sim,Simulation& result);
 
-}
+} //namespace seir
 
 
 #endif

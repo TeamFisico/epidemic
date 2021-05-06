@@ -14,13 +14,46 @@
 #include "TCanvas.h"
 #include "TMultiGraph.h"
 
+
 int main (int argc, char* argv[])
 {
     using namespace seir;
 
-    State start{100000,1,1,0};
-    ode conditions{100000,start,0.9,0.5,0.2,1,100};
+    //default simulation parameters
+    int pop {0};
+    int sim_time {0};
+    double refresh {0.0}; //time step
+    double param1 {0.0};  //beta
+    double param2 {0.0}; //alpha
+    double param3 {0.0}; //gamma
+    //initialState
+    State start {(double)pop,0.0,1.0,0.0};
+    ode conditions;
 
+    //input quest
+    std::string answer;
+    std::cout << "Do you want to set the simulation parameters yourself?" <<std::endl;
+    std::cout << "Type y or n." << std::endl;
+    //////////FARE ERROR CHECKING (COME CHIAMARE ISVALID)
+    while(std::cin >> answer){
+      if (answer == "y" || answer == "yes"){
+        std::cout << std::setw(15) << "Population : "; std::cin >> pop;
+        std::cout << std::setw(15)  << "Simulation time(days) : "; std::cin>> sim_time;
+        std::cout << std::setw(15)  << "Time step(days) : "; std::cin>> refresh;
+        std::cout << std::setw(15) << "Parameter beta : "; std::cin >> param1;
+        std::cout << std::setw(15) << "Parameter alpha : "; std::cin >> param2;
+        std::cout << std::setw(15) << "Parameter gamma : "; std::cin>> param3;
+        std::cout << std::setw(15) << "Susceptible individuals : "; std::cin>> start.S;
+        std::cout << std::setw(15) << "Latent individuals : "; std::cin>> start.E;
+        std::cout << std::setw(15) << "Infected individuals : "; std::cin>> start.I;
+        std::cout << std::setw(15) << "Removed individuals : "; std::cin>> start.R;
+        conditions = {pop,sim_time,refresh,start,param1,param2,param3};
+        break;
+      } else if(answer == "n" || answer == "no"){
+        break;
+      }
+
+    }
     Simulation mysimulation;
 
     simulation(conditions,mysimulation);

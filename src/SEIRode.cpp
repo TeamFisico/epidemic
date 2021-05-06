@@ -4,22 +4,29 @@
 
 namespace seir {
 
-////////////////////////////////
-//         CONSTRUCTOR        //
-////////////////////////////////
-    ode::ode(int population, State initial_state,
-             double beta, double alpha, double gamma, double step_time, int time)
-            : t{time}, N{population}, S_0{initial_state},
-              beta{beta}, alpha{alpha}, gamma{gamma}, step{step_time}
+///////////////////////////////////////////////////////////////
+//                     CONSTRUCTOR                           //
+///////////////////////////////////////////////////////////////
+    ode::ode(int population, int time, double step_time,State initial_state,double beta,
+             double alpha, double gamma)
+            : N{population},t{time}, step{step_time},S_0{initial_state},
+              beta{beta}, alpha{alpha}, gamma{gamma}
     {
         if (!is_valid(*this)) throw std::runtime_error("The constructed object is invalid");
     }
+///////////////////////////////////////////////////////////////
+//  DEFAULT CONDITIONS : POPULATION: 100000,TIME: 80 DAYS, 1 //
+//   INFECTED, BETA = 0.7, ALPHA = 0.5 , GAMMA = 0.2       //
+///////////////////////////////////////////////////////////////
    const ode& default_ode()
    {
-        State df {1000000-1,0,1,0}; //one is infected and
-        static ode def {1000000,df,0.5,0.37,0.2,1,150};
+        State df {99999,0,1,0};
+        static ode def{100000,80,1,df,0.7,0.5,0.2};
         return def;
    }
+///////////////////////////////////////////////////////////////
+//                   DEFAULT CONSTRUCTOR                     //
+///////////////////////////////////////////////////////////////
    ode::ode()
    //default constructor:sample of 1000000 running for 150 days ... CHECK IF IT MAKES SENSE
            : t{default_ode().t}, N{default_ode().N}, S_0{default_ode().S_0},
