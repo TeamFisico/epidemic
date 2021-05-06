@@ -22,6 +22,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
     set(CMAKE_CXX_EXTENSIONS OFF)
 
+
     configure_file(epidemicConfig.h.in epidemicConfig.h)
 
 
@@ -55,8 +56,13 @@ add_subdirectory(src)
 # The executable code is here
 add_subdirectory(apps)
 
-# Testing only available if this is the main app
-if(BUILD_TESTING)
-    add_subdirectory(tests)
-endif()
+# Test code is here
+add_subdirectory(tests)
+
+
+
+## Testing only available if this is the main app
+#if(BUILD_TESTING)
+#    add_subdirectory(tests)
+#endif()
 
