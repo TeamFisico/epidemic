@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <iomanip>
+#include <stdexcept>
 #include "epidemic1/SEIR.hpp"
 
 #include <TApplication.h>
@@ -12,9 +13,59 @@
 int main (int argc, char* argv[])
 {
 
+    int pop {0};
+    int sim_time {100};
+    double param1 {0.0};  //beta
+    double param2 {0.0}; //alpha
+    double param3 {0.0}; //gamma
     State state0{10000,10,2,0,10012};
     sim ode{state0,0.5,0.9,0.2};
-    std::vector<State> result = ode.generate_all_points(100);
+
+    std::string answer;
+    std::cout << "Do you want to set the simulation parameters yourself?" <<std::endl;
+    std::cout << "Type y or n." << std::endl;
+      //////////FARE ERROR CHECKING (COME CHIAMARE ISVALID)
+    try {
+      while (std::cin >> answer) {
+        if (answer == "y" || answer == "yes") {
+          std::cout << std::setw(15) << "Population : ";
+          std::cin >> pop;
+          std::cout << std::setw(15) << "Simulation time(days) : ";
+          std::cin >> sim_time;
+          std::cout << std::setw(15) << "Parameter beta : ";
+          std::cin >> param1;
+          std::cout << std::setw(15) << "Parameter alpha : ";
+          std::cin >> param2;
+          std::cout << std::setw(15) << "Parameter gamma : ";
+          std::cin >> param3;
+          std::cout << std::setw(15) << "Susceptible individuals : ";
+          std::cin >> state0.S;
+          std::cout << std::setw(15) << "Latent individuals : ";
+          std::cin >> state0.E;
+          std::cout << std::setw(15) << "Infected individuals : ";
+          std::cin >> state0.I;
+          std::cout << std::setw(15) << "Removed individuals : ";
+          std::cin >> state0.R;
+          ode = {state0, param2, param1, param3};
+          if (pop !=
+              static_cast<int>(state0.S + state0.E + state0.I + state0.R)) {
+            throw std::runtime_error{
+                "ERROR: The sum of individuals is different from the popolation"};
+          } else {
+            break;
+          }
+        } else if (answer == "n" || answer == "no") {
+          break;
+        }
+        else{
+          throw std::runtime_error{"input not supported"};
+        }
+      }
+    } catch (std::runtime_error const& e){
+      std::cerr << e.what() << std::endl;
+      return 1;
+    }
+    std::vector<State> result = ode.generate_all_points(sim_time);
 
 
     std::ofstream out {"output.txt"};
