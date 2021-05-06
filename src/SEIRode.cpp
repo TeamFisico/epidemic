@@ -28,9 +28,9 @@ namespace seir {
 //                   DEFAULT CONSTRUCTOR                     //
 ///////////////////////////////////////////////////////////////
    ode::ode()
-   //default constructor:sample of 1000000 running for 150 days ... CHECK IF IT MAKES SENSE
-           : t{default_ode().t}, N{default_ode().N}, S_0{default_ode().S_0},
-          beta{default_ode().beta}, alpha{default_ode().alpha}, gamma{default_ode().gamma}, step{default_ode().step}
+   //default constructor:CHECK IF IT MAKES SENSE
+           : N{default_ode().N}, t{default_ode().t}, step{default_ode().step},S_0{default_ode().S_0},
+              beta{default_ode().beta}, alpha{default_ode().alpha}, gamma{default_ode().gamma}
    {
    }
 
