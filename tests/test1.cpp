@@ -11,5 +11,5 @@ TEST_CASE("test risoluzione eq diff") {
      auto const result = prova.generate_all_points(100);
      auto it = result.end();
      --it;
-     CHECK((it->S + it->E + it->I + it->R) == (it->N));
+     CHECK(doctest::Approx(it->S + it->E + it->I + it->R) == (it->N));
 }

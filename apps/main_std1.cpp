@@ -58,7 +58,7 @@ int main (int argc, char* argv[])
           break;
         }
         else{
-          throw std::runtime_error{"input not supported"};
+          throw std::runtime_error{"ERROR: input not supported"};
         }
       }
     } catch (std::runtime_error const& e){

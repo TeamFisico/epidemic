@@ -8,7 +8,7 @@ struct State {
     double E;
     double I;
     double R;
-    double N;
+    int N;
 };
 
 class sim {
