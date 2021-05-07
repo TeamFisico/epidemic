@@ -1,8 +1,23 @@
-
 #include <epidemic1/SEIR.hpp>
 
-sim::sim(const State &initial_state, double a, double b, double c)
-        : state0{initial_state}, alpha{a}, beta{b}, gamma{c}
+//Constructor
+sim::sim(const State &initial_state, double alpha, double beta, double gamma)
+        : state0{initial_state}, alpha{alpha}, beta{beta}, gamma{gamma}
+{
+}
+
+//default values
+const sim& default_sim()
+{
+  State df {99999,0,1,0,100000};
+  static sim def{df,0.5,0.7,0.2};
+  return def;
+}
+
+//default constructor
+sim::sim()
+    : state0{default_sim().state0}, alpha{default_sim().alpha},
+      beta{default_sim().beta}, gamma{default_sim().gamma}
 {
 }
 

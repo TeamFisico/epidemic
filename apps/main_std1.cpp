@@ -18,13 +18,13 @@ int main (int argc, char* argv[])
     double param1 {0.0};  //beta
     double param2 {0.0}; //alpha
     double param3 {0.0}; //gamma
-    State state0{10000,10,2,0,10012};
-    sim ode{state0,0.5,0.9,0.2};
+    State state0{};
+    sim ode;
 
     std::string answer;
     std::cout << "Do you want to set the simulation parameters yourself?" <<std::endl;
     std::cout << "Type y or n." << std::endl;
-      //////////FARE ERROR CHECKING (COME CHIAMARE ISVALID)
+
     try {
       while (std::cin >> answer) {
         if (answer == "y" || answer == "yes") {
