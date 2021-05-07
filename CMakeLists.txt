@@ -14,9 +14,8 @@ if(EXISTS "${LOC_PATH}")
             "remove CMakeCache.txt and CMakeFiles.")
 endif()
 
-#do the following if this is the main project
-#this project -->can be included as a subdirectory
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+#allow this project to be included as a subdirectory in another project
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)  #main project
 
     set(CMAKE_CXX_STANDARD 17)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -25,11 +24,14 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
     configure_file(epidemicConfig.h.in epidemicConfig.h)
 
+    list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+
+    include(ClangFormat)
 
     #support IDE to show all the folders
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-endif()
+endif() ##main project
 
 find_package(SFML 2.5 COMPONENTS system window graphics network audio)
 
