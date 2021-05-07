@@ -14,6 +14,8 @@ target_link_libraries(app1.0 PUBLIC ${ROOT_LIBRARIES} ${ROOT_EXE_LINKER_FLAGS})
 
 target_include_directories(app1.0 PUBLIC "${PROJECT_BINARY_DIR}"
                                          ../include/epidemic1)
+target_clangformat_setup(app1.0) ##allow for code formatting
+
 
 
 target_compile_features(app1.1 PRIVATE cxx_std_17)
@@ -23,7 +25,9 @@ target_link_libraries(app1.1 PRIVATE runge_kutta_solver)
 target_link_libraries(app1.1 PUBLIC ${ROOT_LIBRARIES} ${ROOT_EXE_LINKER_FLAGS})
 
 target_include_directories(app1.1 PUBLIC "${PROJECT_BINARY_DIR}"
-        ../include/epidemic1)
+                                          ../include/epidemic1)
+target_clangformat_setup(app1.1) ##allow for code formatting
+
 
 ##############################
 ##      SECOND PART        ###
