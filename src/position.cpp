@@ -1,4 +1,4 @@
-#include "../include/position.hpp"
+#include <position.hpp>
 #include <cmath>
 //Constructor
 Position::Position(double x, double y)

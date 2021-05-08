@@ -1,4 +1,5 @@
-#include "../include/simulation.hpp"
+#include <simulation.hpp>
+
 //Contructor that generate a random std::vector<Person>
 Simulation::Simulation(int S, int E, int I, int R, double alpha, double gamma, double beta, double spread_radius, int time_in_days) {
 

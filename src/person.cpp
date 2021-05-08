@@ -1,4 +1,4 @@
-#include "../include/person.hpp"
+#include <person.hpp>
 
 //Constructor
 Person::Person(State condition, Position pos, State newcondition)
