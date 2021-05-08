@@ -39,5 +39,4 @@ std::vector<State> sim::generate_all_points(int time_in_days)
 
 bool sim::is_valid()
 {
-
 }

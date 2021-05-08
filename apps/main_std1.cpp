@@ -1,18 +1,18 @@
-#include "epidemic1/SEIR.hpp"
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <stdexcept>
-
 #include <TApplication.h>
 #include <TCanvas.h>
 #include <TGraph.h>
 #include <TMultiGraph.h>
 #include <TRootCanvas.h>
 
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <stdexcept>
+
+#include "epidemic1/SEIR.hpp"
+
 int main(int argc, char *argv[])
 {
-
     int pop{0};
     int sim_time{100};
     double param1{0.0}; // beta
@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
                 std::cout << std::setw(15) << "Removed individuals : ";
                 std::cin >> state0.R;
                 ode = {state0, param2, param1, param3};
-                //ode.isValid();
+                // ode.isValid();
                 if (pop != static_cast<int>(state0.S + state0.E + state0.I + state0.R))
                 {
                     throw std::runtime_error{"ERROR: The sum of individuals is different from the popolation"};
@@ -78,9 +78,15 @@ int main(int argc, char *argv[])
     std::vector<State> result = ode.generate_all_points(sim_time);
 
     std::ofstream out{"output.txt"};
-    std::cout << "┌─────┬───────────────┬───────────────┬───────────────┬───────────────┐" << std::endl;
-    std::cout << "│ Day │       S       │       E       │       I       │       R       │" << std::endl;
-    std::cout << "├─────├───────────────├───────────────├───────────────├───────────────├" << std::endl;
+    std::cout << "┌─────┬───────────────┬───────────────┬───────────────┬────────"
+                 "───────┐"
+              << std::endl;
+    std::cout << "│ Day │       S       │       E       │       I       │       "
+                 "R       │"
+              << std::endl;
+    std::cout << "├─────├───────────────├───────────────├───────────────├────────"
+                 "───────├"
+              << std::endl;
     int t1 = 1;
     for (auto &a : result)
     {
@@ -91,7 +97,9 @@ int main(int argc, char *argv[])
                   << std::endl;
         t1++;
     }
-    std::cout << "└─────┴───────────────┴───────────────┴───────────────┴───────────────┘" << std::endl;
+    std::cout << "└─────┴───────────────┴───────────────┴───────────────┴────────"
+                 "───────┘"
+              << std::endl;
 
     // ROOT CODE
 
@@ -136,7 +144,6 @@ int main(int argc, char *argv[])
     TRootCanvas *rc = (TRootCanvas *)c0->GetCanvasImp();
     rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
     app.Run();
-
 
     return 0;
 }

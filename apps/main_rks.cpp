@@ -9,10 +9,10 @@
 /////////  ROOT  ///////
 #include "TApplication.h"
 #include "TCanvas.h"
-#include "TRootCanvas.h"
 #include "TF1.h"
 #include "TGraph.h"
 #include "TMultiGraph.h"
+#include "TRootCanvas.h"
 
 int main(int argc, char *argv[])
 {
@@ -21,9 +21,9 @@ int main(int argc, char *argv[])
     // default simulation parameters
     int pop{0};
     int sim_time{0};
-    double param1{0.0};  // beta
-    double param2{0.0};  // alpha
-    double param3{0.0};  // gamma
+    double param1{0.0}; // beta
+    double param2{0.0}; // alpha
+    double param3{0.0}; // gamma
     // initialState
     State start{(double)pop, 0.0, 1.0, 0.0};
     ode conditions;
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
             {
                 conditions = {pop, sim_time, start, param1, param2, param3};
             }
-            catch (std::runtime_error const& e)
+            catch (std::runtime_error const &e)
             {
                 std::cerr << "Runtime error: " << e.what() << std::endl;
                 return 1;
@@ -69,7 +69,9 @@ int main(int argc, char *argv[])
         else if (answer == "n" || answer == "no" || answer == "N")
         {
             break;
-        } else {
+        }
+        else
+        {
             std::cout << "ERROR: input not supported, Type y or n." << std::endl;
         }
     }
@@ -78,10 +80,15 @@ int main(int argc, char *argv[])
     simulation(conditions, mysimulation);
     std::ofstream out{"output.txt"};
 
-
-    std::cout << "┌─────┬───────────────┬───────────────┬───────────────┬───────────────┐" << std::endl;
-    std::cout << "│ Day │       S       │       E       │       I       │       R       │" << std::endl;
-    std::cout << "├─────├───────────────├───────────────├───────────────├───────────────├" << std::endl;
+    std::cout << "┌─────┬───────────────┬───────────────┬───────────────┬────────"
+                 "───────┐"
+              << std::endl;
+    std::cout << "│ Day │       S       │       E       │       I       │       "
+                 "R       │"
+              << std::endl;
+    std::cout << "├─────├───────────────├───────────────├───────────────├────────"
+                 "───────├"
+              << std::endl;
     int t1 = 1;
     for (auto &a : mysimulation)
     {
@@ -92,10 +99,9 @@ int main(int argc, char *argv[])
                   << std::endl;
         t1++;
     }
-    std::cout << "└─────┴───────────────┴───────────────┴───────────────┴───────────────┘" << std::endl;
-
-
-
+    std::cout << "└─────┴───────────────┴───────────────┴───────────────┴────────"
+                 "───────┘"
+              << std::endl;
 
     // ROOT CODE
     TApplication app("app", &argc, argv);
@@ -137,12 +143,9 @@ int main(int argc, char *argv[])
     c0->Modified();
     c0->Update();
 
-        TRootCanvas *rc = (TRootCanvas *)c0->GetCanvasImp();
-        rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
+    TRootCanvas *rc = (TRootCanvas *)c0->GetCanvasImp();
+    rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
     app.Run();
-
-
-
 
     return 0;
 }
