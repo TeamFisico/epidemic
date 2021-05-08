@@ -12,23 +12,23 @@ Simulation::Simulation(int S, int E, int I, int R, double alpha, double gamma, d
     std::vector<Person> pop;
     pop.clear();
     for(int i = 1; i < S; ++i){
-        Position rand_pos; // <- Code to generate a random position
-        Person new_S{State::S, rand_pos, State::S};
+        Position rpos = rand_pos(100,100); // <- Code to generate a random position
+        Person new_S{State::S, rpos, State::S};
         pop.push_back(new_S);
     }
     for(int i = 1; i < E; ++i){
-        Position rand_pos; // <- Code to generate a random position
-        Person new_E{State::E, rand_pos, State::E};
+        Position rpos = rand_pos(100,100); // <- Code to generate a random position
+        Person new_E{State::E, rpos, State::E};
         pop.push_back(new_E);
     }
     for(int i = 1; i < I; ++i){
-        Position rand_pos; // <- Code to generate a random position
-        Person new_I{State::I, rand_pos, State::I};
+        Position rpos = rand_pos(100,100); // <- Code to generate a random position
+        Person new_I{State::I, rpos, State::I};
         pop.push_back(new_I);
     }
     for(int i = 1; i < R; ++i){
-        Position rand_pos; // <- Code to generate a random position
-        Person new_R{State::R, rand_pos, State::R};
+        Position rpos = rand_pos(100, 100);; // <- Code to generate a random position
+        Person new_R{State::R, rpos, State::R};
         pop.push_back(new_R);
     }
     Population = pop;

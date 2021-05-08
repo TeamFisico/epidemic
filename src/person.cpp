@@ -1,5 +1,6 @@
 #include <person.hpp>
 
+using namespace sim;
 //Constructor
 Person::Person(State condition, Position pos, State new_condition)
 : condition{condition}, pos{pos}, new_condition{new_condition}

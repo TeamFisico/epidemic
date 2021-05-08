@@ -1,5 +1,7 @@
 #include "position.hpp"
 
+namespace sim
+{
 enum class State
 {
     S,
@@ -17,8 +19,10 @@ class Person
     // Position home;
   public:
     Person(State condition, Position pos, State new_condition); // Constructor
-    Person(); // Default Constructor
-    Position* get_pos(); //return pointer to person position
-    State get_condition(); //return person condition
+    Person();                                                   // Default Constructor
+    Position *get_pos();                                        // return pointer to person position
+    State get_condition();                                      // return person condition
     void next_condition();
 };
+
+}
