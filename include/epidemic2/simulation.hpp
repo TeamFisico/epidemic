@@ -1,7 +1,7 @@
 #include <vector>
-
 #include "person.hpp"
-
+namespace sim
+{
 class Simulation
 {
   private:
@@ -16,9 +16,12 @@ class Simulation
     Simulation(int S, int E, int I, int R, double alpha, double gamma, double beta, double spread_radius,
                int time_in_days);
     Simulation();
-    std::vector<Person *> Close_Persons(Person &current_person); // function that put in a vector pointers to all
-                                                                 // other inRadius Persons
-    void spread(); // Function that, if *this is I, check close Persons and try
+    std::vector<Person *> Close_People(Person &current_person); // function that put in a vector pointers to all
+                                                                // other inRadius Susceptible People
+    void spread(); // Function that, if *this is I, check close People and try
                    // to spread virus to close S if *this is E or I check if the
                    // State evolve
 };
+
+bool try_event(double probability);
+}
