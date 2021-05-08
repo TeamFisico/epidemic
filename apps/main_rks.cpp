@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
     //////////FARE ERROR CHECKING (COME CHIAMARE ISVALID)
     while (std::cin >> answer)
     {
-        if (answer == "y" || answer == "yes")
+        if (answer == "y" || answer == "yes" || answer == "Y")
         {
             std::cout << std::setw(15) << "Population : ";
             std::cin >> pop;
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
             }
             break;
         }
-        else if (answer == "n" || answer == "no")
+        else if (answer == "n" || answer == "no" || answer == "N")
         {
             break;
         } else {

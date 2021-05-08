@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     {
         while (std::cin >> answer)
         {
-            if (answer == "y" || answer == "yes" || answer = "Y")
+            if (answer == "y" || answer == "yes" || answer == "Y")
             {
                 std::cout << std::setw(15) << "Population : ";
                 std::cin >> pop;
