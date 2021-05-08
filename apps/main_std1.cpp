@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     {
         while (std::cin >> answer)
         {
-            if (answer == "y" || answer == "yes")
+            if (answer == "y" || answer == "yes" || answer = "Y")
             {
                 std::cout << std::setw(15) << "Population : ";
                 std::cin >> pop;
@@ -50,6 +50,7 @@ int main(int argc, char *argv[])
                 std::cout << std::setw(15) << "Removed individuals : ";
                 std::cin >> state0.R;
                 ode = {state0, param2, param1, param3};
+                //ode.isValid();
                 if (pop != static_cast<int>(state0.S + state0.E + state0.I + state0.R))
                 {
                     throw std::runtime_error{"ERROR: The sum of individuals is different from the popolation"};
@@ -59,13 +60,13 @@ int main(int argc, char *argv[])
                     break;
                 }
             }
-            else if (answer == "n" || answer == "no")
+            else if (answer == "n" || answer == "no" || answer == "N")
             {
                 break;
             }
             else
             {
-                throw std::runtime_error{"ERROR: input not supported"};
+                std::cout << "ERROR: input not supported, Type y or n." << std::endl;
             }
         }
     }
@@ -80,7 +81,7 @@ int main(int argc, char *argv[])
     std::cout << "┌─────┬───────────────┬───────────────┬───────────────┬───────────────┐" << std::endl;
     std::cout << "│ Day │       S       │       E       │       I       │       R       │" << std::endl;
     std::cout << "├─────├───────────────├───────────────├───────────────├───────────────├" << std::endl;
-    int t1 = 0;
+    int t1 = 1;
     for (auto &a : result)
     {
         out << "S = " << a.S << " E = " << a.E << " I = " << a.I << " R = " << a.R << std::endl;

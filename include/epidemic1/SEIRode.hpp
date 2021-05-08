@@ -7,6 +7,8 @@
 namespace seir
 {
 
+int constexpr time_step = 1;
+
 struct State
 {
     double S;
@@ -38,7 +40,6 @@ class ode
   private:
     int N; // population
     int t; // time of the simulation(days)
-    double step;
     State S_0;
     double beta;
     double alpha;
@@ -46,7 +47,7 @@ class ode
 
   public:
     // constructor of the class
-    ode(int population, int time, double step_time, State S0, double beta, double alpha, double gamma);
+    ode(int population, int time, State S0, double beta, double alpha, double gamma);
     ode(); // default constructor
 
     static bool is_valid(ode obj); // check whether the object is valid or not
@@ -57,10 +58,6 @@ class ode
     int simulation_time() const
     {
         return t;
-    }
-    double time_step() const
-    {
-        return step;
     }
     State initial_state() const
     {
