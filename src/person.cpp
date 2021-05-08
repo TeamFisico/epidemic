@@ -1,8 +1,8 @@
 #include <person.hpp>
 
 //Constructor
-Person::Person(State condition, Position pos, State newcondition)
-: condition{condition}, pos{pos}, newcondition{newcondition}
+Person::Person(State condition, Position pos, State new_condition)
+: condition{condition}, pos{pos}, new_condition{new_condition}
 {}
 //Default constructor
 /*Person::Person()
@@ -21,12 +21,12 @@ State Person::get_condition()
 
 void Person::next_condition()
 {
-    switch(condition){
-    case State::S: condition = State::E;
+    switch(new_condition){
+    case State::S: new_condition = State::E;
         break;
-    case State::E: condition = State::I;
+    case State::E: new_condition = State::I;
         break;
-    case State::I: condition = State::R;
+    case State::I: new_condition = State::R;
         break;
     }
 }

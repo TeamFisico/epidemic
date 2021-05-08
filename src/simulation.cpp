@@ -5,8 +5,33 @@
 using namespace sim;
 
 //Contructor that generate a random std::vector<Person>
-Simulation::Simulation(int S, int E, int I, int R, double alpha, double gamma, double beta, double spread_radius, int time_in_days) {
-
+Simulation::Simulation(int S, int E, int I, int R, double alpha, double gamma, double beta, double spread_radius, int time_in_days)
+    : alpha{alpha}, beta{beta}, gamma{gamma}, spread_radius{spread_radius}, time_in_days{time_in_days}
+{
+    int N = S + E + I + R;
+    std::vector<Person> pop;
+    pop.clear();
+    for(int i = 1; i < S; ++i){
+        Position rand_pos; // <- Code to generate a random position
+        Person new_S{State::S, rand_pos, State::S};
+        pop.push_back(new_S);
+    }
+    for(int i = 1; i < E; ++i){
+        Position rand_pos; // <- Code to generate a random position
+        Person new_E{State::E, rand_pos, State::E};
+        pop.push_back(new_E);
+    }
+    for(int i = 1; i < I; ++i){
+        Position rand_pos; // <- Code to generate a random position
+        Person new_I{State::I, rand_pos, State::I};
+        pop.push_back(new_I);
+    }
+    for(int i = 1; i < R; ++i){
+        Position rand_pos; // <- Code to generate a random position
+        Person new_R{State::R, rand_pos, State::R};
+        pop.push_back(new_R);
+    }
+    Population = pop;
 }
 //default costructor
 Simulation::Simulation()
