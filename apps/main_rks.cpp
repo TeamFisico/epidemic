@@ -141,5 +141,8 @@ int main(int argc, char *argv[])
         rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
     app.Run();
 
+
+
+
     return 0;
 }

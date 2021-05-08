@@ -133,9 +133,10 @@ int main(int argc, char *argv[])
 
     c0->Modified();
     c0->Update();
-    //    TRootCanvas *rc = (TRootCanvas *)c0->GetCanvasImp();
-    //    rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
+    TRootCanvas *rc = (TRootCanvas *)c0->GetCanvasImp();
+    rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
     app.Run();
+
 
     return 0;
 }
