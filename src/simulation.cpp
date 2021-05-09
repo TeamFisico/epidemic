@@ -50,6 +50,23 @@ std::vector<Person*> Simulation::Close_People(Person& current_person) {
     return result;
 }
 
+Data Simulation::get_data()
+{
+    unsigned int nS{};
+    unsigned int nE{};
+    unsigned int nI{};
+    unsigned int nR{};
+    for (auto& a: Population){
+        switch(a.get_condition()){
+        case State::S: nS++;
+        case State::E: nE++;
+        case State::I: nI++;
+        case State::R: nR++;
+        }
+    }
+    return {nS, nE, nI, nR};
+}
+
 void Simulation::spread() {
     for(auto& a: Population)
     {

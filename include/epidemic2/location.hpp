@@ -9,7 +9,7 @@ class Location{
     Location(Position& location_pos, double location_Radius);
     Location(); //default constructor
     Position get_pos(); //get location position
-    double get_area(); //get location area
+    double get_radius(); //get location area
 
 };
 }

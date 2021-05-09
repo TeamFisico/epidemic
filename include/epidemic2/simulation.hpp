@@ -5,6 +5,13 @@
 #include "location.hpp"
 namespace sim
 {
+struct Data{
+    unsigned int S;
+    unsigned int E;
+    unsigned int I;
+    unsigned int R;
+};
+
 class Simulation
 {
   private:
@@ -22,6 +29,7 @@ class Simulation
     Simulation();
     std::vector<Person *> Close_People(Person &current_person); // function that put in a vector pointers to all
                                                                 // other inRadius Susceptible People
+    Data get_data(); // get the summary data.
     void spread(); // Function that, if *this is I, check close People and try
                    // to spread virus to close S if *this is E or I check if the
                    // State evolve

@@ -13,7 +13,7 @@ Position::Position()
 {}
 
 bool Position::InRadius(Position &other, double r) {
-    if (std::abs(x - other.x) <= r && std::abs(y - other.y) <= r){
+    if ((x - other.x)*(x - other.x) <= r*r && (y - other.y)*(y - other.y) <= r*r){
         return true;
     }
     return false;
