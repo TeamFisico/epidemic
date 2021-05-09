@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
                 std::cout << std::setw(15) << "Removed individuals : ";
                 std::cin >> state0.R;
                 ode = {state0, param2, param1, param3};
-                //ode.isValid();
+                // ode.isValid();
                 if (pop != static_cast<int>(state0.S + state0.E + state0.I + state0.R))
                 {
                     throw std::runtime_error{"ERROR: The sum of individuals is different from the popolation"};
@@ -136,7 +136,6 @@ int main(int argc, char *argv[])
     TRootCanvas *rc = (TRootCanvas *)c0->GetCanvasImp();
     rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
     app.Run();
-
 
     return 0;
 }

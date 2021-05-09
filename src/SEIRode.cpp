@@ -2,13 +2,11 @@
 #include <iostream>
 #include <stdexcept>
 
-
-
-
 namespace seir
 {
 
-void error(std::string s){
+void error(std::string s)
+{
     throw std::runtime_error(s);
 }
 
@@ -16,7 +14,7 @@ void error(std::string s){
 //                     CONSTRUCTOR                           //
 ///////////////////////////////////////////////////////////////
 ode::ode(int population, int time, State initial_state, double beta, double alpha, double gamma)
-    : N{population}, t{time},S_0{initial_state}, beta{beta}, alpha{alpha}, gamma{gamma}
+    : N{population}, t{time}, S_0{initial_state}, beta{beta}, alpha{alpha}, gamma{gamma}
 {
     is_valid(*this);
 }
@@ -35,8 +33,8 @@ const ode &default_ode()
 ///////////////////////////////////////////////////////////////
 ode::ode()
     // default constructor:CHECK IF IT MAKES SENSE
-    : N{default_ode().N}, t{default_ode().t}, S_0{default_ode().S_0},
-      beta{default_ode().beta}, alpha{default_ode().alpha}, gamma{default_ode().gamma}
+    : N{default_ode().N}, t{default_ode().t}, S_0{default_ode().S_0}, beta{default_ode().beta},
+      alpha{default_ode().alpha}, gamma{default_ode().gamma}
 {
 }
 
@@ -51,35 +49,36 @@ bool ode::is_valid(ode obj)
     else if (obj.t < 10)
     {
         error("The simulation period is too small for the simulation to be "
-                     "accurate!");
+              "accurate!");
         return false;
     }
     if (obj.N <= 0)
     {
-        error( "The population has a non-positive value!");
+        error("The population has a non-positive value!");
         return false;
     }
     else if (obj.N < 100)
     {
-        error( "The population sample is too small for the simulation to be "
+        error("The population sample is too small for the simulation to be "
               "accurate!");
         return false;
     }
     if (obj.S_0.E == 0 && obj.S_0.I == 0)
     { // 0 people with, at least, virus in latent phase
-        error( "The disease will not spread if nobody has taken the virus in "
-                     "the initial state!");
+        error("The disease will not spread if nobody has taken the virus in "
+              "the initial state!");
         return false;
     }
     if (obj.beta <= 0.0 || obj.gamma <= 0.0 || obj.alpha <= 0.0)
     {
-        error( "The parameters can't be negative or 0!");
+        error("The parameters can't be negative or 0!");
         return false;
         // add some more constraints
     }
 
-    if (obj.S_0.S+ obj.S_0.E + obj.S_0.I + obj.S_0.R != obj.N){
-       error( "The sum of susceptibles, latent, infected and removed individuals must equal the total population!");
+    if (obj.S_0.S + obj.S_0.E + obj.S_0.I + obj.S_0.R != obj.N)
+    {
+        error("The sum of susceptibles, latent, infected and removed individuals must equal the total population!");
     }
 
     return true;
@@ -167,14 +166,12 @@ void simulation(ode sim, Simulation &result)
 
     result.push_back(current_state);
     // sistema stop controlla
-    for (double t = 0.0; t < sim.simulation_time() -1; t += time_step)
+    for (double t = 0.0; t < sim.simulation_time() - 1; t += time_step)
     {
         new_state = sim.RungeKuttaSolver(current_state); // calculate new state with Runge Kutta
         result.push_back(new_state);                     // push into the Simulation
         current_state = new_state;
     }
-
-
 }
 
 } // namespace seir

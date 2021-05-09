@@ -14,7 +14,7 @@ target_compile_options(app1.0.t PRIVATE -Wall -Wextra -fsanitize=address)
 target_link_options(app1.0.t PRIVATE -fsanitize=address)
 target_link_libraries(app1.0.t PRIVATE standard_solver)
 add_test(NAME app1.0.t COMMAND app1.0.t)
-target_clangformat_setup(app1.0.t) ##allow for code formatting
+#target_clangformat_setup(app1.0.t) ##allow for code formatting
 
 
 add_executable(test2 test2.cpp $<TARGET_OBJECTS:test_main>)
