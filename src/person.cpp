@@ -2,12 +2,12 @@
 
 using namespace sim;
 //Constructor
-Person::Person(State condition, Position pos, State new_condition)
-: condition{condition}, pos{pos}, new_condition{new_condition}
+Person::Person(State condition, Position pos, State new_condition, Location home)
+: condition{condition}, pos{pos}, new_condition{new_condition}, home{home}
 {}
 //Default constructor
 /*Person::Person()
-: condition{}, pos{}, newcondition{}
+: condition{}, pos{}, newcondition{}, home{}
 {}*/
 
 Position* Person::get_pos()
@@ -30,6 +30,11 @@ void Person::next_condition()
     case State::I: new_condition = State::R;
         break;
     }
+}
+
+Location * Person::get_home()
+{
+    return &home;
 }
 
 

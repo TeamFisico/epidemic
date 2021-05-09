@@ -1,4 +1,5 @@
 #include "position.hpp"
+#include "location.hpp"
 
 namespace sim
 {
@@ -16,13 +17,14 @@ class Person
     State condition;
     Position pos;
     State new_condition;
-    // Position home;
+    Location home;
   public:
-    Person(State condition, Position pos, State new_condition); // Constructor
+    Person(State condition, Position pos, State new_condition, Location home); // Constructor
     Person();                                                   // Default Constructor
     Position *get_pos();                                        // return pointer to person position
     State get_condition();                                      // return person condition
     void next_condition();
+    Location* get_home(); //return pointer to Location home
 };
 
 }

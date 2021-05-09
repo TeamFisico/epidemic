@@ -5,7 +5,7 @@
 using namespace sim;
 
 //Contructor that generate a random std::vector<Person>
-Simulation::Simulation(int S, int E, int I, int R, double alpha, double gamma, double beta, double spread_radius, int time_in_days)
+Simulation::Simulation(int S, int E, int I, int R, int Location_number, double people_per_home, double alpha, double gamma, double beta, double spread_radius, int time_in_days)
     : alpha{alpha}, beta{beta}, gamma{gamma}, spread_radius{spread_radius}, time_in_days{time_in_days}
 {
     int N = S + E + I + R;

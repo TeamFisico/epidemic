@@ -57,6 +57,22 @@ target_compile_options(simulation PRIVATE -Wall -Wextra -fsanitize=address)
 target_link_options(simulation PRIVATE -fsanitize=address)
 target_clangformat_setup(simulation) ##allow for code formatting
 
+########## LOCATION  #############
+add_library(location location.cpp ${HEADER_LIST2})
+target_include_directories(location PUBLIC ../include/epidemic2)
+target_compile_features(location PUBLIC cxx_std_17)
+target_compile_options(location PRIVATE -Wall -Wextra -fsanitize=address)
+target_link_options(location PRIVATE -fsanitize=address)
+target_clangformat_setup(location) ##allow for code formatting
+
+########## MOBILITY_MODEL  #############
+add_library(mobility_model mobility_model.cpp ${HEADER_LIST2})
+target_include_directories(mobility_model PUBLIC ../include/epidemic2)
+target_compile_features(mobility_model PUBLIC cxx_std_17)
+target_compile_options(mobility_model PRIVATE -Wall -Wextra -fsanitize=address)
+target_link_options(mobility_model PRIVATE -fsanitize=address)
+target_clangformat_setup(mobility_model) ##allow for code formatting
+
 
 
 # IDE will put headers in a nice way
