@@ -65,6 +65,30 @@ target_compile_options(location PRIVATE -Wall -Wextra -fsanitize=address)
 target_link_options(location PRIVATE -fsanitize=address)
 target_clangformat_setup(location) ##allow for code formatting
 
+########## GROUP  #############
+add_library(group group.cpp ${HEADER_LIST2})
+target_include_directories(group PUBLIC ../include/epidemic2)
+target_compile_features(group PUBLIC cxx_std_17)
+target_compile_options(group PRIVATE -Wall -Wextra -fsanitize=address)
+target_link_options(group PRIVATE -fsanitize=address)
+target_clangformat_setup(group) ##allow for code formatting
+
+########## CLUSTER  #############
+add_library(cluster cluster.cpp ${HEADER_LIST2})
+target_include_directories(cluster PUBLIC ../include/epidemic2)
+target_compile_features(cluster PUBLIC cxx_std_17)
+target_compile_options(cluster PRIVATE -Wall -Wextra -fsanitize=address)
+target_link_options(cluster PRIVATE -fsanitize=address)
+target_clangformat_setup(cluster) ##allow for code formatting
+
+########## WORLD  #############
+add_library(world world.cpp ${HEADER_LIST2})
+target_include_directories(world PUBLIC ../include/epidemic2)
+target_compile_features(world PUBLIC cxx_std_17)
+target_compile_options(world PRIVATE -Wall -Wextra -fsanitize=address)
+target_link_options(world PRIVATE -fsanitize=address)
+target_clangformat_setup(world) ##allow for code formatting
+
 ########## MOBILITY_MODEL  #############
 add_library(mobility_model mobility_model.cpp ${HEADER_LIST2})
 target_include_directories(mobility_model PUBLIC ../include/epidemic2)

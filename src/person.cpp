@@ -1,16 +1,17 @@
 #include <person.hpp>
 
 using namespace sim;
-//Constructor
+// Constructor
 Person::Person(State condition, Position pos, State new_condition, Location home)
-: condition{condition}, pos{pos}, new_condition{new_condition}, home{home}
-{}
-//Default constructor
+    : condition{condition}, pos{pos}, new_condition{new_condition}, home{home}
+{
+}
+// Default constructor
 /*Person::Person()
 : condition{}, pos{}, newcondition{}, home{}
 {}*/
 
-Position* Person::get_pos()
+Position *Person::get_pos()
 {
     return &pos;
 }
@@ -22,21 +23,33 @@ State Person::get_condition()
 
 void Person::next_condition()
 {
-    switch(new_condition){
-    case State::S: new_condition = State::E;
+    switch (new_condition)
+    {
+    case State::S:
+        new_condition = State::E;
         break;
-    case State::E: new_condition = State::I;
+    case State::E:
+        new_condition = State::I;
         break;
-    case State::I: new_condition = State::R;
+    case State::I:
+        new_condition = State::R;
+        break;
+    default:
         break;
     }
 }
 
-Location * Person::get_home()
+Location *Person::get_home()
 {
     return &home;
 }
 
+void Person::pass_condition()
+{
+    condition = new_condition;
+}
 
-
-
+bool Person::at_location(Location *loc)
+{
+    return (pos.InRadius(loc->get_pos(), loc->get_radius()));
+}
