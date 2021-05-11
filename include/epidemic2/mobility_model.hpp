@@ -16,12 +16,11 @@ class mobility_model
   public:
     mobility_model(Person *person, Location* target_location, double speed, int stay, int location_to_visit, double home_probability, bool at_home); //Constructor
     mobility_model(); //Default constructor
-    void next_location(std::vector<Location> *location_list); //Randomly select the new location to visit; or home if you do not have anymore location to visit
+    void next_location(std::vector<Location*> *location_list); //Randomly select the new location to visit; or home if you do not have anymore location to visit
     void move(); //move The pointed Person to the pointed Location(or home)
 
 };
 
 double rand_speed(double min, double max);
 int rand_stay(int min, int max);
-bool try_event(double probability);
 }

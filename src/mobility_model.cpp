@@ -17,7 +17,8 @@ mobility_model::mobility_model(Person *person, Location *target_location, double
 {
 }*/
 
-void mobility_model::next_location(std::vector<Location> *location_list)
+//TODO Implement the distance based next location selector
+void mobility_model::next_location(std::vector<Location*> *location_list)
 {
     unsigned int last_index = location_list->size() - 1; // last vector index;
     std::random_device rd;
@@ -27,7 +28,7 @@ void mobility_model::next_location(std::vector<Location> *location_list)
     Location *pointed_loc = target_location;                      // pointer to previous current location
     while (pointed_loc == target_location)
     {
-        target_location = &location_list->operator[](
+        target_location = location_list->operator[](
             rand(gen)); // point to new random location from location_list, different from the previous
     }
 }
@@ -53,11 +54,3 @@ int sim::rand_stay(int min, int max)
     return rand(gen);
 }
 
-bool sim::try_event(double probability)
-{
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    assert(probability >= 0.0 && probability <= 1.0);
-    std::uniform_real_distribution<double> rnum(0.0, 1.0);
-    return rnum(gen) <= probability;
-}

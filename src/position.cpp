@@ -1,6 +1,7 @@
+#include "position.hpp"
 #include <cmath>
-#include <position.hpp>
 #include <random>
+#include <cassert>
 
 using namespace sim;
 // Constructor
@@ -48,4 +49,29 @@ double sim::rand_gauss(double mean, double deviation)
     std::mt19937 gen(rd());
     std::normal_distribution<> rand(mean, deviation);
     return rand(gen);
+}
+
+int sim::rounded_norm(double mean, double deviation)
+{
+    double num = rand_gauss(mean, deviation);
+    int trunc_num = static_cast<double>(num);
+    if(trunc_num < 0){     //make sure that it never return a negative number, as negative number will give problem where this function is used
+        return 0;
+    }
+    if(num - trunc_num <= 0.5){
+        return trunc_num;
+    }
+    else{
+        return trunc_num + 1;
+    }
+
+}
+
+bool sim::try_event(double probability)
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    assert(probability >= 0.0 && probability <= 1.0);
+    std::uniform_real_distribution<double> rnum(0.0, 1.0);
+    return rnum(gen) <= probability;
 }
