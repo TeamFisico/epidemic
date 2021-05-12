@@ -37,6 +37,16 @@ double Position::distance_to(const Position &a){
     return std::sqrt((x-a.x)*(x-a.x) + (y-a.y)*(y-a.y));
 }
 
+double Position::get_x()
+{
+    return x;
+}
+
+double Position::get_y()
+{
+    return y;
+}
+
 Position sim::rand_pos(double x_min, double x_max, double y_min, double y_max)
 {
     std::random_device rd;
