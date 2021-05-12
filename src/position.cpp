@@ -33,6 +33,10 @@ void Position::move_toward(Position target, double speed)
     y = target.y + v_y;
 }
 
+double Position::distance_to(const Position &a){
+    return std::sqrt((x-a.x)*(x-a.x) + (y-a.y)*(y-a.y));
+}
+
 Position sim::rand_pos(double x_min, double x_max, double y_min, double y_max)
 {
     std::random_device rd;
