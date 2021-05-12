@@ -18,7 +18,8 @@ class mobility_model
     mobility_model(Person *person, Location* target_location, double speed, int stay, double home_probability, bool at_home); //Constructor
     mobility_model(); //Default constructor
     void next_location(); //Randomly select the new location to visit; or home if you do not have anymore location to visit
-    void move(); //move The pointed Person to the pointed Location(or home)
+    void move(); //move the pointed Person to the pointed target_location
+    void recall_home(); //set the target_location to home. to be called when curfew start or at a cluster color change
 
 };
 
