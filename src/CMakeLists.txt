@@ -57,6 +57,15 @@ target_compile_options(simulation PRIVATE -Wall -Wextra -fsanitize=address)
 target_link_options(simulation PRIVATE -fsanitize=address)
 target_clangformat_setup(simulation) ##allow for code formatting
 
+########## RECTANGLE  #############
+add_library(rectangle rectangle.cpp ${HEADER_LIST2})
+target_include_directories(rectangle PUBLIC ../include/epidemic2)
+target_compile_features(rectangle PUBLIC cxx_std_17)
+target_compile_options(rectangle PRIVATE -Wall -Wextra -fsanitize=address)
+target_link_options(rectangle PRIVATE -fsanitize=address)
+target_clangformat_setup(rectangle) ##allow for code formatting
+
+
 ########## LOCATION  #############
 add_library(location location.cpp ${HEADER_LIST2})
 target_include_directories(location PUBLIC ../include/epidemic2)

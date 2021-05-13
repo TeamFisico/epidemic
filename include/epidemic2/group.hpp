@@ -6,6 +6,8 @@ namespace sim{
 class Group{
   private:
     std::vector<Location> locations;
+    Position center;
+    double Radius;
   public:
     Group(int number_of_locations, Position center, double Radius);
     Group();

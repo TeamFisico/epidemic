@@ -1,5 +1,6 @@
 #include "person.hpp"
 #include "group.hpp"
+#include "rectangle.hpp"
 
 namespace sim{
 
@@ -7,6 +8,7 @@ class Cluster{
   private:
     std::vector<Person> Population;
     std::vector<Group> groups;
+    Rectangle Area;
   public:
     Cluster(int N, int S, int E, int I, int R, int number_of_groups, Position blh_corner, Position trh_corner);
     Cluster();
