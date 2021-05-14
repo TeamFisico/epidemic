@@ -1,7 +1,7 @@
 #include "position.hpp"
+#include <cassert>
 #include <cmath>
 #include <random>
-#include <cassert>
 
 using namespace sim;
 // Constructor
@@ -33,8 +33,9 @@ void Position::move_toward(Position target, double speed)
     y = target.y + v_y;
 }
 
-double Position::distance_to(const Position &a){
-    return std::sqrt((x-a.x)*(x-a.x) + (y-a.y)*(y-a.y));
+double Position::distance_to(const Position &a)
+{
+    return std::sqrt((x - a.x) * (x - a.x) + (y - a.y) * (y - a.y));
 }
 
 double Position::get_x()
@@ -69,16 +70,19 @@ int sim::rounded_norm(double mean, double deviation)
 {
     double num = rand_gauss(mean, deviation);
     int trunc_num = static_cast<double>(num);
-    if(trunc_num < 0){     //make sure that it never return a negative number, as negative number will give problem where this function is used
+    if (trunc_num < 0)
+    { // make sure that it never return a negative number, as negative number will give problem where this function is
+      // used
         return 0;
     }
-    if(num - trunc_num <= 0.5){
+    if (num - trunc_num <= 0.5)
+    {
         return trunc_num;
     }
-    else{
+    else
+    {
         return trunc_num + 1;
     }
-
 }
 
 bool sim::try_event(double probability)

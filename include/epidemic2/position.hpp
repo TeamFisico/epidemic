@@ -13,14 +13,15 @@ class Position
     bool InRadius(Position other,
                   double r);                         // Function that determine if two position are close enough
     void move_toward(Position target, double speed); // move position closer to target
-    double distance_to(Position const& a); // return the distance from the 2 Position
-    double get_x(); // return the x coordinate
-    double get_y(); // return the y coordinate
+    double distance_to(Position const &a);           // return the distance from the 2 Position
+    double get_x();                                  // return the x coordinate
+    double get_y();                                  // return the y coordinate
 };
 
 Position rand_pos(double x_min, double x_max, double y_min, double y_max); // get a random position
 double rand_gauss(double mean, double deviation); // get a random number from gaussian distribution
-int rounded_norm(double mean, double deviation); // generate a random number using rand_gauss and round it to closest integer.
+int rounded_norm(double mean,
+                 double deviation); // generate a random number using rand_gauss and round it to closest integer.
 bool try_event(double probability);
 
 } // namespace sim

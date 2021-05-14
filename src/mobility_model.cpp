@@ -1,7 +1,7 @@
 #include "mobility_model.hpp"
 #include <cassert>
-#include <random>
 #include <numeric>
+#include <random>
 
 using namespace sim;
 
@@ -18,26 +18,29 @@ mobility_model::mobility_model(Person *person, Location *target_location, double
 {
 }*/
 
-
 void mobility_model::next_location()
 {
-    if (Path.empty()){  //if Path vector empty select home
+    if (Path.empty())
+    { // if Path vector empty select home
         target_location = person->get_home();
     }
-    else if(Path.size() == 1){ //if Path ha only one element select that element
+    else if (Path.size() == 1)
+    { // if Path ha only one element select that element
         target_location = Path.operator[](0);
         Path.clear();
     }
-    else //if Path vector has more than one element ran the LATP Algorithm to select next Location
+    else // if Path vector has more than one element ran the LATP Algorithm to select next Location
     {
-        std::vector<double> inverse_distances; // vector where we store the inverse_distance elevated to alpha of the pointed location with the same index in Path
+        std::vector<double> inverse_distances; // vector where we store the inverse_distance elevated to alpha of the
+                                               // pointed location with the same index in Path
         inverse_distances.clear();
         for (auto &a : Path)
         { // fill the inverse_distances vector
             double dist = 1 / pow(a->get_pos().distance_to(*(person->get_pos())), alpha);
             inverse_distances.push_back(dist);
         }
-        std::vector<double> probabilities; // vector where we store the probabilities of the same index in Path calculated with LATP algorithm
+        std::vector<double> probabilities; // vector where we store the probabilities of the same index in Path
+                                           // calculated with LATP algorithm
         probabilities.clear();
         double denom =
             std::accumulate(inverse_distances.begin(), inverse_distances.end(),

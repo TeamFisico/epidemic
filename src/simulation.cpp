@@ -1,6 +1,6 @@
+#include "simulation.hpp"
 #include <cassert>
 #include <random>
-#include "simulation.hpp"
 
 using namespace sim;
 
