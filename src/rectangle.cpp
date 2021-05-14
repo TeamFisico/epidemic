@@ -8,6 +8,11 @@ Rectangle::Rectangle(Position &blh_corner, Position &trh_corner)
 {
 }
 
+double Rectangle::get_area()
+{
+    return (trh_corner.get_x() - blh_corner.get_x())*(trh_corner.get_y() - trh_corner.get_y());
+}
+
 std::vector<Rectangle> Rectangle::Split()
 {
     std::vector<Rectangle> result;
@@ -16,6 +21,13 @@ std::vector<Rectangle> Rectangle::Split()
     std::mt19937 gen(rd());
     std::uniform_int_distribution side(0,1); //decide the random side to divide
     int selected_side = side(gen); // if 0 select the x-axis side, if 1 select the y-axis side
+    //make sure that rectangle that have a side at least three times the other have the longest_side as the selected
+    if((trh_corner.get_x() - blh_corner.get_x()) <= 3*(trh_corner.get_y() - blh_corner.get_y())){
+        selected_side = 1;
+    }
+    if(3*(trh_corner.get_x() - blh_corner.get_x()) >= (trh_corner.get_y() - blh_corner.get_y())){
+        selected_side = 0;
+    }
     int min{};
     int max{};
     if(selected_side == 0){ //select the parameter to generate the coordinate for the new rectangles
@@ -47,7 +59,8 @@ std::vector<Rectangle> Rectangle::Split()
     return result;
 }
 
-//TODO Add error checking to the following function when n < 1
+//TODO Add error checking to the following function when n < 1, and change the random selection of what rectangle divide to an algorithm that is based on the area,
+// as the current method favor a too uneven division.
 std::vector<Rectangle> Rectangle::Divide(int n)
 {
     std::random_device rd;
@@ -58,9 +71,30 @@ std::vector<Rectangle> Rectangle::Divide(int n)
     }
     for(int i = 1; i < n; ++i){ //Divide the rectangle in n random part
         //select a random member of the result vector
-        int last_index = result.size() - 1;
-        std::uniform_int_distribution rand(0, last_index);
-        int index = rand(gen);
+        std::vector<double> Area; // vector that store the areas of the rectangle at the same index in result
+        Area.clear();
+        for(auto a: result){ //fill the Area vector
+            Area.push_back(a.get_area());
+        }
+        double total_area = std::accumulate(Area.begin(), Area.end(), 0);
+        std::vector<double> probabilities;
+        probabilities.clear();
+        for (auto a: Area) //fill the probability vector
+        {
+            probabilities.push_back(a/total_area);       //the probability to be chosen is proportional to the area
+        }
+        std::uniform_real_distribution<> rand(0, 1);
+        double rnum = rand(gen);
+        int index{};
+        for (int i = 0; i < probabilities.size(); ++i)
+        {
+            if (rnum <= probabilities.operator[](i))
+            {
+                index = i;
+                break;
+            }
+            rnum -= probabilities.operator[](i);
+        }
         auto it = result.begin();
         it += index;
         // Split the selected Rectangle in 2 rectangle
@@ -69,6 +103,7 @@ std::vector<Rectangle> Rectangle::Divide(int n)
         for (auto a: prev){ //Add the 2 resulting rectangle to result vector
             result.push_back(a);
         }
+
     }
     return result;
 }

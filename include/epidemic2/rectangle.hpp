@@ -9,6 +9,7 @@ class Rectangle{
     Position trh_corner;
   public:
     Rectangle(Position& blh_corner, Position& trh_corner); //constructor
+    double get_area(); //return the Area of the rectangle
     std::vector<Rectangle> Split(); //Split the rectangle in two randomly uneven rectangle
     std::vector<Rectangle> Divide(int n); //Divide the Rectangle in n part using Split() function
 };
