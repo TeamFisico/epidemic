@@ -4,3 +4,6 @@
 #define epidemic_VERSION_MAJOR @epidemic_VERSION_MAJOR@
 #define epidemic_VERSION_MINOR @epidemic_VERSION_MINOR@
 
+#define POPULATION @N@
+#define CLUSTERS  @C@
+#define WAYPOINTS @W@

@@ -29,20 +29,28 @@ target_include_directories(app1.1 PUBLIC "${PROJECT_BINARY_DIR}"
 target_clangformat_setup(app1.1) ##allow for code formatting
 
 
-##############################
-##      SECOND PART        ###
-##############################
+####################################################################################
+############                    2nd part                          ##################
+####################################################################################
 add_executable(app2 main2.cpp)
 
 target_compile_features(app2 PRIVATE cxx_std_17)
 target_compile_options(app2 PRIVATE -Wall -Wextra -fsanitize=address)
 target_link_options(app2 PRIVATE -fsanitize=address)
 target_link_libraries(app2 PRIVATE position
-                                   person
-                                   simulation)
+                                   person2
+                                   simulation2)
 target_include_directories(app2 PUBLIC "${PROJECT_BINARY_DIR}"
                                     ../include/epidemic2)
 target_clangformat_setup(app2) ##allow for code formatting
 
+add_executable(app3 main3.cpp)
 
+target_compile_features(app3 PRIVATE cxx_std_17)
+target_compile_options(app3 PRIVATE -Wall -Wextra -fsanitize=address)
+target_link_options(app3 PRIVATE -fsanitize=address)
+target_link_libraries(app3 PRIVATE area cluster3 group3 location3 person3 )
+target_include_directories(app3 PUBLIC "${PROJECT_BINARY_DIR}"
+        ../include/epidemic3)
+target_clangformat_setup(app3) ##allow for code formatting
 

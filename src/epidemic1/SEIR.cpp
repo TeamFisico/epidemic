@@ -1,4 +1,4 @@
-#include <epidemic1/SEIR.hpp>
+#include "SEIR.hpp"
 
 // Constructor
 sim::sim(const State &initial_state, double alpha, double beta, double gamma)

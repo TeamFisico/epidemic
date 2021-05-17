@@ -1,4 +1,4 @@
-#include <epidemic1/SEIRode.hpp>
+#include "SEIRode.hpp"
 #include <iostream>
 #include <stdexcept>
 

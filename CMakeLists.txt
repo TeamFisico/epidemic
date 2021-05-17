@@ -21,8 +21,13 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)  #main project
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
     set(CMAKE_CXX_EXTENSIONS OFF)
 
-
-    configure_file(epidemicConfig.h.in epidemicConfig.h)
+    ##parameters for version 2 of the second part
+    set(N 100000 CACHE INTERNAL "Total number of people in the simulation")
+    set(W 20 CACHE INTERNAL "Total number of waypoint in the simulation")
+    set(C 5 CACHE INTERNAL "Total number of clusters in the simulation")
+    configure_file(
+            "${PROJECT_SOURCE_DIR}/configuration.h.in"
+            "${PROJECT_SOURCE_DIR}/include/epidemic3/configuration.h")
 
     list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
@@ -51,6 +56,8 @@ else()
     include("${ROOT_DIR}/RootMacros.cmake")
 endif()
 
+
+add_subdirectory(include/epidemic3)
 
 # The compiled library code is here
 add_subdirectory(src)
