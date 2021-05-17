@@ -1,7 +1,6 @@
 #include "epidemicConfig.h"
 #include <iostream>
 
-
 int main()
 {
 

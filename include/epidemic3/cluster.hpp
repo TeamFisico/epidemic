@@ -3,49 +3,77 @@
 
 #include "group.hpp"
 
-namespace SMOOTH{
+namespace SMOOTH
+{
 
-    enum class Zone{
-        white=0,
-        yellow,
-        orange,
-        red
+enum class Zone
+{
+    white = 0,
+    yellow,
+    orange,
+    red
+};
+
+class Cluster
+{
+  private:
+    int sz;        // num of waypoints
+    int lbl;       // corresponding index into Cluster array 0 <= lbl <= clusters_size-1
+    double weight; // weight to be chosen by a person
+    Zone zone;
+
+  public:
+    std::vector<Group> Groups; // groups of waypoints in cluster
+
+    explicit Cluster(int size); // constructor
+    Cluster();                  // default constructor
+
+    // non-modifying members
+    int size() const
+    {
+        return sz;
+    }
+    Zone zone_type() const
+    {
+        return zone;
+    }
+    int label() const
+    {
+        return lbl;
+    }
+
+    void set_weight(double w)
+    {
+        weight = w;
     };
+    void set_label(int n)
+    {
+        lbl = n;
+    }
+    void set_zone(Zone newZone)
+    {
+        zone = newZone;
+    }
 
-    class Cluster{
-      private:
-          int sz;         //num of waypoints
-          int lbl;        //corresponding index into Cluster array 0 <= lbl <= clusters_size-1
-          double weight;  //weight to be chosen by a person
-          Zone zone;
-      public:
-          std::vector<Group> Groups;  //groups of waypoints in cluster
+    double &cluster_weight()
+    {
+        return weight;
+    }
+    int &size()
+    {
+        return sz;
+    }
 
-          explicit Cluster(int size); //constructor
-          Cluster(); //default constructor
+    bool is_partitioned() const
+    {
+        return (Groups.size() > 0);
+    } // return true if groups have been created for this cluster
 
-          //non-modifying members
-          int size() const { return sz; }
-          Zone zone_type() const { return zone; }
-          int label() const { return lbl; }
+    void determine_groups_sizes(); // determine the n. of waypoints associated to every group
 
-          void set_weight(double w) { weight = w; };
-          void set_label(int n) { lbl = n; }
-          void set_zone(Zone newZone) { zone = newZone; }
+    // setarea?
+};
 
-          double& cluster_weight() { return weight; }
-          int& size () { return sz; }
+} // namespace SMOOTH
 
-          bool is_partitioned() const { return (Groups.size() > 0); } //return true if groups have been created for this cluster
-
-          void determine_groups_sizes(); //determine the n. of waypoints associated to every group
-
-         //setarea?
-
-    };
-
-
-} //namespace SMOOTH
-
-
-#endif  //CLUSTER_HPP
+#endif // CLUSTER_HPP

@@ -1,6 +1,5 @@
 
 
-
-class MobilityModel{
-
+class MobilityModel
+{
 };
