@@ -1,7 +1,8 @@
+#ifndef PERSON_HPP
+#define PERSON_HPP
 
+#include "area.hpp"
 #include "location.hpp"
-#include "mobility_model.hpp"
-
 namespace SMOOTH
 {
 
@@ -10,16 +11,28 @@ enum class Status
     Susceptible = 0,
     Latent,
     Infected,
-    Removed
+    Recovered,
+    Dead
 };
 
 class Person
 {
   private:
-    Location location;
-    double y;
-    Status disease_status;
-    MobilityModel *mobility_model;
+    Cluster* cluster;  //which cluster this person is in
+    Status status;
+    Location home;
+    Location current_location;
+    double y;  //percent of waypoints visited by a person in the cluster
+  public:
+    void upgrade_condition();
+
+    void set_home(Location loc) { home = loc; }
+    Location* get_home();
+
+
+
 };
 
 } // namespace SMOOTH
+
+#endif //PERSON_HPP

@@ -3,7 +3,6 @@
 
 #include "cluster.hpp"
 #include "configuration.h"
-#include "person.hpp"
 #include <array> //using STL array (provides optional bound checking, iterators, ecc to low performance loss)
 #include <stdexcept>
 
@@ -13,7 +12,6 @@ namespace SMOOTH
 // TODO try-catch for checking
 // getting some program inputs from Cmake Variables and doing type check
 // so that the program won't compile in case of wrong input
-int constexpr population_size = POPULATION;
 int constexpr clusters_size = CLUSTERS;
 int constexpr waypoints_size = WAYPOINTS;
 
@@ -24,7 +22,6 @@ class Area
     double R;  // transmission Range
   public:
     std::array<Location, waypoints_size> Waypoints; // array with waypoints
-    std::array<Person, population_size> People;     // People in the simulation
     std::array<Cluster, clusters_size> Clusters;    // array with Clusters in the simulation
   private:
     void partition_in_clusters();
