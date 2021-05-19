@@ -1,3 +1,6 @@
+#ifndef LOCATION_HPP
+#define LOCATION_HPP
+
 #include "position.hpp"
 
 namespace sim{
@@ -14,3 +17,5 @@ class Location{
 };
 Location generate_close_loc(Position& pos, double max_distance); //generate a new location in a random position in the circle that has pos as a centre and max_distance as radius
 }
+
+#endif // LOCATION_HPP

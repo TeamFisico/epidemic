@@ -3,9 +3,9 @@
 namespace SMOOTH
 {
 
-Location* Person::get_home()
+Location *Person::get_home()
 {
     return &home;
 }
 
-}
+} // namespace SMOOTH

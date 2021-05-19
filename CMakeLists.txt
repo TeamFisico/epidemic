@@ -22,8 +22,8 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)  #main project
     set(CMAKE_CXX_EXTENSIONS OFF)
 
     ##parameters for version 2 of the second part
-    set(N 100000 CACHE INTERNAL "Total number of people in the simulation")
-    set(W 20 CACHE INTERNAL "Total number of waypoint in the simulation")
+    set(N 1000 CACHE INTERNAL "Total number of people in the simulation")
+    set(W 200 CACHE INTERNAL "Total number of waypoint in the simulation")
     set(C 5 CACHE INTERNAL "Total number of clusters in the simulation")
     configure_file(
             "${PROJECT_SOURCE_DIR}/configuration.h.in"

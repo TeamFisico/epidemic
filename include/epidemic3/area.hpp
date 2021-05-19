@@ -27,7 +27,7 @@ class Area
     void partition_in_clusters();
     void partition_in_groups(int label);
     Location first_group_step(int label);
-    Location other_groups_step(int cl_label, int gr_label, Location const &prev_waypoint) const;
+    Location other_groups_step(Location const &prev_waypoint) const;
     Location plot_nearby_waypoints(int cluster_label, int group_label, Location const &starting_waypoint);
 
   public:
@@ -42,8 +42,6 @@ class Area
     void plot_waypoints();
 
 }; // class Area
-
-void plot_waypoints(Cluster const &current, Area &world); // setting the waypoints on the map based on the algorithm
 
 } // namespace SMOOTH
 

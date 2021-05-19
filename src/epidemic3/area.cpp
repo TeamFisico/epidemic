@@ -134,9 +134,9 @@ Location Area::first_group_step(int label)
                     for (auto it = current_group.group_ptr; it_index < current_group.size();
                          it += it_index) // loop over group Waypoints
                     {
+
                         if (it->get_distance(try_waypoint) <= R)
                         {
-
                             change_wpt = true;
                             break;
                         }
@@ -200,7 +200,7 @@ Location Area::plot_nearby_waypoints(int cluster_label, int group_label, Locatio
 
 // algorithm applied from the second group of this cluster to the last
 // plot
-Location Area::other_groups_step(int cl_label, int gr_label, Location const &prev_group_waypoint) const
+Location Area::other_groups_step(Location const &prev_group_waypoint) const
 {
     double const Y = 2 * sd / clusters_size;
 
@@ -230,7 +230,7 @@ Location Area::other_groups_step(int cl_label, int gr_label, Location const &pre
     {
         Location try_waypoint{rand_x(gen), rand_y(gen)};
         double distance = try_waypoint.get_distance(prev_group_waypoint);
-        if (distance >= Y / 4)
+        if (distance >= Y / 4 && distance <= Y /3)
         {
             //                std::cout <<"location found in "<<i<<" loops\n";
             assert(try_waypoint.X() > 0.0 && try_waypoint.Y() > 0.0 && try_waypoint.X() <= sd &&
@@ -250,10 +250,10 @@ void Area::plot_waypoints()
         // plot all the waypoints of the group around this one and return a reference to the last one
         Location previous_group_last_waypoint = plot_nearby_waypoints(i, 0, Clusters[i].Groups[0].group_ptr[0]);
 
-        for (int j = 1; j < Clusters[i].Groups.size(); ++j) // now set the other groups' wpts
+        for (unsigned int j = 1; j < Clusters[i].Groups.size(); ++j) // now set the other groups' wpts
         {
             // setting the first waypoint of this group
-            Clusters[i].Groups[j].group_ptr[0] = other_groups_step(i, j, previous_group_last_waypoint);
+            Clusters[i].Groups[j].group_ptr[0] = other_groups_step(previous_group_last_waypoint);
             // plot the neighbourhood and set the la
             previous_group_last_waypoint = plot_nearby_waypoints(i, j, Clusters[i].Groups[j].group_ptr[0]);
         }

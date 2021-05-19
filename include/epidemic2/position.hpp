@@ -1,3 +1,5 @@
+#ifndef POSITION_HPP
+#define POSITION_HPP
 
 namespace sim
 {
@@ -25,3 +27,5 @@ int rounded_norm(double mean,
 bool try_event(double probability);
 
 } // namespace sim
+
+#endif // POSITION_HPP

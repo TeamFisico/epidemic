@@ -18,21 +18,21 @@ enum class Status
 class Person
 {
   private:
-    Cluster* cluster;  //which cluster this person is in
+    Cluster *cluster; // which cluster this person is in
     Status status;
     Location home;
     Location current_location;
-    double y;  //percent of waypoints visited by a person in the cluster
+    double y; // percent of waypoints visited by a person in the cluster
   public:
     void upgrade_condition();
 
-    void set_home(Location loc) { home = loc; }
-    Location* get_home();
-
-
-
+    void set_home(Location loc)
+    {
+        home = loc;
+    }
+    Location *get_home();
 };
 
 } // namespace SMOOTH
 
-#endif //PERSON_HPP
+#endif // PERSON_HPP

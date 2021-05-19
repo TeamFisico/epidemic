@@ -10,8 +10,9 @@ class Simulation{
     Area world;
     std::array<Person, population_size> People;     // People in the simulation
 
-    void assign_home(int label);
+    void assign_to_cluster();
 
+    void assign_home(int label);
 };
 
 
