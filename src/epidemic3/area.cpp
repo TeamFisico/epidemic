@@ -117,10 +117,11 @@ Location Area::first_group_step(int label)
         bool end_loop = false;
         bool change_wpt = false;
 
+      int n_loops = 0;
         while (!end_loop)
         {
             int check_up_to = label; // check the other waypoints in the previous clusters
-
+            
             for (int curr_cluster_index = 0; curr_cluster_index < check_up_to;
                  ++curr_cluster_index) // loop over Clusters
             {
@@ -152,12 +153,15 @@ Location Area::first_group_step(int label)
 
             if (!end_loop)
             {
+                                         ++n_loops;
+
                 // retry with new location
                 try_waypoint.X() = rand(gen);
                 try_waypoint.Y() = rand(gen);
             }
         } // end while
         assert(try_waypoint.X() > 0.0 && try_waypoint.Y() > 0.0 && try_waypoint.X() <= sd && try_waypoint.X() <= sd);
+        std::cout << "Step completed in " <<n_loops <<" loops\n";
         return try_waypoint;
     } // else
 }

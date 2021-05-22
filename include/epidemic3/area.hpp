@@ -33,10 +33,8 @@ class Area
   public:
     Area(double side, double transmission_range); // constructor
 
-    int side() const
-    {
-        return sd;
-    }
+    int side() const { return sd; }
+
 
     void partition();
     void plot_waypoints();
