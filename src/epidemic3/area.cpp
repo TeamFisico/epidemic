@@ -77,9 +77,6 @@ void Area::partition_in_groups(int label)
     for (auto &group : Clusters[label].Groups)
     {
         group.set_to_waypoint(Waypoints, already_setted_waypoints);
-        std::cout << "Group " << j << " -->Waypoint[" << already_setted_waypoints << "]  Size == " << group.size()
-                  << std::endl;
-        ;
         already_setted_waypoints += group.size();
         ++j;
     }
@@ -120,11 +117,15 @@ Location Area::first_group_step(int label)
         bool end_loop = false;
         bool change_wpt = false;
 
+<<<<<<< HEAD
       int n_loops = 1;
+=======
+        int n_loops = 0;
+>>>>>>> 6fe9ce0d4553c0e15cfbb78308e5265a7f109d2b
         while (!end_loop)
         {
             int check_up_to = label; // check the other waypoints in the previous clusters
-            
+
             for (int curr_cluster_index = 0; curr_cluster_index < check_up_to;
                  ++curr_cluster_index) // loop over Clusters
             {
@@ -136,7 +137,7 @@ Location Area::first_group_step(int label)
                         break;
                     int it_index = 0;
                     for (auto it = current_group.group_ptr; it_index < current_group.size();
-                         it += 1) // loop over group Waypoints
+                         ++it) // loop over group Waypoints
                     {
 
                         if (it->get_distance(try_waypoint) <= R)
@@ -156,15 +157,12 @@ Location Area::first_group_step(int label)
 
             if (!end_loop)
             {
-                                         ++n_loops;
-
                 // retry with new location
                 try_waypoint.X() = rand(gen);
                 try_waypoint.Y() = rand(gen);
             }
         } // end while
         assert(try_waypoint.X() > 0.0 && try_waypoint.Y() > 0.0 && try_waypoint.X() <= sd && try_waypoint.X() <= sd);
-        std::cout << "Step completed in " <<n_loops <<" loops\n";
         return try_waypoint;
     } // else
 }
@@ -234,7 +232,7 @@ Location Area::other_groups_step(Location const &prev_group_waypoint) const
     {
         Location try_waypoint{rand_x(gen), rand_y(gen)};
         double distance = try_waypoint.get_distance(prev_group_waypoint);
-        if (distance >= Y / 4 && distance <= Y /3)
+        if (distance >= Y / 4 && distance <= Y / 3)
         {
             //                std::cout <<"location found in "<<i<<" loops\n";
             assert(try_waypoint.X() > 0.0 && try_waypoint.Y() > 0.0 && try_waypoint.X() <= sd &&

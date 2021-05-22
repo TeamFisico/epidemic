@@ -35,49 +35,6 @@ void Simulation::assign_home(int label)
 
 void Simulation::assign_to_cluster()
 {
-
 }
 
-
-
 } // namespace SMOOTH
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
