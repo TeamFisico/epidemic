@@ -13,8 +13,9 @@ Area::Area(double side, double transmission_range) : sd{side}, R{transmission_ra
 {
     assert(sd > 0 && R > 0);
 }
-
-//////////////// AREA PARTITIONING ALGORITHM /////////////////
+/////////////////////////////////////////////////////
+////////          AREA PARTITIONING           ///////
+/////////////////////////////////////////////////////
 void Area::partition_in_clusters()
 {
     int total_sizes = 0;
@@ -55,7 +56,9 @@ void Area::partition_in_clusters()
         }
     }
 }
-
+/////////////////////////////////////////////////////
+////////        CLUSTER PARTITIONING          ///////
+/////////////////////////////////////////////////////
 void Area::partition_in_groups(int label)
 {
 
@@ -81,7 +84,7 @@ void Area::partition_in_groups(int label)
         ++j;
     }
 
-    // TODO check with an assert absolutely!!!
+    // TODO check assert checking!!
 }
 
 void Area::partition()
@@ -94,11 +97,11 @@ void Area::partition()
     std::cout << "Area::partition() complete\n";
 }
 
-// Input: label of the current cluster whose waypoints are to be plot
-// return: reference to the plotted waypoint
+/////////////////////////////////////////////////////
+////////    1st WAYPOINT OF THE GROUP PLOT    ///////
+/////////////////////////////////////////////////////
 Location Area::first_group_step(int label)
 {
-    /////////////////// PART 1 ////////////////////
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> rand(0.0, sd); // generate the waypoint coordinate in [0,size]
@@ -113,11 +116,11 @@ Location Area::first_group_step(int label)
         return try_waypoint;
     }
     else
-    { // if 1 <= label <= C-1
+    {     // if 1 <= label <= C-1
         bool end_loop = false;
         bool change_wpt = false;
 
-      int n_loops = 0;
+      int n_loops = 1;
         while (!end_loop)
         {
             int check_up_to = label; // check the other waypoints in the previous clusters
@@ -166,14 +169,16 @@ Location Area::first_group_step(int label)
     } // else
 }
 
-// set the nearby waypoints and return
+/////////////////////////////////////////////////////
+////////     NEIGHBOURING WAYPOINTS PLOT      ///////
+/////////////////////////////////////////////////////
 Location Area::plot_nearby_waypoints(int cluster_label, int group_label, Location const &starting_waypoint)
+// plot within 0.1 R from the other waypoint of this group
+// we do that by extracting the next waypoint from a gaussian distribution
+// with mean on the previous waypoint with a stddev of 0.1R/3 so that the 99.7%
+// will be in the 0.1R range
 {
-    /////////////////// PART 2 ////////////////////
-    // plot within 0.1 R from the other waypoint of this group
-    // we do that by extracting the next waypoint from a gaussian distribution
-    // with mean on the previous waypoint with a stddev of 0.1R/3 so that the 99.7%
-    // will be in the 0.1R range
+
 
     std::random_device gs; // set the seed for gaussian generation
     std::mt19937 gen_gaus(gs());
@@ -187,23 +192,22 @@ Location Area::plot_nearby_waypoints(int cluster_label, int group_label, Locatio
         double current_waypoint_y = gaus2(gen_gaus);
 
         // handle cases with a possible negative extraction
-        if (current_waypoint_x < 0.0)
-            current_waypoint_x = 0.0;
-        if (current_waypoint_y < 0.0)
-            current_waypoint_y = 0.0;
+        if (current_waypoint_x < 0.0) current_waypoint_x = 0.0;
+        if (current_waypoint_y < 0.0) current_waypoint_y = 0.0;
 
         Location current_waypoint{current_waypoint_x, current_waypoint_y};
 
         Clusters[cluster_label].Groups[group_label].group_ptr[i] = current_waypoint;
 
     } // end for
-    return Clusters[cluster_label]
-        .Groups[group_label]
-        .group_ptr[Clusters[cluster_label].Groups[group_label].size() - 1];
+
+    //return the last plotted waypoint of this group
+    return Clusters[cluster_label].Groups[group_label] .group_ptr[Clusters[cluster_label].Groups[group_label].size() - 1];
 }
 
-// algorithm applied from the second group of this cluster to the last
-// plot
+/////////////////////////////////////////////////////
+////////  1st WAYPOINT OF OTHER GROUPS PLOT   ///////
+/////////////////////////////////////////////////////
 Location Area::other_groups_step(Location const &prev_group_waypoint) const
 {
     double const Y = 2 * sd / clusters_size;
@@ -217,14 +221,10 @@ Location Area::other_groups_step(Location const &prev_group_waypoint) const
     double lower_y = prev_group_waypoint.Y() - Y / 3;
     double upper_y = prev_group_waypoint.Y() + Y / 3;
 
-    if (lower_x < 0.0)
-        lower_x = 0.0;
-    if (lower_y < 0.0)
-        lower_y = 0.0;
-    if (upper_x > sd)
-        upper_x = sd;
-    if (upper_y > sd)
-        upper_y = sd;
+    if (lower_x < 0.0) lower_x = 0.0;
+    if (lower_y < 0.0) lower_y = 0.0;
+    if (upper_x > sd)  upper_x = sd;
+    if (upper_y > sd)  upper_y = sd;
 
     std::uniform_real_distribution<> rand_x(lower_x, upper_x);
     std::uniform_real_distribution<> rand_y(lower_y, upper_y);
@@ -250,7 +250,7 @@ void Area::plot_waypoints()
     for (int i = 0; i < clusters_size; ++i)
     {
         // set the first waypoint associated with the first group
-        Clusters[i].Groups[0].group_ptr[0] = first_group_step(i); // TODO CAPIRE PERCHE C'E LOOP INFINITO QUI
+        Clusters[i].Groups[0].group_ptr[0] = first_group_step(i);
         // plot all the waypoints of the group around this one and return a reference to the last one
         Location previous_group_last_waypoint = plot_nearby_waypoints(i, 0, Clusters[i].Groups[0].group_ptr[0]);
 
