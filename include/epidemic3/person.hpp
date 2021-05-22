@@ -26,10 +26,7 @@ class Person
   public:
     void upgrade_condition();
 
-    void set_home(Location loc)
-    {
-        home = loc;
-    }
+    void set_home(Location loc) { home = loc; }
     Location *get_home();
 };
 

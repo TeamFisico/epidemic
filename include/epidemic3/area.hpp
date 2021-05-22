@@ -35,7 +35,6 @@ class Area
 
     int side() const { return sd; }
 
-
     void partition();
     void plot_waypoints();
 

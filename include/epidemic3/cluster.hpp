@@ -29,18 +29,21 @@ class Cluster
     Cluster();                  // default constructor
 
     // non-modifying members
-    int size() const{ return sz; }
-    Zone zone_type() const{ return zone; }
-    int label() const{ return lbl; }
+    int size() const { return sz; }
+    Zone zone_type() const { return zone; }
+    int label() const { return lbl; }
 
     void set_weight(double w) { weight = w; };
-    void set_label(int n) { lbl = n;}
-    void set_zone(Zone newZone){ zone = newZone;}
+    void set_label(int n) { lbl = n; }
+    void set_zone(Zone newZone) { zone = newZone; }
 
-    double &cluster_weight(){ return weight; }
-    int &size(){ return sz; }
+    double &cluster_weight() { return weight; }
+    int &size() { return sz; }
 
-    bool is_partitioned() const{ return (Groups.size() > 0); } // return true if groups have been created for this cluster
+    bool is_partitioned() const
+    {
+        return (Groups.size() > 0);
+    } // return true if groups have been created for this cluster
 
     void determine_groups_sizes(); // determine the n. of waypoints associated to every group
 
