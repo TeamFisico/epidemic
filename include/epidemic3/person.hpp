@@ -18,7 +18,7 @@ enum class Status
 class Person
 {
   private:
-    Cluster *cluster; // which cluster this person is in
+    int cluster_label; // which cluster this person is in
     Status status;
     Location home;
     Location current_location;
@@ -26,6 +26,7 @@ class Person
   public:
     void upgrade_condition();
 
+    void set_cluster(int n) { cluster_label = n; }
     void set_home(Location loc) { home = loc; }
     Location *get_home();
 };

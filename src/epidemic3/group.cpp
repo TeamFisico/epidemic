@@ -11,29 +11,16 @@ Group::Group(int size, int label) : sz{size}, lbl{label}
 }
 
 // default constructor
-Group::Group() : sz{0}, lbl{0}
+Group::Group() : sz{0}
 {
 }
 
+// let this group's pointer point to the nth element of the input array
 void Group::set_to_waypoint(std::array<Location, WAYPOINTS> &wpts, int n)
 {
     assert(n < WAYPOINTS);
-    group_ptr = &(wpts[n]); // valuta se usare .at(n)
+    group_ptr = &(wpts[n]);
     assert(group_ptr);
-}
-// check group size waypoints to see if the group is done with plotting
-bool Group::is_plotted()
-{
-    int i = 0;
-    for (auto it = group_ptr; i < sz; ++it)
-    {
-        if (it->X() != 0 && it->Y() != 0)
-        { // find an already set value
-            return true;
-        }
-        ++i;
-    }
-    return false;
 }
 
 } // namespace SMOOTH

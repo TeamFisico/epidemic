@@ -19,7 +19,7 @@ class Cluster
   private:
     int sz;        // num of waypoints
     int lbl;       // corresponding index into Cluster array 0 <= lbl <= clusters_size-1
-    double weight; // weight to be chosen by a person
+    double w; // weight to be chosen by a person
     Zone zone;
 
   public:
@@ -32,12 +32,12 @@ class Cluster
     int size() const { return sz; }
     Zone zone_type() const { return zone; }
     int label() const { return lbl; }
+    double weight() const { return w; }
 
-    void set_weight(double w) { weight = w; };
+    void set_weight(double weight) { w = weight; };
     void set_label(int n) { lbl = n; }
     void set_zone(Zone newZone) { zone = newZone; }
 
-    double &cluster_weight() { return weight; }
     int &size() { return sz; }
 
     bool is_partitioned() const

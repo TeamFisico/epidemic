@@ -27,8 +27,6 @@ class Group
 
     int size() const { return sz; }
     int &size() { return sz; } // return a ref to size
-
-    bool is_plotted(); // determines if this group's waypoint have been plotted on the map
 };
 
 } // namespace SMOOTH
