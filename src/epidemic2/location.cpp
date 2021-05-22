@@ -1,6 +1,5 @@
 #include "location.hpp"
 #include <cmath>
-#include <numeric>
 #include <random>
 
 #define PI 3.14159265358979323846 /* pi */
@@ -16,22 +15,13 @@ Location::Location(Position &location_pos, double location_Radius)
 {
 }*/
 
-Position Location::get_pos()
-{
-    return location_pos;
-}
 
-double Location::get_radius()
-{
-    return location_Radius;
-}
-
-Location sim::generate_close_loc(Position &pos, double max_distance)
+Location sim::generate_close_loc(Position &pos, double min_distance, double max_distance)
 {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> angle(0, 2 * PI);
-    std::uniform_real_distribution<> distance(0, max_distance);
+    std::uniform_real_distribution<> distance(min_distance, max_distance);
     double rangle = angle(gen);
     double rdistance = distance(gen);
     double v_x = rdistance * std::cos(rangle); // x coordinate of the traslation vector

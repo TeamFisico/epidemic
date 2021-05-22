@@ -48,12 +48,12 @@ double Position::get_y()
     return y;
 }
 
-Position sim::rand_pos(double x_min, double x_max, double y_min, double y_max)
+Position sim::rand_pos(Position blh_corner, Position trh_corner)
 {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_real_distribution X(x_min, x_max);
-    std::uniform_real_distribution Y(y_min, y_max);
+    std::uniform_real_distribution X(blh_corner.get_x(), trh_corner.get_x());
+    std::uniform_real_distribution Y(blh_corner.get_y(), blh_corner.get_y());
     Position result{X(gen), Y(gen)};
     return result;
 }

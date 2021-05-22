@@ -21,6 +21,12 @@ State Person::get_condition()
     return condition;
 }
 
+void Person::set_conditions(State &cond)
+{
+    condition = cond;
+    new_condition = cond;
+}
+
 void Person::next_condition()
 {
     switch (new_condition)

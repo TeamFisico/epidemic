@@ -4,7 +4,7 @@ namespace sim{
 
 class World{
   private:
-    double Side;
+    Rectangle Area;
     std::vector<Cluster> clusters;
   public:
     World(double Side_lenght, int number_of_clusters, int number_of_groups, int number_of_location, int Population, int S, int E, int I, int R);

@@ -20,7 +20,7 @@ class Position
     double get_y();                                  // return the y coordinate
 };
 
-Position rand_pos(double x_min, double x_max, double y_min, double y_max); // get a random position
+Position rand_pos(Position blh_corner, Position trh_corner); // get a random position
 double rand_gauss(double mean, double deviation); // get a random number from gaussian distribution
 int rounded_norm(double mean,
                  double deviation); // generate a random number using rand_gauss and round it to closest integer.
