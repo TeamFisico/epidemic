@@ -89,25 +89,16 @@ void Simulation::spread()
     {
         if (a.get_condition() == State::E)
         { // if current person is in dormant state
-            if (try_event((alpha)))
-            {
-                a.next_condition();
-            }
+            if (try_event((alpha))) { a.next_condition(); }
         }
         if (a.get_condition() == State::I)
         {                                                         // if current person is infected
             std::vector<Person *> close_people = Close_People(a); // susceptible people near the infected
             for (auto b : close_people)
             {
-                if (try_event((beta)))
-                {
-                    b->next_condition();
-                }
+                if (try_event((beta))) { b->next_condition(); }
             }
-            if (try_event((gamma)))
-            {
-                a.next_condition();
-            }
+            if (try_event((gamma))) { a.next_condition(); }
         }
     }
 }

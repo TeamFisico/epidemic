@@ -24,17 +24,16 @@ class Area
     std::array<Location, waypoints_size> Waypoints; // array with waypoints
     std::array<Cluster, clusters_size> Clusters;    // array with Clusters in the simulation
   private:
-    void partition_in_clusters();
-    void partition_in_groups(int label);
-    Location first_group_step(int label);
-    Location other_groups_step(Location const &prev_waypoint) const;
-    Location plot_nearby_waypoints(int cluster_label, int group_label, Location const &starting_waypoint);
+    void partition_in_clusters();               // divide area in clusters
+    void partition_in_groups(int label);        // split a cluster into groups
+    Location first_group_step(int label) const; //
+    Location other_groups_step(Location const& prev_waypoint) const;
+    Location plot_nearby_waypoints(int cluster_label, int group_label, Location const& starting_waypoint) const;
 
   public:
     Area(double side, double transmission_range); // constructor
 
     int side() const { return sd; }
-
 
     void partition();
     void plot_waypoints();

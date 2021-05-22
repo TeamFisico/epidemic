@@ -15,10 +15,7 @@ Position::Position() : x{0}, y{0}
 
 bool Position::InRadius(Position other, double r)
 {
-    if ((x - other.x) * (x - other.x) <= r * r && (y - other.y) * (y - other.y) <= r * r)
-    {
-        return true;
-    }
+    if ((x - other.x) * (x - other.x) <= r * r && (y - other.y) * (y - other.y) <= r * r) { return true; }
     return false;
 }
 
@@ -75,10 +72,7 @@ int sim::rounded_norm(double mean, double deviation)
       // used
         return 0;
     }
-    if (num - trunc_num <= 0.5)
-    {
-        return trunc_num;
-    }
+    if (num - trunc_num <= 0.5) { return trunc_num; }
     else
     {
         return trunc_num + 1;

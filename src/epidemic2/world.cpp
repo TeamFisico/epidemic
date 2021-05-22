@@ -101,10 +101,7 @@ std::vector<Location *> sim::generate_path(std::vector<Location *> list, double 
             current = list.operator[](rand(gen));
             for (auto a : result)
             {
-                if (current == a)
-                {
-                    continue_loop = true;
-                }
+                if (current == a) { continue_loop = true; }
             }
         }
         result.push_back(current);

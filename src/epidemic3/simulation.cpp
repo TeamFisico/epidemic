@@ -3,8 +3,34 @@
 namespace SMOOTH
 {
 
-// Extract groups of 1 to 5 people and assign them the same home
+/////////////////////////////////////////////////////
+////////          CLUSTER ASSIGNMENT          ///////
+/////////////////////////////////////////////////////
+void Simulation::assign_to_cluster()
+//assign a person to a cluster based on the cluster weight using piecewise-const-dist
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::vector<double> weights (clusters_size);  //weights
+
+    for (int i = 0; i < clusters_size; ++i)
+    {
+        weights[i] = world.Clusters[i].weight();
+    }
+
+    std::discrete_distribution<int> dis (std::begin(weights),std::end(weights));
+
+    for (auto& person : People)
+    {
+        person.set_cluster(dis(gen));
+    }
+}
+
+/////////////////////////////////////////////////////
+////////          HOME ASSIGNMENT             ///////
+/////////////////////////////////////////////////////
 void Simulation::assign_home(int label)
+
 {
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -33,51 +59,4 @@ void Simulation::assign_home(int label)
     }
 }
 
-void Simulation::assign_to_cluster()
-{
-
-}
-
-
-
 } // namespace SMOOTH
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

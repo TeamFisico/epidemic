@@ -13,10 +13,13 @@ Cluster::Cluster(int size) : sz{size}
     //        partition_in_groups();
 }
 // default constructor
-Cluster::Cluster() : sz{0}, lbl{0}, weight{0.0}, zone{Zone::white}
+Cluster::Cluster() : sz{0}, lbl{0}, w{0.0}, zone{Zone::white}
 {
 }
 
+/////////////////////////////////////////////////////
+////////      GROUP SIZE DETERMINATION        ///////
+/////////////////////////////////////////////////////
 void Cluster::determine_groups_sizes()
 {
     const double maximum_group_size = sz / 2; // TODO the groups can be as big as 66% of the cluster size(makesense???)
@@ -29,7 +32,6 @@ void Cluster::determine_groups_sizes()
     std::uniform_int_distribution<> rand(1, nearbyint(maximum_group_size));
 
     assert(Groups.size() == 0);
-    //        Groups.clear(); //make sure groups is empty
 
     Groups.reserve(sz / 2); // allocate space for half of cluster size-->considering the uniform distribution
                             // should avoid reallocation in the majority of the cases
@@ -53,15 +55,15 @@ void Cluster::determine_groups_sizes()
         }
 
     } // end for
+
+    // Fix the size if 1 waypoint is left out either from the 1st of from last group
     int total_size = 0;
-    // it is possible that one waypoint is missed either from the 1st or last group
-    for (int j = 0; j < Groups.size(); ++j)
+    for (unsigned long int j = 0; j < Groups.size(); ++j)
     {
         total_size += Groups[j].size();
     }
     int difference = sz - total_size;
     Groups[Groups.size() - 1].size() += difference;
-    // the first or the last will miss one
 }
 
 } // namespace SMOOTH
