@@ -136,7 +136,7 @@ Location Area::first_group_step(int label)
                         break;
                     int it_index = 0;
                     for (auto it = current_group.group_ptr; it_index < current_group.size();
-                         it += it_index) // loop over group Waypoints
+                         it += 1) // loop over group Waypoints
                     {
 
                         if (it->get_distance(try_waypoint) <= R)
