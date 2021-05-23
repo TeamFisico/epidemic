@@ -7,7 +7,7 @@ class World{
     Rectangle Area;
     std::vector<Cluster> clusters;
   public:
-    World(double Side_lenght, int number_of_clusters, int number_of_groups, int number_of_location, int Population, int S, int E, int I, int R);
+    World(double Side_length, int number_of_clusters, int number_of_location, int S, int E, int I, int R);
     World();
     std::vector<Location*> Location_list(); //get a vector of pointer to all locations in the world
     std::vector<Person*> Total_Population(); //get a vector of pointer to all Person in the world

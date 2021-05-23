@@ -9,6 +9,7 @@ class Rectangle{
     Position trh_corner;
   public:
     Rectangle(Position& blh_corner, Position& trh_corner); //constructor
+    Rectangle();
     double get_area(); //return the Area of the rectangle
     Position get_blh_corner(){ return blh_corner; }
     Position get_trh_corner(){ return trh_corner; }

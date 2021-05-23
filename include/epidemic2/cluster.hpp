@@ -10,7 +10,7 @@ class Cluster{
     std::vector<Group> groups;
     Rectangle Area;
   public:
-    Cluster(int N, int S, int E, int I, int R, int number_of_groups, int number_of_location, Position blh_corner, Position trh_corner);
+    Cluster(int S, int E, int I, int R, int number_of_location, Rectangle Area);
     Cluster();
     std::vector<Location*> Location_list();//get a vector of pointer to all locations in the cluster
     std::vector<Person*> Person_list();//get a vector of pointer to all People in the cluster

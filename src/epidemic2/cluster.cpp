@@ -3,15 +3,16 @@
 
 using namespace sim;
 
-Cluster::Cluster(int N, int S, int E, int I, int R, int number_of_groups, int number_of_location, Position blh_corner, Position trh_corner)
-: Area{blh_corner,trh_corner}
+Cluster::Cluster(int S, int E, int I, int R, int number_of_location, Rectangle Area)
+: Area{Area}
 {
+    int N = S + E + I + R;
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution rand(1,5);  //number of people in a home
     Population.clear();
     Population.reserve(N); //reserve space for the population vector
-    //generate the population vector; initialize all person as susceptible an at home
+    //generate the population vector; initialize all person as susceptible and at home
     for(int i = 0; i < N;){
         int home_pop = rand(gen); // number of people in the current home
         Location current_home = rand_loc(blh_corner, trh_corner, HOME_RADIUS); //TODO add a macro for HOME_RADIUS value
@@ -32,12 +33,28 @@ Cluster::Cluster(int N, int S, int E, int I, int R, int number_of_groups, int nu
             Population.operator[](i).set_conditions(State::R);
         }
     }
+    //Determine the number of groups
+    std::normal_distribution<double> rnum(number_of_location/8, number_of_location/32);
+    int number_of_groups = nearbyint(rnum(gen));
     // Create a Vector which will have the partition of locations in group, every group has at least one location
     std::vector<int> loc_num(number_of_groups,1);
-    std::uniform_int_distribution<int> rand_index(0, number_of_groups - 1);
+    //std::uniform_int_distribution<int> rand_index(0, number_of_groups - 1);
     int loc_left = number_of_location - number_of_groups;
-    for(int i = 0; i < loc_left; ++i){
-        ++loc_num.operator[](rand_index(gen));
+    for(int i = 0; i < number_of_groups; ++i){
+        if (loc_left == 0){
+            i = number_of_groups; //end the loop
+        }
+        else if (loc_left == 1){
+            ++loc_num.operator[](i);
+            i = number_of_groups; //end the loop
+        }
+        else
+        {
+            std::uniform_int_distribution<> rand_num(1, nearbyint(loc_left / 2));
+            int rnum = rand_num(gen);
+            loc_num.operator[](i) += rnum;
+            loc_left -= rnum;
+        }
     }
 
     groups.clear();

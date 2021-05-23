@@ -14,7 +14,7 @@ Group::Group(int number_of_locations, Position center)  //TODO add TRANSMISSION_
             is_ok = true;
             Location new_loc = generate_close_loc(center,0, (i+1)*TRANSMISSION_RANGE/10);
             for(auto a : locations){
-                if(a.get_pos().distance_to(new_loc.get_pos()) < TRANSMISSION_RANGE/10){;
+                if(a.get_pos().distance_to(new_loc.get_pos()) < TRANSMISSION_RANGE/10){; //make sure the new location close enough to other locations
                     is_ok = false;
                     break;
                 }
