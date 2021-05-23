@@ -42,7 +42,6 @@ void Area::partition_in_clusters()
             Clusters[clusters_size - 1].size() = (int)wpts_left;
             Clusters[clusters_size - 1].set_label(clusters_size - 1);
             Clusters[index].set_weight((double)wpts_left / waypoints_size);
-            std::cout << (double)wpts_left / waypoints_size;
             return;
         }
 
@@ -73,15 +72,11 @@ void Area::partition_in_groups(int label)
         already_setted_waypoints += Clusters[i].size();
     }
 
-    int j = 0;
-    std::cout << "Cluster[" << label << "]" << std::endl;
-
     // set groups pointers to their index in the vector containing all waypoints(Locations)
     for (auto& group : Clusters[label].Groups)
     {
         group.set_to_waypoint(Waypoints, already_setted_waypoints);
         already_setted_waypoints += group.size();
-        ++j;
     }
 
     // TODO check assert checking!!

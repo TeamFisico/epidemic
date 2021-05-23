@@ -30,31 +30,32 @@ void Simulation::assign_to_cluster()
 ////////          HOME ASSIGNMENT             ///////
 /////////////////////////////////////////////////////
 void Simulation::assign_home(int label)
-
 {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> rand(1, 5);
 
     int people_left = population_size;
-    int current_fam = 0;
+    int current_family = 0;
 
-    for (auto it = std::begin(People); it == std::end(People); ++it)
+    //iterate over People array
+    for (auto it1 = std::begin(People); it1 == std::end(People); ++it1)
     {
 
         if (people_left <= 5)
         {
-            for (auto it2 = it; it2 == std::end(People); ++it2)
+            for (auto it2 = it1; it2 == std::end(People); ++it2)
             {
-                //                it2->set_home();
+
             }
             break;
         }
-        current_fam = rand(gen);
+        current_family = rand(gen);
         int i = 0;
-        for (auto it2 = it; i < current_fam; it2 += i)
+        for (auto it2 = it1; i < current_family; ++it2)
         {
-            //            it2->set_home();
+            //it2->set_home();
+            ++i;
         }
     }
 }
