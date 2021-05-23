@@ -1,6 +1,6 @@
 #include "area.hpp"
-#include <random>
 #include <iostream>
+#include <random>
 
 int main()
 {
@@ -21,16 +21,14 @@ int main()
     std::cout << "Time taken : " << duration.count() << " s " << std::endl;
 
     int i = 1;
-    for (auto &wpts : world.Waypoints)
+    for (auto& wpts : world.Waypoints)
     {
         std::cout << "[" << i << "]==" << wpts.X() << '\t' << wpts.Y() << std::endl;
         ++i;
     }
 
-    for (auto& cluster: world.Clusters)
+    for (auto& cluster : world.Clusters)
     {
-        std::cout<< "Cluster.weight == " << cluster.weight() << std::endl;
+        std::cout << "Cluster.weight == " << cluster.weight() << std::endl;
     }
-
-
 }

@@ -15,7 +15,6 @@ Location::Location(Position &location_pos, double location_Radius)
 {
 }*/
 
-
 Location sim::generate_close_loc(Position &pos, double min_distance, double max_distance)
 {
     std::random_device rd;

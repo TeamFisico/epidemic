@@ -32,7 +32,7 @@ void Cluster::determine_groups_sizes()
     assert(Groups.size() == 0);
 
     Groups.reserve(sz / 2); // allocate space for half of cluster size-->considering the uniform distribution
-                               // should avoid new allocation in the majority of the cases
+                            // should avoid new allocation in the majority of the cases
 
     int current = 0;
     for (int i = 0; i < sz; ++i)
@@ -68,7 +68,7 @@ void Cluster::determine_groups_sizes()
 /////////////////////////////////////////////////////
 ////////   CLUSTER X,Y LIMITS DETERMINATION   ///////
 /////////////////////////////////////////////////////
-void Cluster::determine_limits()
+void Cluster::set_limits()
 {
     double x_min = Groups[0].group_ptr[0].X();
     double y_min = Groups[0].group_ptr[0].Y();
@@ -78,7 +78,7 @@ void Cluster::determine_limits()
     for (auto& group : Groups)
     {
         int i = 0;
-        for (auto it = group.group_ptr; i< group.size();++it)
+        for (auto it = group.group_ptr; i < group.size(); ++it)
         {
             if (it->X() < x_min) x_min = it->X();
             if (it->X() > x_max) x_max = it->X();
@@ -88,18 +88,7 @@ void Cluster::determine_limits()
         }
     }
 
-    limits = {x_min,x_max,y_min,y_max};
+    limits = {x_min, x_max, y_min, y_max};
 }
 
 } // namespace SMOOTH
-
-
-
-
-
-
-
-
-
-
-

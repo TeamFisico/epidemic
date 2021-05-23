@@ -21,7 +21,7 @@ class Position
 };
 
 Position rand_pos(Position blh_corner, Position trh_corner); // get a random position
-double rand_gauss(double mean, double deviation); // get a random number from gaussian distribution
+double rand_gauss(double mean, double deviation);            // get a random number from gaussian distribution
 int rounded_norm(double mean,
                  double deviation); // generate a random number using rand_gauss and round it to closest integer.
 bool try_event(double probability);

@@ -17,11 +17,11 @@ enum class Zone
 class Cluster
 {
   private:
-    int sz;        // num of waypoints
-    int lbl;       // corresponding index into Cluster array 0 <= lbl <= clusters_size-1
+    int sz;   // num of waypoints
+    int lbl;  // corresponding index into Cluster array 0 <= lbl <= clusters_size-1
     double w; // weight to be chosen by a person
     Zone zone;
-    std::array<double,4> limits; // [0]= lower_x, [1] = upper_x, [2] = lower_y, [3] = upper_y
+    std::array<double, 4> limits; // [0]= lower_x, [1] = upper_x, [2] = lower_y, [3] = upper_y
   public:
     std::vector<Group> Groups; // groups of waypoints in cluster
 
@@ -44,38 +44,9 @@ class Cluster
 
     int &size() { return sz; }
     void determine_groups_sizes(); // determine the n. of waypoints associated to every group
-
-    void determine_limits();
-
-
+    void set_limits();
 };
 
 } // namespace SMOOTH
 
 #endif // CLUSTER_HPP
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
