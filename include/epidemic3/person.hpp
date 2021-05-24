@@ -18,42 +18,29 @@ enum class Status
 class Person
 {
   private:
-    Cluster* cluster;   //Cluster to which the person belongs
-    int label;          //label of the cluster
+    Cluster* clust; // Cluster to which the person belongs
+    int label;      // label of the cluster
     Status status;
     Location home;
     Location current_location;
-  public:
 
-    //non-modifying members
+  public:
+    Person();
+    // non-modifying members
     int cluster_label() const { return label; }
+    Cluster* cluster() const { return clust; }
 
     void upgrade_condition();
 
-    void set_cluster(int n, Cluster* clust) { label = n; cluster = clust; }
+    void set_cluster(int n, Cluster* cluster)
+    {
+        label = n;
+        clust = cluster;
+    }
     void set_home(Location loc) { home = loc; }
-    Location *get_home();
-
-
-
+    Location* get_home();
 };
 
 } // namespace SMOOTH
 
 #endif // PERSON_HPP
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

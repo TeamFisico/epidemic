@@ -23,7 +23,7 @@ void Simulation::assign_to_cluster()
     for (auto& person : People)
     {
         int index = dis(gen);
-        person.set_cluster(index,&(world.Clusters[index]));
+        person.set_cluster(index, &(world.Clusters[index]));
     }
 }
 
@@ -31,8 +31,8 @@ void Simulation::assign_to_cluster()
 ////////          HOME ASSIGNMENT             ///////
 /////////////////////////////////////////////////////
 void Simulation::assign_home(int label)
-//generate home address inside the relating cluster limits and generate groups of
-//1 to 5 people(families) which are gonna be assigned the same home location
+// generate home address inside the relating cluster limits and generate groups of
+// 1 to 5 people(families) which are gonna be assigned the same home location
 {
     std::random_device rd1;
     std::mt19937 gen1(rd1());
@@ -51,17 +51,17 @@ void Simulation::assign_home(int label)
     // iterate over People array
     for (auto it1 = std::begin(People); it1 == std::end(People); ++it1)
     {
-        //set the bounds based on the belonging cluster for home generation
+        // set the bounds based on the belonging cluster for home generation
         lw_x = world.Clusters[it1->cluster_label()].lower_x();
         up_x = world.Clusters[it1->cluster_label()].upper_x();
         lw_y = world.Clusters[it1->cluster_label()].lower_y();
         up_y = world.Clusters[it1->cluster_label()].upper_y();
 
-        std::uniform_real_distribution<double> x_home(lw_x,up_x);
-        std::uniform_real_distribution<double> y_home(lw_y,up_y);
+        std::uniform_real_distribution<double> x_home(lw_x, up_x);
+        std::uniform_real_distribution<double> y_home(lw_y, up_y);
 
         current_family = family(gen1);
-        Location home {x_home(gen2),y_home(gen2)};
+        Location home{x_home(gen2), y_home(gen2)};
 
         if (people_left <= 5)
         {

@@ -49,7 +49,8 @@ void Area::partition_in_clusters()
         {
             Clusters[index].size() = current;
             Clusters[index].set_label(index); // label the group with its index(from 0 to C-1)
-            Clusters[index].set_weight((double)current / waypoints_size); // set the weight to be be chosen by a random person
+            Clusters[index].set_weight((double)current /
+                                       waypoints_size); // set the weight to be be chosen by a random person
             total_sizes += current;                     // add this cluster's size to the counter
             --still_to_choose;
             wpts_left -= current;
