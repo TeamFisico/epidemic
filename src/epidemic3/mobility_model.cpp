@@ -11,7 +11,50 @@ MobilityModel::MobilityModel(Person *person, Location *Waypoints_to_visit, int s
 void MobilityModel::select_waypoints()
 //select y% waypoints to put into *person target from the available from the cluster
 {
-
+     
 }
 
 } // namespace SMOOTH
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
