@@ -8,15 +8,19 @@ MobilityModel::MobilityModel(Person *person, Location *Waypoints_to_visit, int s
                              Location *target_location, double speed, double stay)
 {
 }
-
+/////////////////////////////////////////////////////
+////////            PATH ASSIGNMENT           ///////
+/////////////////////////////////////////////////////
+// select y% waypoints to put into Path among the available from the belonging cluster
 void MobilityModel::select_waypoints()
-// select y% waypoints to put into *person target from the available from the cluster
-// this function will fill Paths vector with indexes of waypoints referring to Waypoints array
 {
+
+    int belonging_cluster_size = Simulation::world.Clusters[person->cluster_label()].size();
+
     std::random_device rd;
     std::mt19937 gen(rd());
 
-    int selected_size = static_cast<int>(person->cluster()->size() * y);
+    int selected_size = static_cast<int>(belonging_cluster_size * y);
     // now determining the this cluster's indeces range inside Waypoints array
 
     int starting_index = 0;
@@ -24,18 +28,16 @@ void MobilityModel::select_waypoints()
 
     if (person->cluster_label() > 0) // this is not the first clust
     {
-        int i = 0;
-        for (auto it = person->cluster(); i < person->cluster_label(); ++it)
+        for (int i = 0; i < person->cluster_label(); ++i) // check the previous clusters
         {
-            assert(it); // it is actually pointing to a cluster
-            starting_index += it->size();
+            starting_index += Simulation::world.Clusters[i].size();
             ++i;
         }
-        ending_index = starting_index + person->cluster()->size();
+        ending_index = starting_index + belonging_cluster_size;
     }
     else
     {
-        ending_index = person->cluster()->size();
+        ending_index = belonging_cluster_size;
     }
 
     std::uniform_int_distribution<> rand(starting_index, ending_index);
@@ -60,6 +62,13 @@ void MobilityModel::select_waypoints()
         already_chosen.push_back(random_index);
         Paths.push_back(random_index);
     }
+}
+/////////////////////////////////////////////////////
+////////      TARGET ASSIGNMENT : LATP        ///////
+/////////////////////////////////////////////////////
+void MobilityModel::set_new_target()
+// use the Least action trip planning(LATP) algorithm to determine new person target
+{
 }
 
 } // namespace SMOOTH

@@ -49,7 +49,7 @@ void Simulation::assign_home(int label)
     double up_y = 0.0;
 
     // iterate over People array
-    for (auto it1 = std::begin(People); it1 == std::end(People); ++it1)
+    for (auto it1 = std::begin(People); it1 != std::end(People); ++it1)
     {
         // set the bounds based on the belonging cluster for home generation
         lw_x = world.Clusters[it1->cluster_label()].lower_x();
@@ -65,7 +65,7 @@ void Simulation::assign_home(int label)
 
         if (people_left <= 5)
         {
-            for (auto it2 = it1; it2 == std::end(People); ++it2)
+            for (auto it2 = it1; it2 != std::end(People); ++it2)
             {
                 it2->set_home(home);
             }

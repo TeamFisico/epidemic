@@ -38,6 +38,8 @@ class Area
     void partition();
     void plot_waypoints();
 
+    friend class MobilityModel; // needed to allow Clusters and Waypoints access
+
 }; // class Area
 
 } // namespace SMOOTH
