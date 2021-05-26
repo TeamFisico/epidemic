@@ -23,7 +23,7 @@ void Simulation::assign_to_cluster()
     for (auto& person : People)
     {
         int index = dis(gen);
-        person.set_cluster(index, &(world.Clusters[index]));
+        person.set_cluster(index);
     }
 }
 
