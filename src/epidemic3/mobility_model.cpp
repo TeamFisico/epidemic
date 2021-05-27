@@ -103,10 +103,31 @@ void MobilityModel::choose_target()
                                                    probabilities.begin());
 
     person->set_target(Simulation::world.Waypoints[rand(gen)]);
+    //TODO TESTING
 }
 double MobilityModel::compute_weight(double distance)
 {
     return 1 / std::pow(distance, alpha);
 }
+/////////////////////////////////////////////////////
+////////    MOVE A PERSON TOWARD A TARGET     ///////
+/////////////////////////////////////////////////////
+void MobilityModel::move_toward_target(Location *target)
+{
+
+}
 
 } // namespace SMOOTH
+
+
+
+
+
+
+
+
+
+
+
+
+

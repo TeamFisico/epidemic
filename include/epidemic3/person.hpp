@@ -31,7 +31,7 @@ class Person
     // non-modifying members
     int cluster_label() const { return label; }
 
-    //    void upgrade_condition();
+    //   void upgrade_condition();
     Location get_location() const { return location; };
     Location get_home() const { return home; };
     void set_cluster(int n) { label = n; }
