@@ -1,3 +1,5 @@
+#ifndef GROUP_HPP
+#define GROUP_HPP
 #include "location.hpp"
 #include <vector>
 
@@ -18,3 +20,5 @@ class Group{
 };
 
 }
+
+#endif

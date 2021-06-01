@@ -7,7 +7,10 @@ Rectangle::Rectangle(Position &blh_corner, Position &trh_corner) : blh_corner{bl
 {
 }
 
-// Default constructor
+Rectangle::Rectangle()
+: blh_corner{}, trh_corner{}
+{
+}
 
 double Rectangle::get_area()
 {

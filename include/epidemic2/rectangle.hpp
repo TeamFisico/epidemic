@@ -1,3 +1,5 @@
+#ifndef RECTANGLE_HPP
+#define RECTANGLE_HPP
 #include "position.hpp"
 #include <vector>
 
@@ -20,3 +22,5 @@ class Rectangle{
 Rectangle* rand_rec(std::vector<Rectangle*> list); // function that will select a random member of the list vector
 
 }
+
+#endif

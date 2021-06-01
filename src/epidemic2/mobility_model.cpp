@@ -6,9 +6,9 @@
 using namespace sim;
 
 // Constructor
-mobility_model::mobility_model(Person *person, Location *target_location, double speed, int stay,
+mobility_model::mobility_model(Person *person, Location *target_location, int stay,
                                double home_probability, bool at_home)
-    : person{person}, target_location{target_location}, speed{speed}, stay{stay},
+    : person{person}, target_location{target_location}, stay{stay},
       home_probability{home_probability}, at_home{at_home}
 {
 }
@@ -20,6 +20,9 @@ mobility_model::mobility_model(Person *person, Location *target_location, double
 
 void mobility_model::next_location()
 {
+    if(target_location == person->get_home()){ //called when person is at home with target location home
+        at_home = true;
+    }
     if (Path.empty())
     { // if Path vector empty select home
         target_location = person->get_home();
@@ -73,9 +76,14 @@ void mobility_model::next_location()
     }
 }
 
+bool mobility_model::at_target_location()
+{
+    return person->at_location(target_location);
+}
+
 void mobility_model::move()
 {
-    speed = rand_speed(0, 1);
+    double speed = rand_speed(0, 1);
     person->get_pos()->move_toward(target_location->get_pos(), speed);
 }
 
@@ -84,6 +92,16 @@ void mobility_model::recall_home()
     Path.clear();
     stay = 0;
     target_location = person->get_home();
+}
+
+void mobility_model::change_home_prob(double prob)
+{
+    home_probability = prob;
+}
+
+int mobility_model::cluster_index()
+{
+    return person->get_cluster_index();
 }
 
 double sim::rand_speed(double min, double max)

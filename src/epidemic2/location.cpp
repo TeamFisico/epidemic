@@ -6,7 +6,7 @@
 
 using namespace sim;
 // Constructor
-Location::Location(Position &location_pos, double location_Radius)
+Location::Location(Position location_pos, double location_Radius)
     : location_pos{location_pos}, location_Radius{location_Radius}
 {
 }
@@ -31,4 +31,9 @@ Location sim::generate_close_loc(Position &pos, double min_distance, double max_
     double radius =
         sim::rand_gauss(max_distance / 4, max_distance / 10); // arbitrary way to generate Locatio radius, still WIP
     return {res, radius};
+}
+
+Location sim::rand_loc(Position blh_corner, Position trh_corner, double radius)
+{
+    return {sim::rand_pos(blh_corner, trh_corner),radius};
 }

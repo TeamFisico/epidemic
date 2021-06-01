@@ -1,5 +1,6 @@
 #include "area.hpp"
 #include <iostream>
+#include <chrono>
 #include <random>
 
 int main()

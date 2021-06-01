@@ -1,7 +1,8 @@
-// TODO need to add ifdef guard
+#ifndef SIMULATION_HPP
+#define SIMULATION_HPP
 
-#include "location.hpp"
-#include "person.hpp"
+#include "world.hpp"
+#include "mobility_model.hpp"
 #include <vector>
 namespace sim
 {
@@ -16,21 +17,22 @@ struct Data
 class Simulation
 {
   private:
-    std::vector<Person> Population;
-    std::vector<Location> Locations;
+    World world;
+    std::vector<mobility_model> people;
     double alpha;
     double beta;
     double gamma;
     double spread_radius;
-    int time_in_days;
+    int time_in_minutes;
+    int step_in_minutes;
 
   public:
-    Simulation(int S, int E, int I, int R, int Location_number, double people_per_home, double alpha, double gamma,
-               double beta, double spread_radius, int time_in_days);
-    Simulation();
+    Simulation(int S, int E, int I, int R,int number_of_clusters, int number_of_Locations, double Side, double alpha, double gamma,
+               double beta, double spread_radius, int time_in_days, int step_in_minutes);
     std::vector<Person *> Close_People(Person &current_person); // function that put in a vector pointers to all
                                                                 // other inRadius Susceptible People
     Data get_data();                                            // get the summary data.
+    std::vector<Location *> green_loc_list(); //list of locations of non_red clusters
     void spread();   // Function that, if *this is I, check close People and try
                      // to spread virus to close S if *this is E or I check if the
                      // State evolve
@@ -40,3 +42,5 @@ class Simulation
 };
 
 } // namespace sim
+
+#endif
