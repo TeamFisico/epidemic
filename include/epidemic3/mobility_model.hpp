@@ -23,7 +23,7 @@ class MobilityModel
 
     void choose_target();
     void select_waypoints(); // select waypoints from the current person cluster
-    void move();
+    void move_toward(Person* person, Location target);
 };
 
 } // namespace SMOOTH

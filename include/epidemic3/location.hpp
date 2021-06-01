@@ -13,7 +13,6 @@ struct Location
   public:
     Location(double X, double Y); // constructor
     Location();                   // default constructor
-    // define copy!!
 
     double X() const { return x; }
     double Y() const { return y; }
