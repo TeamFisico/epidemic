@@ -16,41 +16,16 @@ class MobilityModel
     Person *person; // ptr to person subject of the modelling
     double alpha;   // parameter of LATP algorithm
     double compute_weight(double distance);
+
   public:
     MobilityModel(Person *person, Location *Waypoints_to_visit, int still_to_visit, Location *target_location,
                   double speed, double stay);
 
     void choose_target();
     void select_waypoints(); // select waypoints from the current person cluster
-    void move_toward_target(Location* target);
+    void move_toward(Person* person, Location target);
 };
-
-
 
 } // namespace SMOOTH
 
 #endif // MOBILITY_MODEL_HPP
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

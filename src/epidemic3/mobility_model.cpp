@@ -1,6 +1,8 @@
 #include "mobility_model.hpp"
 #include <cassert>
 #include <random>
+#include <cmath>
+
 namespace SMOOTH
 {
 
@@ -103,23 +105,27 @@ void MobilityModel::choose_target()
                                                    probabilities.begin());
 
     person->set_target(Simulation::world.Waypoints[rand(gen)]);
-    //TODO TESTING
 }
+
 double MobilityModel::compute_weight(double distance)
 {
     return 1 / std::pow(distance, alpha);
 }
-/////////////////////////////////////////////////////
-////////    MOVE A PERSON TOWARD A TARGET     ///////
-/////////////////////////////////////////////////////
-void MobilityModel::move_toward_target(Location *target)
-{
 
+/////////////////////////////////////////////////////
+////////  MOVE A PERSON TOWARD A LOCATION     ///////
+/////////////////////////////////////////////////////
+void MobilityModel::move_toward(Person* person, Location target)
+{
+    double delta_x = std::abs(person->get_location().X() - target.X());
+    double delta_y = std::abs(person->get_location().Y() - target.Y());
+    //angle connecting the target through a straight line
+    double theta = atan(delta_y / delta_x);
+
+    //now vary angle and do sth
 }
 
 } // namespace SMOOTH
-
-
 
 
 
