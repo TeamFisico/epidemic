@@ -9,10 +9,10 @@ Person::Person()
     home = {0.0, 0.0};
     location = {0.0, 0.0};
 }
-
-Location *Person::get_home()
+double Person::speed() const
 {
-    return &home;
+    return sqrt( velocity[0] * velocity[0] + velocity[1]* velocity[1]);
 }
+
 
 } // namespace SMOOTH

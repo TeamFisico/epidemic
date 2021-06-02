@@ -13,8 +13,10 @@ namespace SMOOTH
 class MobilityModel
 {
   private:
-    Person *person; // ptr to person subject of the modelling
+    Person* person; // ptr to person subject of the modelling
     double alpha;   // parameter of LATP algorithm
+  private:
+    void update_speed();
     double compute_weight(double distance);
 
   public:
@@ -23,7 +25,7 @@ class MobilityModel
 
     void choose_target();
     void select_waypoints(); // select waypoints from the current person cluster
-    void move_toward(Person* person, Location target);
+    void move_toward(Location target);
 };
 
 } // namespace SMOOTH
