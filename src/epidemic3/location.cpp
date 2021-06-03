@@ -32,21 +32,6 @@ bool Location::in_radius(Location loc2, double r) const
 }
 void Location::move_toward(Location *destination, double distance)
 {
-
 }
 
 } // namespace SMOOTH
-
-
-
-
-
-
-
-
-
-
-
-
-
-
