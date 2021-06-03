@@ -127,3 +127,48 @@ Position Cluster::gen_group_center(int num_of_loc)
     return new_center;
 
 }
+
+std::vector<Location*> Cluster::generate_path(double mean, double dev)
+{
+    int to_visit = rounded_norm(mean - 1, dev) + 1; // make sure is always >= 1
+    int last_index = -1;
+    for(auto& a: groups){
+        last_index += a.size();
+    }
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> rand(0, last_index);
+    std::vector<Location*> result;
+    std::vector<int> result_indexes;
+    for(int i = 0; i < to_visit; ++i){ // select the random indexes
+        bool continue_loop = true;
+        int curr_index;
+        while(continue_loop)
+        {
+            continue_loop = false;
+            curr_index = rand(gen);
+            for (auto& a: result_indexes){
+                if (curr_index == a){
+                    continue_loop = true;
+                    break;
+                }
+            }
+        }
+        result_indexes.push_back(curr_index);
+    }
+    for(int i = 0; i < to_visit; ++i){
+        int index = result_indexes.operator[](i);
+        int g_size = groups.size();
+        for(int j = 0; j < g_size; ++j){
+            int size = groups.operator[](j).size();
+            if(index < size){
+                result.push_back(&groups.operator[](j).Locations().operator[](index));
+                j = g_size + 1;
+            }
+            else{
+                index -= size;
+            }
+        }
+    }
+    return result;
+}

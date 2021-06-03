@@ -123,11 +123,13 @@ void Simulation::move()
                             a.not_at_home(); // set the person as not at home
                             if (try_event(0.50))
                             { // select the location from the cluster in which the person is located
-                                a.path() = sim::generate_path(list, 5, 1);
+                                //a.path() = sim::generate_path(list, 5, 1);
+                                a.path() = c.generate_path(5,1);
                             }
                             else
                             { // select from all green locations
-                                a.path() = sim::generate_path(green_list, 5, 1);
+                                //a.path() = sim::generate_path(green_list, 5, 1);
+                                a.path() = c.generate_path(5,1);
                             }
                         }
                     }
@@ -161,7 +163,8 @@ void Simulation::move()
                         if (!try_event(a.home_prob()))
                         {                    // check if the person leave home
                             a.not_at_home(); // set the person as not at home
-                            a.path() = sim::generate_path(list, 3, 0.5);
+                            //a.path() = sim::generate_path(list, 3, 0.5);
+                            a.path() = c.generate_path(3,0.5);
                         }
                     }
                     else
@@ -194,7 +197,8 @@ void Simulation::move()
                         if (!try_event(a.home_prob()))
                         {                    // check if the person leave home
                             a.not_at_home(); // set the person as not at home
-                            a.path() = sim::generate_path(list, 1, 0.2);
+                            //a.path() = sim::generate_path(list, 1, 0.2);
+                            a.path() = c.generate_path(1, 0.2);
                         }
                     }
                     else
