@@ -15,10 +15,10 @@ class Position
     bool InRadius(Position other,
                   double r);                         // Function that determine if two position are close enough
     void move_toward(Position target, double speed); // move position closer to target
-    double distance_to(Position const &a);           // return the distance from the 2 Position
+    double distance_to(Position &a);           // return the distance from the 2 Position
     double get_x();                                  // return the x coordinate
     double get_y();                                  // return the y coordinate
-};
+};\
 
 Position rand_pos(Position blh_corner, Position trh_corner); // get a random position
 double rand_gauss(double mean, double deviation);            // get a random number from gaussian distribution

@@ -18,7 +18,7 @@ class Simulation
 {
   private:
     World world;
-    std::vector<mobility_model> people;
+    //std::vector<mobility_model> people;
     double alpha;
     double beta;
     double gamma;

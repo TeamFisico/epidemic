@@ -6,9 +6,9 @@
 using namespace sim;
 
 // Constructor
-mobility_model::mobility_model(Person *person, Location *target_location, int stay,
+mobility_model::mobility_model(Person person, int stay,
                                double home_probability, bool at_home)
-    : person{person}, target_location{target_location}, stay{stay},
+    : person{person}, target_location{nullptr}, stay{stay},
       home_probability{home_probability}, at_home{at_home}
 {
 }
@@ -20,12 +20,12 @@ mobility_model::mobility_model(Person *person, Location *target_location, int st
 
 void mobility_model::next_location()
 {
-    if(target_location == person->get_home()){ //called when person is at home with target location home
+    if(target_location == person.get_home()){ //called when person is at home with target location home
         at_home = true;
     }
     if (Path.empty())
     { // if Path vector empty select home
-        target_location = person->get_home();
+        target_location = person.get_home();
     }
     else if (Path.size() == 1)
     { // if Path ha only one element select that element
@@ -39,7 +39,7 @@ void mobility_model::next_location()
         inverse_distances.clear();
         for (auto &a : Path)
         { // fill the inverse_distances vector
-            double dist = 1 / pow(a->get_pos().distance_to(*(person->get_pos())), alpha);
+            double dist = 1 / pow(a->get_pos().distance_to(person.get_pos()), alpha);
             inverse_distances.push_back(dist);
         }
         std::vector<double> probabilities; // vector where we store the probabilities of the same index in Path
@@ -78,20 +78,20 @@ void mobility_model::next_location()
 
 bool mobility_model::at_target_location()
 {
-    return person->at_location(target_location);
+    return person.at_location(target_location);
 }
 
 void mobility_model::move()
 {
     double speed = rand_speed(0, 1);
-    person->get_pos()->move_toward(target_location->get_pos(), speed);
+    person.get_pos().move_toward(target_location->get_pos(), speed);
 }
 
 void mobility_model::recall_home()
 {
     Path.clear();
     stay = 0;
-    target_location = person->get_home();
+    target_location = person.get_home();
 }
 
 void mobility_model::change_home_prob(double prob)
@@ -101,7 +101,7 @@ void mobility_model::change_home_prob(double prob)
 
 int mobility_model::cluster_index()
 {
-    return person->get_cluster_index();
+    return person.get_cluster_index();
 }
 
 double sim::rand_speed(double min, double max)

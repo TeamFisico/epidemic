@@ -11,10 +11,6 @@ Person::Person(State condition, Position pos, State new_condition, Location home
 : condition{}, pos{}, newcondition{}, home{}
 {}*/
 
-Position *Person::get_pos()
-{
-    return &pos;
-}
 
 State& Person::get_condition()
 {
@@ -59,3 +55,4 @@ bool Person::at_location(Location *loc)
 {
     return (pos.InRadius(loc->get_pos(), loc->get_radius()));
 }
+

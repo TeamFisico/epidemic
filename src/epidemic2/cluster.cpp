@@ -3,6 +3,8 @@
 
 using namespace sim;
 
+#define HOME_PROBABILITY 0.5
+
 Cluster::Cluster(int S, int E, int I, int R, int number_of_location, Rectangle Area, Color color, int cluster_index)
 : Area{Area}, color{color}, cluster_index{cluster_index}
 {
@@ -17,20 +19,22 @@ Cluster::Cluster(int S, int E, int I, int R, int number_of_location, Rectangle A
         int home_pop = rand(gen); // number of people in the current home
         Location current_home = rand_loc(Area.get_blh_corner(), Area.get_trh_corner(), HOME_RADIUS); //TODO add a macro for HOME_RADIUS value
         for(int j = 0; j < home_pop && i < N; ++j){
-            Population.emplace_back(State::S,current_home.get_pos(),State::S,current_home, cluster_index);
+            Person curr{State::S,current_home.get_pos(),State::S,current_home, cluster_index};
+            Population.emplace_back(curr,0,HOME_PROBABILITY,true);
+            Population.operator[](i).recall_home(); //set target location as person's home
             ++i;
         }
     }
     //change person's condition and next condition to have the right number of States
     for(int i = 0; i < E + I + R; ++i){
         if(i < E){
-            Population.operator[](i).set_conditions(State::E);
+            Population.operator[](i).Person_ref().set_conditions(State::E);
         }
         else if(i < E + I){
-            Population.operator[](i).set_conditions(State::I);
+            Population.operator[](i).Person_ref().set_conditions(State::I);
         }
         else if(i < E + I + R){
-            Population.operator[](i).set_conditions(State::R);
+            Population.operator[](i).Person_ref().set_conditions(State::R);
         }
     }
     //Determine the number of groups
@@ -86,7 +90,7 @@ std::vector<Person *> Cluster::Person_list()
     result.clear();
     for (unsigned int i = 0; i <= Population.size(); ++i)
     {
-        result.push_back(&Population.operator[](i));
+        result.push_back(&Population.operator[](i).Person_ref());
     }
     return result;
 }

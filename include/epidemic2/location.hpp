@@ -14,7 +14,7 @@ class Location{
   public:
     Location(Position location_pos, double location_Radius);
     Location(); //default constructor
-    Position get_pos(){return location_pos;} //get location position
+    Position& get_pos(){return location_pos;} //get location position
     double get_radius(){return location_Radius;} //get location area
 
 };

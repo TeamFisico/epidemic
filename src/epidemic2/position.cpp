@@ -30,7 +30,7 @@ void Position::move_toward(Position target, double speed)
     y = target.y + v_y;
 }
 
-double Position::distance_to(const Position &a)
+double Position::distance_to(Position &a)
 {
     return std::sqrt((x - a.x) * (x - a.x) + (y - a.y) * (y - a.y));
 }

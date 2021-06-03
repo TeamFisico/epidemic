@@ -25,7 +25,7 @@ class Person
   public:
     Person(State condition, Position pos, State new_condition, Location home, int cluster_index); // Constructor
     Person();                                                                  // Default Constructor
-    Position *get_pos();                                                        // return pointer to person position
+    Position &get_pos(){ return pos; }                                                        // return reference to person position
     State& get_condition(); // return person condition
     int get_cluster_index(){ return cluster_index; }
     void set_conditions(State cond); //function that set both condition and next_condition as cond; used for Cluster class constructor
