@@ -12,8 +12,8 @@ namespace SMOOTH
 // TODO try-catch for checking
 // getting some program inputs from Cmake Variables and doing type check
 // so that the program won't compile in case of wrong input
-int constexpr clusters_size = CLUSTERS;
-int constexpr waypoints_size = WAYPOINTS;
+int constexpr CLUSTERS_SIZE = CLUSTERS;
+int constexpr WAYPOINTS_SIZE = WAYPOINTS;
 
 class Area
 {
@@ -21,8 +21,8 @@ class Area
     double sd; // side of the simulation area
     double R;  // transmission Range
   public:
-    std::array<Location, waypoints_size> Waypoints; // array with waypoints
-    std::array<Cluster, clusters_size> Clusters;    // array with Clusters in the simulation
+    static std::array<Location, WAYPOINTS_SIZE> Waypoints; // array with waypoints
+    static std::array<Cluster, CLUSTERS_SIZE> Clusters;    // array with Clusters in the simulation
   private:
     void partition_in_clusters();               // divide area in clusters
     void partition_in_groups(int label);        // split a cluster into groups

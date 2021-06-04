@@ -1,7 +1,7 @@
 #ifndef PERSON_HPP
 #define PERSON_HPP
 
-#include "area.hpp"
+#include <vector>
 #include "location.hpp"
 namespace SMOOTH
 {

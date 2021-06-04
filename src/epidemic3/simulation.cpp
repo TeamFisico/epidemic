@@ -11,9 +11,9 @@ void Simulation::assign_to_cluster()
 {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::vector<double> weights(clusters_size); // weights
+    std::vector<double> weights(CLUSTERS_SIZE); // weights
 
-    for (int i = 0; i < clusters_size; ++i)
+    for (int i = 0; i < CLUSTERS_SIZE; ++i)
     {
         weights[i] = world.Clusters[i].weight();
     }
@@ -25,6 +25,8 @@ void Simulation::assign_to_cluster()
         int index = dis(gen);
         person.set_cluster(index);
     }
+
+
 }
 
 /////////////////////////////////////////////////////
@@ -41,7 +43,7 @@ void Simulation::assign_home(int label)
     std::random_device rd2;
     std::mt19937 gen2(rd2());
 
-    int people_left = population_size;
+    int people_left = POPULATION_SIZE;
     int current_family = 0;
     double lw_x = 0.0;
     double up_x = 0.0;
@@ -155,7 +157,7 @@ void Simulation::update_target(Person* person)
     // compute distances
     for (int& index : person->Paths)
     {
-        Location waypoint = Simulation::world.Waypoints[index];
+        Location waypoint = world.Waypoints[index];
         current_weight = weight_function(person_location.get_distance(waypoint), alpha);
         distances.push_back(current_weight);
     }

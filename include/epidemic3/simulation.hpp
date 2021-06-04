@@ -1,9 +1,11 @@
 #include "person.hpp"
+#include "area.hpp"
 #include "configuration.h"
 #include <vector>
+
 namespace SMOOTH{
 
-int constexpr population_size = POPULATION;
+int constexpr POPULATION_SIZE = POPULATION;
 double constexpr TIME_STEP = 0.5; //seconds
 double constexpr MAX_PAUSE = 0.0;
 double constexpr MIN_PAUSE = 0.0;
@@ -11,8 +13,8 @@ double constexpr MIN_PAUSE = 0.0;
 class Simulation{
   private:
     static Area world;
-    static std::array<Person, population_size> People;     // People in the simulation
-    static double y;                                       //percent waypoint
+    std::array<Person, POPULATION_SIZE> People;     // People in the simulation
+    double y;                                       //percent waypoint
     double alpha;                                          //parameter of LATP algorithm
 
   private:
@@ -20,10 +22,8 @@ class Simulation{
     void update_target(Person* person);
     void assign_to_cluster();
     void assign_home(int label);
-
   public:
     void evolve();
-
 
 };
 

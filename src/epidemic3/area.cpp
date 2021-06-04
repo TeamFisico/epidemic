@@ -21,8 +21,8 @@ Area::Area(double side, double transmission_range) : sd{side}, R{transmission_ra
 void Area::partition_in_clusters()
 {
     int total_sizes = 0;
-    double wpts_left = waypoints_size;
-    double still_to_choose = clusters_size;
+    double wpts_left = WAYPOINTS_SIZE;
+    double still_to_choose = CLUSTERS_SIZE;
     int index = 0;
 
     std::random_device rd;  // set the seed
@@ -39,18 +39,17 @@ void Area::partition_in_clusters()
         assert(current >= 0.0);
         if (still_to_choose == 1) // the last will take the remaining size --> avoid too many more loops
         {
-            Clusters[clusters_size - 1].size() = (int)wpts_left;
-            Clusters[clusters_size - 1].set_label(clusters_size - 1);
-            Clusters[index].set_weight((double)wpts_left / waypoints_size);
+            Clusters[CLUSTERS_SIZE - 1].size() = (int)wpts_left;
+            Clusters[CLUSTERS_SIZE - 1].set_label(CLUSTERS_SIZE - 1);
+            Clusters[index].set_weight((double)wpts_left / WAYPOINTS_SIZE);
             return;
         }
 
-        if (total_sizes + current < waypoints_size)
+        if (total_sizes + current < WAYPOINTS_SIZE)
         {
             Clusters[index].size() = current;
             Clusters[index].set_label(index); // label the group with its index(from 0 to C-1)
-            Clusters[index].set_weight((double)current /
-                                       waypoints_size); // set the weight to be be chosen by a random person
+            Clusters[index].set_weight((double)current / WAYPOINTS_SIZE); // set the weight to be be chosen by a random person
             total_sizes += current;                     // add this cluster's size to the counter
             --still_to_choose;
             wpts_left -= current;
@@ -85,7 +84,7 @@ void Area::partition_in_groups(int label)
 void Area::partition()
 {
     partition_in_clusters();
-    for (int i = 0; i < clusters_size; ++i)
+    for (int i = 0; i < CLUSTERS_SIZE; ++i)
     {
         partition_in_groups(i);
     }
@@ -202,7 +201,7 @@ Location Area::other_groups_step(Location const& prev_group_waypoint) const
 // plot the first waypoint of the current group within a distance d of
 // Y/4 <= d <= Y/3
 {
-    double const Y = 2 * sd / clusters_size;
+    double const Y = 2 * sd / CLUSTERS_SIZE;
 
     std::random_device rd; // set the seed for the gaussian extraction
     std::mt19937 gen(rd());
@@ -239,7 +238,7 @@ Location Area::other_groups_step(Location const& prev_group_waypoint) const
 /////////////////////////////////////////////////////
 void Area::plot_waypoints()
 {
-    for (int i = 0; i < clusters_size; ++i)
+    for (int i = 0; i < CLUSTERS_SIZE; ++i)
     {
         // set the first waypoint associated with the first group
         Clusters[i].Groups[0].group_ptr[0] = first_group_step(i);

@@ -30,8 +30,6 @@ bool Location::in_radius(Location loc2, double r) const
     double dy = std::abs(loc2.y - y);
     return (dx <= r && dy <= r);
 }
-void Location::move_toward(Location *destination, double distance)
-{
-}
+
 
 } // namespace SMOOTH

@@ -40,14 +40,6 @@ target_compile_options(person3 PRIVATE -Wall -Wextra -fsanitize=address)
 target_link_options(person3 PRIVATE -fsanitize=address)
 target_clangformat_setup(person3) ##allow for code formatting
 
-########## MOBILITY MODEL  #############
-add_library(mobility_model3 mobility_model.cpp ${HEADER_LIST3})
-target_include_directories(mobility_model3 PUBLIC ../../include/epidemic3)
-target_compile_features(mobility_model3 PUBLIC cxx_std_17)
-target_compile_options(mobility_model3 PRIVATE -Wall -Wextra -fsanitize=address)
-target_link_options(mobility_model3 PRIVATE -fsanitize=address)
-target_clangformat_setup(mobility_model3) ##allow for code formatting
-
 ########## SIMULATION  #############
 add_library(simulation3 simulation.cpp ${HEADER_LIST3})
 target_include_directories(simulation3 PUBLIC ../../include/epidemic3)
