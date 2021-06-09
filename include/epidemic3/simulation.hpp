@@ -2,7 +2,6 @@
 #define SIMULATION_HPP
 
 #include "cluster.hpp"
-#include "person.hpp"
 #include "configuration.h"
 #include <vector>
 #include <array>
@@ -15,6 +14,8 @@ namespace SMOOTH{
  double constexpr TIME_STEP = 0.5; //seconds
  double constexpr MAX_PAUSE = 0.0;
  double constexpr MIN_PAUSE = 0.0;
+
+
 
 class Simulation{
   private:
@@ -29,6 +30,7 @@ class Simulation{
     static std::array<Location, WAYPOINTS_SIZE> Waypoints; // array with waypoints
     static std::array<Cluster, CLUSTERS_SIZE> Clusters;    // array with Clusters in the simulation
     static std::array<Person, POPULATION_SIZE> People;     // People in the simulation
+
   private:
     void partition_in_clusters();               // divide area in clusters
     Location first_group_step(int label) const; //
@@ -42,6 +44,7 @@ class Simulation{
     void assign_home(int label);                   //assign each person a home
   public:
     Simulation(double side, double transmission_range,double alpha, double percent_waypoint,double minimum_pause, double maximum_pause);  //constructor
+    Simulation();
 //    void evolve();
 //    void move();
 //    void spread();
@@ -51,6 +54,7 @@ class Simulation{
 };
 
   double weight_function(double distance,double LATP_parameter); //weight function of LATP algorithm
+
 
 
 } //namespace SMOOTH

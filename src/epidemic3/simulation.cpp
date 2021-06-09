@@ -9,6 +9,11 @@ namespace SMOOTH
 /////////////////////////////////////////////////////
 ////////          AREA PARTITIONING           ///////
 /////////////////////////////////////////////////////
+  std::array<Location, WAYPOINTS_SIZE> Simulation::Waypoints;
+  std::array<Cluster, CLUSTERS_SIZE> Simulation::Clusters;
+  std::array<Person, POPULATION_SIZE> Simulation::People;
+
+
 void Simulation::partition_in_clusters()
 {
     int total_sizes = 0;
@@ -224,12 +229,16 @@ Simulation::Simulation(double side, double transmission_range, double alpha, dou
     : side{side}, R{transmission_range}, alpha{alpha}, y{percent_waypoint}, min_pause{minimum_pause}, max_pause{
                                                                                                           maximum_pause}
 {
+
     partition_in_clusters();
     for (Cluster& cluster : Clusters)
     {
         cluster.partition_in_groups();
     }
     plot_waypoints();
+}
+Simulation::Simulation()
+{
 }
 
 /////////////////////////////////////////////////////
@@ -411,7 +420,6 @@ void Simulation::update_target(Person* person)
     // generate one index based on the previously determinated probabilities(weights)
     std::piecewise_constant_distribution<int> rand(std::begin(person->Paths), std::begin(person->Paths),
                                                    probabilities.begin());
-
     person->set_target(Waypoints[rand(gen)]);
     // TODO TESTING
 }

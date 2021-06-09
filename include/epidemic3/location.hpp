@@ -23,11 +23,8 @@ struct Location
     bool in_radius(Location loc2, double r) const;
 };
 
-// define when two locations are equal
-bool operator==(const Location& l1, const Location& l2)
-{
-    return (l1.X() == l2.X() && l1.Y() == l2.Y());
-}
+ bool operator==(const Location& l1, const Location& l2);
+
 } // namespace SMOOTH
 
 #endif // LOCATION_HPP

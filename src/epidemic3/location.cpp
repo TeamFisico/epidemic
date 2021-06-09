@@ -8,7 +8,7 @@ namespace SMOOTH
 // constructor
 Location::Location(double X, double Y) : x{X}, y{Y}
 {
-    assert((x > 0.0000000 && y > 0.00000000));
+    assert((x >= 0.0000000 && y >= 0.00000000));
 }
 
 // default constructor
@@ -29,6 +29,11 @@ bool Location::in_radius(Location loc2, double r) const
     double dx = std::abs(loc2.x - x);
     double dy = std::abs(loc2.y - y);
     return (dx <= r && dy <= r);
+}
+// define when two locations are equal
+bool operator==(const Location& l1, const Location& l2)
+{
+    return (l1.X() == l2.X() && l1.Y() == l2.Y());
 }
 
 } // namespace SMOOTH
