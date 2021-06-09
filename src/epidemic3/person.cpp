@@ -68,7 +68,7 @@ void move_toward(Person* person, Location target)
 
     double final_angle = angle(gen);
     // calculate new displacement
-    // replace the precvious velocity vector with a new one with the same magnitude but different direction
+    // replace the previous velocity vector with a new one with the same magnitude but different direction
     // so recalculating the new v_x and v_y to determine x_displacement and y_displacement
     x_displacement = person->speed() * cos(final_angle) * TIME_STEP;
     y_displacement = person->speed() * sin(final_angle) * TIME_STEP;
