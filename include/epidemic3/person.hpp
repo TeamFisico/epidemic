@@ -1,8 +1,9 @@
 #ifndef PERSON_HPP
 #define PERSON_HPP
 
-#include <vector>
 #include "location.hpp"
+#include <vector>
+
 namespace SMOOTH
 {
 
@@ -19,11 +20,11 @@ class Person
 {
   private:
     Status status;
-    int label;                  // label of the cluster
-    Location home;              //home address
-    Location location;          //current location
-    Location* target_location;  // ptr to next target location
-    double velocity[2];         // [0] == x_speed , [1] == y_speed
+    int label;                 // label of the cluster
+    Location home;             // home address
+    Location location;         // current location
+    Location* target_location; // ptr to next target location
+    double velocity[2];        // [0] == x_speed , [1] == y_speed
   public:
     std::vector<int> Paths; // vector with indeces to waypoints in Waypoints array
 
@@ -43,12 +44,13 @@ class Person
     void set_home(Location loc) { home = loc; }
     void set_target(Location loc) { target_location = &loc; }
     void set_location(Location loc) { location = loc; }
+
+    void upgrade_status();
 };
 
-  void move_toward(Person* person, Location target);
-  void update_speed(Person* person);
-  void upgrade_condition(Person*);   //TODO Define
-  bool try_infect();                 //TODO Define
+void move_toward(Person* person, Location target);
+void update_speed(Person* person);
+bool try_infect(); // TODO Define
 
 } // namespace SMOOTH
 

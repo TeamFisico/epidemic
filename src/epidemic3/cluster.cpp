@@ -1,5 +1,6 @@
 
 #include "cluster.hpp"
+#include "simulation.hpp"
 #include <algorithm>
 #include <math.h>
 #include <random>
@@ -34,7 +35,7 @@ void Cluster::determine_groups_sizes()
     Groups.reserve(sz / 2); // allocate space for half of cluster size-->considering the uniform distribution
                             // should avoid new allocation in the majority of the cases
 
-    int current = 0;
+    int current;
     for (int i = 0; i < sz; ++i)
     {
 
@@ -64,6 +65,28 @@ void Cluster::determine_groups_sizes()
     }
     int difference = sz - total_size;
     Groups[Groups.size() - 1].size() += difference;
+}
+/////////////////////////////////////////////////////
+////////        CLUSTER PARTITIONING          ///////
+/////////////////////////////////////////////////////
+void Cluster::partition_in_groups()
+{
+    Simulation::Clusters[lbl].determine_groups_sizes(); // filling vector<Groups>
+
+    int already_setted_waypoints = 0;
+    for (int i = 0; i < lbl; ++i)
+    {
+        already_setted_waypoints += Simulation::Clusters[i].size();
+    }
+
+    // set groups pointers to their index in the vector containing all waypoints(Locations)
+    for (auto& group : Simulation::Clusters[lbl].Groups)
+    {
+        group.set_to_waypoint(Simulation::Waypoints, already_setted_waypoints);
+        already_setted_waypoints += group.size();
+    }
+
+    // TODO Do some kind of check!!
 }
 /////////////////////////////////////////////////////
 ////////   CLUSTER X,Y LIMITS DETERMINATION   ///////

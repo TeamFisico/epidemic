@@ -25,7 +25,6 @@ class Cluster
     std::array<double, 4> limits; // [0]= lower_x, [1] = upper_x, [2] = lower_y, [3] = upper_y
   public:
     std::vector<Group> Groups; // groups of waypoints in cluster
-    std::vector<Person*> Cluster_People;  //pointer to people currently in this cluster
 
     explicit Cluster(int size); // constructor
     Cluster();                  // default constructor
@@ -46,6 +45,7 @@ class Cluster
 
     int &size() { return sz; }
     void determine_groups_sizes(); // determine the n. of waypoints associated to every group
+    void partition_in_groups();
     void set_limits();
 };
 

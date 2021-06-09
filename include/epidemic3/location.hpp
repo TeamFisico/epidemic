@@ -21,7 +21,6 @@ struct Location
 
     double get_distance(Location loc2) const;
     bool in_radius(Location loc2, double r) const;
-
 };
 
 // define when two locations are equal
