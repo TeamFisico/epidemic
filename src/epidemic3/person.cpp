@@ -21,6 +21,26 @@ bool Person::at_home()
     return false;
 }
 /////////////////////////////////////////////////////
+////////             STATUS UPGRADE           ///////
+/////////////////////////////////////////////////////
+void Person::upgrade_status()
+{
+    switch (status)
+    {
+    case Status::Susceptible:
+        status = Status::Latent;
+        break;
+    case Status::Latent:
+        status = Status::Infected;
+        break;
+    case Status::Infected:
+        status = Status::Recovered;
+        break;
+    default:
+        break;
+    }
+}
+/////////////////////////////////////////////////////
 ////////            SPEED UPDATE              ///////
 /////////////////////////////////////////////////////
 void update_speed(Person* person)

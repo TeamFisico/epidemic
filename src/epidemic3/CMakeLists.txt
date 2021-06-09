@@ -1,12 +1,11 @@
 
-########## AREA  #############
-add_library(area area.cpp ${HEADER_LIST3})
-target_include_directories(area PUBLIC ../../include/epidemic3 )
-target_include_directories(area PUBLIC ../)
-target_compile_features(area PUBLIC cxx_std_17)
-target_compile_options(area PRIVATE -Wall -Wextra -fsanitize=address)
-target_link_options(area PRIVATE -fsanitize=address)
-target_clangformat_setup(area) ##allow for code formatting
+########## SIMULATION  #############
+add_library(simulation3 simulation.cpp ${HEADER_LIST3})
+target_include_directories(simulation3 PUBLIC ../../include/epidemic3)
+target_compile_features(simulation3 PUBLIC cxx_std_17)
+target_compile_options(simulation3 PRIVATE -Wall -Wextra -fsanitize=address)
+target_link_options(simulation3 PRIVATE -fsanitize=address)
+target_clangformat_setup(simulation3) ##allow for code formatting
 
 ########## CLUSTER  #############
 add_library(cluster3 cluster.cpp ${HEADER_LIST3})
@@ -39,15 +38,6 @@ target_compile_features(person3 PUBLIC cxx_std_17)
 target_compile_options(person3 PRIVATE -Wall -Wextra -fsanitize=address)
 target_link_options(person3 PRIVATE -fsanitize=address)
 target_clangformat_setup(person3) ##allow for code formatting
-
-########## SIMULATION  #############
-add_library(simulation3 simulation.cpp ${HEADER_LIST3})
-target_include_directories(simulation3 PUBLIC ../../include/epidemic3)
-target_compile_features(simulation3 PUBLIC cxx_std_17)
-target_compile_options(simulation3 PRIVATE -Wall -Wextra -fsanitize=address)
-target_link_options(simulation3 PRIVATE -fsanitize=address)
-target_clangformat_setup(simulation3) ##allow for code formatting
-
 
 
 source_group(

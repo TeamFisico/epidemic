@@ -31,5 +31,4 @@ bool Location::in_radius(Location loc2, double r) const
     return (dx <= r && dy <= r);
 }
 
-
 } // namespace SMOOTH
