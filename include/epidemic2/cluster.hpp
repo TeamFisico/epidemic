@@ -25,9 +25,10 @@ class Cluster{
     int number_of_locations(); //return the number of locations in the cluster
     int number_of_people(); //return the number of people in the cluster
     Position gen_group_center(int num_of_loc); //generate a valid center location for the next group
-    Color get_color(){ return color; }
+    Color& get_color(){ return color; }
     std::vector<mobility_model> &population(){ return Population; }
     std::vector<Location*> generate_path(double mean, double dev);
+
 
 };
 

@@ -94,10 +94,10 @@ std::vector<Location *> World::Location_list()
 {
     std::vector<Location *> result;
     result.clear();
-    for (unsigned int i = 0; i <= clusters.size(); ++i)
+    for (unsigned int i = 0; i < clusters.size(); ++i)
     {
         std::vector<Location *> temporary = clusters.operator[](i).Location_list();
-        for (unsigned int j = 0; j <= temporary.size(); ++j)
+        for (unsigned int j = 0; j < temporary.size(); ++j)
         {
             result.push_back(temporary.operator[](j));
         }

@@ -9,7 +9,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "epidemic1/SEIR.hpp"
+#include "SEIR.hpp"
 
 int main(int argc, char *argv[])
 {

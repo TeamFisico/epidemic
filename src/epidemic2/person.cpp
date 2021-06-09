@@ -23,24 +23,6 @@ void Person::set_conditions(State cond)
     new_condition = cond;
 }
 
-void Person::next_condition()
-{
-    switch (condition)
-    {
-    case State::S:
-        new_condition = State::E;
-        break;
-    case State::E:
-        new_condition = State::I;
-        break;
-    case State::I:
-        new_condition = State::R;
-        break;
-    default:
-        break;
-    }
-}
-
 Location *Person::get_home()
 {
     return &home;

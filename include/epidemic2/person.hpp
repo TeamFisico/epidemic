@@ -27,9 +27,9 @@ class Person
     Person();                                                                  // Default Constructor
     Position &get_pos(){ return pos; }                                                        // return reference to person position
     State& get_condition(); // return person condition
+    State& get_new_condition(){ return new_condition; }
     int get_cluster_index(){ return cluster_index; }
     void set_conditions(State cond); //function that set both condition and next_condition as cond; used for Cluster class constructor
-    void next_condition(); // put the next condition in new_condition
     Location *get_home();  // return pointer to Location home
     void pass_condition(); // function that assign nex_condition to condition, to be called at the end of the day
                            // Simulation::spread function

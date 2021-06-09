@@ -18,11 +18,19 @@ std::vector<Person *> Simulation::Close_People(Person &current_person)
     std::vector<Person *> result;
     result.clear();
     for(int i = 0; i < world.Clusters().size(); ++i){
-        for (int j = 0; j < world.Clusters().operator[](i).population().size(); ++j){
-            auto pos = world.Clusters().operator[](i).population().operator[](j).Person_ref().get_pos();
-            if (pos.InRadius(current_person.get_pos(), spread_radius) && world.Clusters().operator[](i).population().operator[](j).Person_ref().get_condition() == State::S && world.Clusters().operator[](i).population().operator[](j).is_at_home())
-            {                                          // check if person is close_enough, Susceptible and not at_home
-                result.push_back(&world.Clusters().operator[](i).population().operator[](j).Person_ref()); // push a pointer to the current person back to the end of the vector
+        if(world.Clusters().operator[](i).get_color()==Color::Green)
+        {
+            for (int j = 0; j < world.Clusters().operator[](i).population().size(); ++j)
+            {
+                auto pos = world.Clusters().operator[](i).population().operator[](j).Person_ref().get_pos();
+                if (pos.InRadius(current_person.get_pos(), spread_radius) &&
+                    world.Clusters().operator[](i).population().operator[](j).Person_ref().get_condition() ==
+                        State::S &&
+                    world.Clusters().operator[](i).population().operator[](j).is_at_home())
+                { // check if person is close_enough, Susceptible and not at_home
+                    result.push_back(
+                        &world.Clusters().operator[](i).population().operator[](j).Person_ref()); // push a pointer to the current person back to the end of the vector
+                }
             }
         }
     }
@@ -35,6 +43,44 @@ std::vector<Person *> Simulation::Close_People(Person &current_person)
         }
     }*/
     return result;
+}
+
+std::vector<Person *> Simulation::Close_Cluster_People(Person &current_person)
+{
+    std::vector<Person *> result;
+    for (auto & a: world.Clusters().operator[](current_person.get_cluster_index()).population()){
+        auto pos = a.Person_ref().get_pos();
+        if (pos.InRadius(current_person.get_pos(), spread_radius) && a.Person_ref().get_condition() == State::S && a.is_at_home())
+        {                                          // check if person is close_enough, Susceptible and not at_home
+            result.push_back(&a.Person_ref()); // push a pointer to the current person back to the end of the vector
+        }
+    }
+    return result;
+}
+
+Data Simulation::get_Cluster_data(int i)
+{
+    unsigned int nS = 0;
+    unsigned int nE = 0;
+    unsigned int nI = 0;
+    unsigned int nR = 0;
+    for(auto & a: world.Clusters().operator[](i).population()){
+        switch(a.Person_ref().get_condition()) {
+        case State::S:
+            nS++;
+            break;
+        case State::E:
+            nE++;
+            break;
+        case State::I:
+            nI++;
+            break;
+        case State::R:
+            nR++;
+            break;
+        }
+    }
+    return {nS,nE,nI,nR};
 }
 
 Data Simulation::get_data()
@@ -51,12 +97,16 @@ Data Simulation::get_data()
             {
             case State::S:
                 nS++;
+                break;
             case State::E:
                 nE++;
+                break;
             case State::I:
                 nI++;
+                break;
             case State::R:
                 nR++;
+                break;
             }
         }
     }
@@ -77,28 +127,57 @@ std::vector<Location *> Simulation::green_loc_list()
     return result;
 }
 
+void Simulation::update_Colors()
+{
+    for(int i = 0; i < world.Clusters().size(); ++i){
+        Data data = get_Cluster_data(i);
+        if(data.I >= data.S/4){ //condition when a cluster is considered Red, to change
+            world.Clusters().operator[](i).get_color() = Color::Red;
+        }
+        else if(data.I >= data.S/10){ //condition when a cluster is considered Red, to change
+            world.Clusters().operator[](i).get_color() = Color::Yellow;
+        }
+        else{
+            world.Clusters().operator[](i).get_color() = Color::Green;
+        }
+    }
+}
+
 void Simulation::spread()
 {
     for(auto& c: world.Clusters())
     {
-        for (auto a : c.population())
+        for (auto& a : c.population())
         {
             if (a.Person_ref().get_condition() == State::E)
             { // if current person is in dormant state
-                if (try_event((alpha))) { a.Person_ref().next_condition(); }
+                if (try_event(alpha))
+                {
+                    a.Person_ref().get_new_condition() = State::I;
+                }
             }
-            if (a.Person_ref().get_condition() == State::I)
+            else if (a.Person_ref().get_condition() == State::I)
             {                        // if current person is infected
                 if (!a.is_at_home()) // if current person is not at home, the spread the virus
                 {
-                    std::vector<Person *> close_people =
-                        Close_People(a.Person_ref()); // susceptible people near the infected that are not at home
+                    std::vector<Person *> close_people{};
+                    if (c.get_color() == Color::Green) //if cluster is Green
+                    {
+                        close_people = Close_People(a.Person_ref()); // susceptible people in Green Cluster near the infected that are not at home
+                    }
+                    else //if cluster is Yellow or Red
+                    {
+                        close_people = Close_Cluster_People(a.Person_ref()); // susceptible people in the same Cluster near the infected that are not at home
+                    }
                     for (auto b : close_people)
                     {
-                        if (try_event((beta))) { b->next_condition(); }
+                        if (try_event(beta)) { b->get_new_condition() = State::E; }
                     }
                 }
-                if (try_event((gamma))) { a.Person_ref().next_condition(); }
+                if (try_event(gamma))
+                {
+                    a.Person_ref().get_new_condition() = State::R;
+                }
             }
         }
     }
@@ -272,6 +351,13 @@ void Simulation::move()
     }*/
 }
 
+void Simulation::update_Condition()
+{
+    for(auto &c : world.Clusters()){
+        for(auto &a : c.population())//set all the people's condition to new_condition
+            a.Person_ref().pass_condition();
+    }
+}
 
 void Simulation::simulate()
 {
@@ -280,10 +366,7 @@ void Simulation::simulate()
     {
         move();   // move all people
         spread(); // spread the virus
-        for(auto &c : world.Clusters()){
-            for(auto &a : c.population())//set all the people's condition to new_condition
-            a.Person_ref().pass_condition();
-        }
+        update_Condition();
     }
 }
 

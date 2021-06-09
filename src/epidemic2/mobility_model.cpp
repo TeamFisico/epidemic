@@ -22,6 +22,7 @@ void mobility_model::next_location()
 {
     if(target_location == person.get_home()){ //called when person is at home with target location home
         at_home = true;
+        rand_stay(2,5);
     }
     if (Path.empty())
     { // if Path vector empty select home
@@ -31,6 +32,7 @@ void mobility_model::next_location()
     { // if Path ha only one element select that element
         target_location = Path.operator[](0);
         Path.clear();
+        rand_stay(2,5);
     }
     else // if Path vector has more than one element ran the LATP Algorithm to select next Location
     {
@@ -73,6 +75,7 @@ void mobility_model::next_location()
         auto it = Path.begin(); // generate an iterator to the star of the Path vector
         it = it + index_result; // make sure the iterator point to the selected location
         Path.erase(it);         // erase the selected Location from the Path vector
+        rand_stay(2,5);
     }
 }
 

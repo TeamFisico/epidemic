@@ -30,12 +30,16 @@ class Simulation
     Simulation(int S, int E, int I, int R,int number_of_clusters, int number_of_Locations, double Side, double alpha, double gamma,
                double beta, double spread_radius, int time_in_days, int step_in_minutes);
     std::vector<Person *> Close_People(Person &current_person); // function that put in a vector pointers to all
-                                                                // other inRadius Susceptible People
+                                                                // other inRadius Susceptible People in green clusters
+    std::vector<Person *> Close_Cluster_People(Person &current_person); // function that put in a vector pointers to all other inRadius susceptible people in the same cluster
+    Data get_Cluster_data(int i); //get the summary data from i-nth cluster
     Data get_data();                                            // get the summary data.
     std::vector<Location *> green_loc_list(); //list of locations of non_red clusters
+    void update_Colors(); // Update Clusters Color based on infected population
     void spread();   // Function that, if *this is I, check close People and try
                      // to spread virus to close S if *this is E or I check if the
                      // State evolve
+    void update_Condition();
     void move();     // function that use mobility_model class to make a move step
     void simulate(); // function that call move, spread and Person::pass_condition for the necessary amount of time, WIP
                      // concept, will vary based on other addition(as curfew, quarantine, ...)

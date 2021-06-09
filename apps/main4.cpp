@@ -1,14 +1,16 @@
+#include "iomanip"
 #include "simulation.hpp"
 #include <chrono>
+#include <fstream>
 #include <iostream>
 
 int main()
 {
     using namespace sim;
 
-    auto start = std::chrono::high_resolution_clock::now();
+/*    auto start = std::chrono::high_resolution_clock::now();
 
-    Simulation prova{200000 ,3, 4, 4, 10, 500, 1000,0.5,0.3,0.2,1,20,10};
+    Simulation prova{25000 ,3, 25000, 4, 5, 500, 1000,0.5,0.3,0.2,0.5,20,10};
 
     auto end = std::chrono::high_resolution_clock::now();
 
@@ -20,7 +22,6 @@ int main()
     prova.move();
 
     auto end2 = std::chrono::high_resolution_clock::now();
-
     std::chrono::duration<float> duration2 = end2 - start2;
     std::cout << "Time taken : " << duration2.count() << " s " << std::endl;
 
@@ -41,9 +42,39 @@ int main()
 
     std::chrono::duration<float> duration4 = end4 - start4;
     std::cout << "Time taken : " << duration4.count() << " s " << std::endl;
+*/
 
+    auto start = std::chrono::high_resolution_clock::now();
 
+    Simulation prova{50000 ,3, 7, 4, 5, 200, 300,0.1,0.02,0.3,0.5,20,10};
+    for(int k = 0; k < 10; ++k){
+        prova.move();
+    }
 
+    auto end = std::chrono::high_resolution_clock::now();
 
+    std::chrono::duration<float> duration = end - start;
+    std::cout << "Generation and first movement : " << duration.count() << " s " << std::endl;
 
+    std::vector<Data> result{};
+    for(int i = 0; i < 10; ++i){
+        start = std::chrono::high_resolution_clock::now();
+        for(int j = 0; j < 30; ++j){
+            prova.move();
+            prova.spread();
+            prova.update_Condition();
+            result.push_back(prova.get_data());
+        }
+        prova.update_Colors();
+        end = std::chrono::high_resolution_clock::now();
+        duration = end - start;
+        std::cout << i+1 <<"-nth Cycle : " << duration.count() << " s " << std::endl;
+    }
+
+    std::ofstream out{"output.txt"};
+
+    for (auto &a : result)
+    {
+        out << "S = " << a.S << " E = " << a.E << " I = " << a.I << " R = " << a.R << std::endl;
+    }
 }
