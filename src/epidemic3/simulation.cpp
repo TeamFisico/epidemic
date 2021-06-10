@@ -6,14 +6,13 @@ namespace SMOOTH
 ////////////////////////////////////////////    WORLD CREATION  ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// initialising static data members
+std::array<Location, WAYPOINTS_SIZE> Simulation::Waypoints;
+std::array<Cluster, CLUSTERS_SIZE> Simulation::Clusters;
+std::array<Person, POPULATION_SIZE> Simulation::People;
 /////////////////////////////////////////////////////
 ////////          AREA PARTITIONING           ///////
 /////////////////////////////////////////////////////
-  std::array<Location, WAYPOINTS_SIZE> Simulation::Waypoints;
-  std::array<Cluster, CLUSTERS_SIZE> Simulation::Clusters;
-  std::array<Person, POPULATION_SIZE> Simulation::People;
-
-
 void Simulation::partition_in_clusters()
 {
     int total_sizes = 0;
@@ -54,7 +53,6 @@ void Simulation::partition_in_clusters()
         }
     }
 }
-
 /////////////////////////////////////////////////////
 ////////    1st WAYPOINT OF THE GROUP PLOT    ///////
 /////////////////////////////////////////////////////
@@ -157,7 +155,6 @@ Location Simulation::plot_nearby_waypoints(int cluster_label, int group_label, L
     int index = Clusters[cluster_label].Groups[group_label].size() - 1;
     return Clusters[cluster_label].Groups[group_label].group_ptr[index];
 }
-
 /////////////////////////////////////////////////////
 ////////  1st WAYPOINT OF OTHER GROUPS PLOT   ///////
 /////////////////////////////////////////////////////
@@ -224,12 +221,11 @@ void Simulation::plot_waypoints()
 /////////////////////////////////////////////////////
 ////////       SIMULATION CONSTRUCTOR         ///////
 /////////////////////////////////////////////////////
-Simulation::Simulation(double side, double transmission_range, double alpha, double percent_waypoint,
-                       double minimum_pause, double maximum_pause)
-    : side{side}, R{transmission_range}, alpha{alpha}, y{percent_waypoint}, min_pause{minimum_pause}, max_pause{
-                                                                                                          maximum_pause}
+Simulation::Simulation(double side, double transmission_range, double spread_radius, double alpha,
+                       double percent_waypoint, double minimum_pause, double maximum_pause)
+    : side{side}, R{transmission_range}, spread_radius{spread_radius}, alpha{alpha}, y{percent_waypoint},
+      min_pause{minimum_pause}, max_pause{maximum_pause}
 {
-
     partition_in_clusters();
     for (Cluster& cluster : Clusters)
     {
@@ -237,10 +233,6 @@ Simulation::Simulation(double side, double transmission_range, double alpha, dou
     }
     plot_waypoints();
 }
-Simulation::Simulation()
-{
-}
-
 /////////////////////////////////////////////////////
 ////////          CLUSTER ASSIGNMENT          ///////
 /////////////////////////////////////////////////////
@@ -290,10 +282,10 @@ void Simulation::assign_home(int label)
     for (auto it1 = std::begin(People); it1 != std::end(People); ++it1)
     {
         // set the bounds based on the belonging cluster for home generation
-        lw_x = Clusters[it1->cluster_label()].lower_x();
-        up_x = Clusters[it1->cluster_label()].upper_x();
-        lw_y = Clusters[it1->cluster_label()].lower_y();
-        up_y = Clusters[it1->cluster_label()].upper_y();
+        lw_x = Clusters[it1->home_cluster()].lower_x();
+        up_x = Clusters[it1->home_cluster()].upper_x();
+        lw_y = Clusters[it1->home_cluster()].lower_y();
+        up_y = Clusters[it1->home_cluster()].upper_y();
 
         std::uniform_real_distribution<double> x_home(lw_x, up_x);
         std::uniform_real_distribution<double> y_home(lw_y, up_y);
@@ -323,10 +315,10 @@ void Simulation::assign_home(int label)
 ////////   PATH ASSIGNMENT(FROM 1 CLUSTER)    ///////
 /////////////////////////////////////////////////////
 // fill person Path vector with the waypoints to visit FROM THE CLUSTER HE/SHE'S IN CURRENTLY
-void Simulation::fill_path_from_cluster(Person& person)
+void Simulation::fill_path_current(Person& person)
 {
 
-    int belonging_cluster_size = Clusters[person.cluster_label()].size();
+    int belonging_cluster_size = Clusters[person.home_cluster()].size();
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -337,9 +329,9 @@ void Simulation::fill_path_from_cluster(Person& person)
     int starting_index = 0;
     int ending_index = 0;
 
-    if (person.cluster_label() > 0) // this is not the first clust
+    if (person.home_cluster() > 0) // this is not the first clust
     {
-        for (int i = 0; i < person.cluster_label(); ++i) // check the previous clusters
+        for (int i = 0; i < person.home_cluster(); ++i) // check the previous clusters
         {
             starting_index += Clusters[i].size();
             ++i;
@@ -373,55 +365,6 @@ void Simulation::fill_path_from_cluster(Person& person)
         already_chosen.push_back(random_index);
         person.Paths.push_back(random_index);
     }
-}
-/////////////////////////////////////////////////////
-//////   PATH ASSIGNMENT(FROM GREEN CLUSTERS)   /////
-/////////////////////////////////////////////////////
-// select some waypoints among the current cluster and the others
-void Simulation::fill_path(Person& person)
-{
-    // TODO define
-}
-/////////////////////////////////////////////////////
-////////            TARGET UPDATE             ///////
-/////////////////////////////////////////////////////
-void Simulation::update_target(Person* person)
-// use the Least action trip planning(LATP) algorithm to determine new person target
-{
-    // calculate distance between all the possibile paths
-    // then calculate the probability to visit each waypoint
-    // through the weight function and finally extract the next
-    // target with the previous probabilities assigned to each wpt
-    Location person_location = person->get_location();
-
-    std::vector<double> distances;
-    std::vector<double> probabilities;
-    distances.reserve(person->Paths.size());     // allocate the space
-    probabilities.reserve(person->Paths.size()); // allocate the space
-    double current_weight = 0.0;
-    // compute distances
-    for (int& index : person->Paths)
-    {
-        Location waypoint = Waypoints[index];
-        current_weight = weight_function(person_location.get_distance(waypoint), alpha);
-        distances.push_back(current_weight);
-    }
-    double sum = std::accumulate(std::begin(distances), std::end(distances), 0.0);
-
-    for (double curr_weight : distances)
-    {
-        probabilities.push_back(curr_weight / sum);
-    }
-    // ok now knowing all the probabilities for a person to target an indexed waypoint
-    // extract an index based on this probabilities
-
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    // generate one index based on the previously determinated probabilities(weights)
-    std::piecewise_constant_distribution<int> rand(std::begin(person->Paths), std::begin(person->Paths),
-                                                   probabilities.begin());
-    person->set_target(Waypoints[rand(gen)]);
-    // TODO TESTING
 }
 
 double weight_function(double distance, double LATP_parameter)

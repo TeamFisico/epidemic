@@ -21,7 +21,8 @@ set(HEADER_LIST3  "${epidemic_SOURCE_DIR}/include/epidemic3/location.hpp"
                   "${epidemic_SOURCE_DIR}/include/epidemic3/group.hpp"
                   "${epidemic_SOURCE_DIR}/include/epidemic3/cluster.hpp"
                   "${epidemic_SOURCE_DIR}/include/epidemic3/person.hpp"
-                  "${epidemic_SOURCE_DIR}/include/epidemic3/simulation.hpp")
+                  "${epidemic_SOURCE_DIR}/include/epidemic3/simulation.hpp"
+                  "${epidemic_SOURCE_DIR}/include/epidemic3/random.hpp")
 
 add_subdirectory(epidemic3)
 # IDE will put headers in a nice way
