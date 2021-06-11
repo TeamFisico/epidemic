@@ -21,7 +21,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)  #main project
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
     set(CMAKE_CXX_EXTENSIONS OFF)
 
-    ##parameters for version 2 of the second part
+    ##SIMULATION PARAMETERS
     set(N 1000 CACHE INTERNAL "Total number of people in the simulation")
     set(W 200 CACHE INTERNAL "Total number of waypoint in the simulation")
     set(C 5 CACHE INTERNAL "Total number of clusters in the simulation")

@@ -23,7 +23,7 @@ struct Location
     bool in_radius(Location loc2, double r) const;
 };
 
- bool operator==(const Location& l1, const Location& l2);
+bool operator==(const Location& l1, const Location& l2);
 
 } // namespace SMOOTH
 
