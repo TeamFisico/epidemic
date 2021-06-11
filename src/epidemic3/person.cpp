@@ -121,14 +121,20 @@ void Person::move_home()
     // now determine the displacement on each axis based on the current person speed
     delta_x = (speed() * cos(theta)) * TIME_STEP; // moving of delta_x on the x axis
     delta_y = (speed() * sin(theta)) * TIME_STEP; // moving of delta_y on the y axis
+    double displacement = sqrt(delta_x * delta_x + delta_y * delta_y);
 
+    if (location.get_distance(target) < displacement)
+    {
+        set_location(home);
+        at_place = true;
+    }
     Location new_location{location.X() + delta_x, location.Y() + delta_y};
     set_location(new_location);
 }
 /////////////////////////////////////////////////////
 /// CASE OF PERSON MOVING TO A NON-HOME LOCATION ////
 /////////////////////////////////////////////////////
-void Person::move_toward(Location new_target)
+void Person::move_toward()
 // move a person by an amount determined by the current speed slightly varying the angle
 {
     update_speed();
@@ -154,8 +160,7 @@ void Person::move_toward(Location new_target)
     std::uniform_real_distribution<double> angle(direction(), theta);
 
     double final_angle = angle(gen);
-    // calculate new displacement
-    // replace the previous velocity vector with a new one with the same magnitude but different direction
+    // calculate new displacement replacing the previous velocity vector with a new one with the same magnitude but different direction
     // so recalculating the new v_x and v_y to determine x_displacement and y_displacement
     x_displacement = speed() * cos(final_angle) * TIME_STEP;
     y_displacement = speed() * sin(final_angle) * TIME_STEP;
@@ -163,66 +168,81 @@ void Person::move_toward(Location new_target)
     Location new_location{location.X() + x_displacement, location.Y() + y_displacement};
 
     set_location(new_location);
+
 }
 /////////////////////////////////////////////////////
 ////////            MOVE A PERSON             ///////
 /////////////////////////////////////////////////////
-void Person::move_person(Location new_target)
+void Person::move_person()
 {
+    if (target == home) move_home();
+    else move_toward();
+}
+/////////////////////////////////////////////////////
+////////        DETERMINE PATHS SIZE          ///////
+/////////////////////////////////////////////////////
+int determine_fill_size(const Person& person)
+{
+    int current_paths_size = person.Paths.size();
+    double selected_size = Simulation::Clusters[person.home_cluster()].size() * VISITING_PERCENTAGE; //Paths final size
+    return static_cast<int>(selected_size - current_paths_size);
 }
 /////////////////////////////////////////////////////
 ////////  PATH ASSIGNMENT FROM HOME CLUSTER   ///////
 /////////////////////////////////////////////////////
 // fill person Path vector with the waypoints to visit from the home cluster
-void fill_path_home(Person& person, double perc_waypoints)
+void fill_path_home(Person& person)
 {
-
-    int belonging_cluster_size = Simulation::Clusters[person.home_cluster()].size();
-
-    std::random_device rd;
-    std::mt19937 gen(rd());
-
-    int selected_size = static_cast<int>(belonging_cluster_size * perc_waypoints);
-    // now determining the this cluster's indeces range inside Waypoints array
-
+    // determine this cluster's indeces range inside Waypoints array
     int starting_index = 0;
     int ending_index = 0;
 
     if (person.home_cluster() > 0) // this is not the first clust
     {
-        for (int i = 0; i < person.home_cluster(); ++i) // check the previous clusters
+        for (int i = 0; i < person.home_cluster(); ++i)
         {
-            starting_index += Simulation::Clusters[i].size();
-            ++i;
+            starting_index += Simulation::Clusters[i].size();  //add up the indeces of the previous clusters
         }
-        ending_index = starting_index + belonging_cluster_size;
+        ending_index = starting_index + Simulation::Clusters[person.home_cluster()].size() - 1;
     }
     else
     {
-        ending_index = belonging_cluster_size;
+        ending_index = Simulation::Clusters[person.home_cluster()].size() -1 ;
     }
-
+    std::random_device rd;
+    std::mt19937 gen(rd());
     std::uniform_int_distribution<> rand(starting_index, ending_index);
 
-    int random_index = 0;
-    std::vector<int> already_chosen; // keep track of already chosen waypoints indeces
+    int missing_waypoints = determine_fill_size(person);  //number of waypoints to add to person.Paths
 
-    assert(person.Paths.size() == 0);
-    person.Paths.reserve(selected_size);
-    already_chosen.reserve(selected_size);
-    for (int i = 0; i < selected_size; ++i)
+    std::vector<int> already_chosen_indeces;
+
+    person.Paths.reserve(missing_waypoints);                                       //avoid reallocation when pushing back
+    already_chosen_indeces.reserve(person.Paths.size() + person.Paths.size());
+
+    assert(already_chosen_indeces.empty());   //TODO consider deleting
+    //keep track of the indeces of the waypoints already in person.Paths
+    for (int& taken_index : person.Paths)
+    {
+        already_chosen_indeces.push_back(taken_index);
+    }
+    int random_index = 0;
+    for (int i = 0; i < missing_waypoints; ++i)
     {
         random_index = rand(gen);
-        for (int i = 0; i < already_chosen.size(); ++i)
+        for (unsigned long j = 0; j < already_chosen_indeces.size(); ++j)
         {
-            if (already_chosen[i] == random_index)
+            if (already_chosen_indeces[j] == random_index)
             {
                 random_index = rand(gen); // try a new one
-                i = -1;                   // restart then from 0
+                j = 0;
+                continue;  // restart the inner loop
             }
         }
-        already_chosen.push_back(random_index);
+
+        already_chosen_indeces.push_back(random_index);
         person.Paths.push_back(random_index);
+
     }
 }
 /////////////////////////////////////////////////////
@@ -234,8 +254,47 @@ void fill_path_white(Person& person)
     std::vector<int> white_clusters; // vector containing white clusters labels
     for (Cluster& cl : Simulation::Clusters)
     {
-        if (cl.zone_type() == Zone::white && person.home_cluster() != cl.label()) white_clusters.push_back(cl.label());
+        if (cl.zone_type() == Zone::White && person.home_cluster() != cl.label()) white_clusters.push_back(cl.label());
     }
+}
+/////////////////////////////////////////////////////
+//////        DETERMINE STAY AT A PLACE         /////
+/////////////////////////////////////////////////////
+//generating pause time at a place according to TPL(Truncated power Law) [see
+int determine_pause_time()
+{
+    double term1 = 0.0;
+    double term2 = 0.0;
+    double term3 = 0.0;
+    double term4 = 0.0;
+    double pause_time = 0.0;
+
+    std::random_device rd; // set the seed
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> rand(0.0,1.0);
+
+    double u = rand(gen);  //number in range [0,1)
+
+    term1 = (u*pow(MAX_PAUSE,PAUSE_EXPONENT)) - (u*pow(MIN_PAUSE,PAUSE_EXPONENT)) - pow(MAX_PAUSE,PAUSE_EXPONENT);
+    term2= pow(MAX_PAUSE, PAUSE_EXPONENT) * pow(MIN_PAUSE,PAUSE_EXPONENT);
+    term3 = -(term1 / term2);
+    term4 = pow(term3, (-1 / PAUSE_EXPONENT));
+    pause_time = term4;
+
+    return round(pause_time);
 }
 
 } // namespace SMOOTH
+
+
+
+
+
+
+
+
+
+
+
+
+

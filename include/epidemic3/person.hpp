@@ -53,19 +53,22 @@ class Person
     void set_location(Location loc) { location = loc; }
 
   private:
-    void move_toward(Location new_target);
+
+    void move_toward();
     void move_home();
     void update_speed();
 
   public:
+
     void upgrade_status();
     void update_target(double LATP_parameter);
-    void move_person(Location new_target);
-};
+    void move_person();
 
-void fill_path_home(Person& person, double perc_waypoints); // select next visiting locations from the person cluster
-void fill_path_white(Person& person);                       // select next visiting locations from green clusters
-int determine_stay();
+};
+  int determine_fill_size(const Person& person); // determine how many indeces Paths must be filled with
+  void fill_path_home(Person& person);           // select next visiting locations from the person cluster
+  void fill_path_white(Person& person); // TODO define               // select next visiting locations from green clusters
+  int determine_pause_time();
 // bool try_infect(); // TODO Define
 
 } // namespace SMOOTH

@@ -7,16 +7,36 @@
 
 namespace SMOOTH
 {
-
-Cluster::Cluster(int size) : sz{size}
+/////////////////////////////////////////////////////
+////////          CLUSTER CONSTRUCTOR         ///////
+/////////////////////////////////////////////////////
+Cluster::Cluster(int size, int label, double weight, Zone zone, Data data, double x_low, double x_up, double y_low, double y_up)
+        :sz{size},lbl{label},w{weight},zone{zone},data{data}
 {
-    //        partition_in_groups();
+    limits[0] = x_low;
+    limits[1] = x_up;
+    limits[2] = y_low;
+    limits[3] = y_up;
 }
-// default constructor
-Cluster::Cluster() : sz{0}, lbl{0}, w{0.0}, zone{Zone::white}
+/////////////////////////////////////////////////////
+////////           DEFAULT CLUSTER            ///////
+/////////////////////////////////////////////////////
+const Cluster& default_cluster()
 {
+    static Data dd {}
+    static Cluster def_cl{0,0,0.0,Zone::White,0.0,0.0,0.0,0.0};
+    return def_cl;
 }
-
+/////////////////////////////////////////////////////
+////////    DEFAULT CLUSTER CONSTRUCTOR       ///////
+/////////////////////////////////////////////////////
+Cluster::Cluster() :sz{default_cluster().sz},lbl{default_cluster().lbl},w{default_cluster().w},zone{default_cluster().zone}
+{
+    limits[0] = default_cluster().limits[0];
+    limits[1] = default_cluster().limits[1];
+    limits[2] = default_cluster().limits[2];
+    limits[3] = default_cluster().limits[3];
+}
 /////////////////////////////////////////////////////
 ////////      GROUP SIZES DETERMINATION       ///////
 /////////////////////////////////////////////////////
@@ -91,17 +111,18 @@ void Cluster::partition_in_groups()
 /////////////////////////////////////////////////////
 ////////   CLUSTER X,Y LIMITS DETERMINATION   ///////
 /////////////////////////////////////////////////////
+//Look into waypoints of this cluster and determine the limits
 void Cluster::set_limits()
 {
-    double x_min = Groups[0].group_ptr[0].X();
-    double y_min = Groups[0].group_ptr[0].Y();
-    double x_max = Groups[0].group_ptr[0].X();
-    double y_max = Groups[0].group_ptr[0].Y();
+    double x_min = Groups[0].pointed_waypoint()[0].X();
+    double y_min = Groups[0].pointed_waypoint()[0].Y();
+    double x_max = Groups[0].pointed_waypoint()[0].X();
+    double y_max = Groups[0].pointed_waypoint()[0].Y();
 
     for (auto& group : Groups)
     {
         int i = 0;
-        for (auto it = group.group_ptr; i < group.size(); ++it)
+        for (auto it = group.pointed_waypoint(); i < group.size(); ++it)
         {
             if (it->X() < x_min) x_min = it->X();
             if (it->X() > x_max) x_max = it->X();
@@ -112,6 +133,19 @@ void Cluster::set_limits()
     }
 
     limits = {x_min, x_max, y_min, y_max};
+}
+/////////////////////////////////////////////////////
+////////         GET CLUSTER DATA             ///////
+/////////////////////////////////////////////////////
+Data Cluster::get_data() const
+{
+}
+/////////////////////////////////////////////////////
+////////        DATA CONSTRUCTOR              ///////
+/////////////////////////////////////////////////////
+Data::Data(int susceptible, int latent, int infected, int recovered, int dead)
+      :S{susceptible},E{latent},I{infected},R{recovered},D{dead}
+{
 }
 
 } // namespace SMOOTH

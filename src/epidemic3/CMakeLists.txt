@@ -32,7 +32,7 @@ target_compile_options(person3 PRIVATE -Wall -Wextra -fsanitize=address)
 target_link_options(person3 PRIVATE -fsanitize=address)
 target_clangformat_setup(person3) ##allow for code formatting
 
-########## SIMULATION  #############
+########## RANDOM  #############
 add_library(random3 simulation.cpp ${HEADER_LIST3})
 target_include_directories(random3 PUBLIC ../../include/epidemic3)
 target_compile_features(random3 PUBLIC cxx_std_17)
@@ -47,6 +47,14 @@ target_compile_features(simulation3 PUBLIC cxx_std_17)
 target_compile_options(simulation3 PRIVATE -Wall -Wextra -fsanitize=address)
 target_link_options(simulation3 PRIVATE -fsanitize=address)
 target_clangformat_setup(simulation3) ##allow for code formatting
+
+########## CLOCK  #############
+add_library(clock3 simulation.cpp ${HEADER_LIST3})
+target_include_directories(clock3 PUBLIC ../../include/epidemic3)
+target_compile_features(clock3 PUBLIC cxx_std_17)
+target_compile_options(clock3 PRIVATE -Wall -Wextra -fsanitize=address)
+target_link_options(clock3 PRIVATE -fsanitize=address)
+target_clangformat_setup(clock3) ##allow for code formatting
 
 source_group(
         TREE "${PROJECT_SOURCE_DIR}/include/epidemic3"
