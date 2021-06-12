@@ -54,7 +54,8 @@ target_link_libraries(app3 PRIVATE   location3
                                      group3
                                      cluster3
                                      simulation3
-                                     clock3)
+                                     clock3
+                                     random3)
 target_include_directories(app3 PUBLIC "${PROJECT_BINARY_DIR}"
         ../include/epidemic3)
 target_clangformat_setup(app3) ##allow for code formatting

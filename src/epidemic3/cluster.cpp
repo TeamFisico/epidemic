@@ -10,8 +10,8 @@ namespace SMOOTH
 /////////////////////////////////////////////////////
 ////////          CLUSTER CONSTRUCTOR         ///////
 /////////////////////////////////////////////////////
-Cluster::Cluster(int size, int label, double weight, Zone zone, Data data, double x_low, double x_up, double y_low, double y_up)
-        :sz{size},lbl{label},w{weight},zone{zone},data{data}
+Cluster::Cluster(int size, int label, double weight, Zone zone/*, Data data*/, double x_low, double x_up, double y_low, double y_up)
+        :sz{size},lbl{label},w{weight},zone{zone}/*,data{data}*/
 {
     limits[0] = x_low;
     limits[1] = x_up;
@@ -23,7 +23,7 @@ Cluster::Cluster(int size, int label, double weight, Zone zone, Data data, doubl
 /////////////////////////////////////////////////////
 const Cluster& default_cluster()
 {
-    static Data dd {}
+//    static Data dd {}
     static Cluster def_cl{0,0,0.0,Zone::White,0.0,0.0,0.0,0.0};
     return def_cl;
 }

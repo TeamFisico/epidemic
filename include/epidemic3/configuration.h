@@ -4,6 +4,6 @@
 #define epidemic_VERSION_MAJOR 1
 #define epidemic_VERSION_MINOR 0
 
-#define POPULATION 50000
+#define POPULATION 1000
 #define CLUSTERS  5
-#define WAYPOINTS 900
+#define WAYPOINTS 200

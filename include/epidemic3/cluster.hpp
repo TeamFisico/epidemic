@@ -30,7 +30,7 @@ class Cluster
     int sz;   // num of waypoints
     int lbl;  // corresponding index into Cluster array 0 <= lbl <= clusters_size-1
     double w; // weight to be chosen by a person
-    Data data;
+//    Data data;
     Zone zone;
     std::array<double, 4> limits; // [0]= lower_x, [1] = upper_x, [2] = lower_y, [3] = upper_y
 
@@ -40,7 +40,7 @@ class Cluster
     std::vector<int> People_index;  //indeces of People array to people belonging to this cluster-->see assign_to_cluster() method
     std::vector<Group> Groups;      // groups of waypoints in cluster
     //constructors
-    Cluster(int size,int label,double weight,Zone zone,Data data,double x_low,double x_up,double y_low,double y_up );
+    Cluster(int size,int label,double weight,Zone zone/*,Data data*/,double x_low,double x_up,double y_low,double y_up );
     Cluster();
     // non-modifying members
     int size() const { return sz; }
