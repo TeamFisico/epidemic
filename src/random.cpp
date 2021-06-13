@@ -1,7 +1,7 @@
 #include "../include/random.hpp"
 #include <cassert>
 
-namespace SMOOTH
+namespace smooth_simulation
 {
 Random::Random(int seeding_type)
 {
@@ -31,7 +31,7 @@ double Random::uniform(double lower, double upper)
 }
 int Random::int_uniform(int lower, int upper)
 {
-    return eng.variate<int,std::uniform_int_distribution>(lower,upper);
+    return eng.variate<int, std::uniform_int_distribution>(lower, upper);
 }
 double Random::gauss(double mean, double stddev)
 {

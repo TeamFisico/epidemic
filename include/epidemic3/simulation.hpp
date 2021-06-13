@@ -5,7 +5,7 @@
 #include <array>
 #include <vector>
 
-namespace SMOOTH
+namespace smooth_simulation
 {
 
 class Simulation
@@ -29,27 +29,18 @@ class Simulation
     void assign_home();       // assign each person a home
     void update_zones();      // check the numbers of the epidemic and change Zones color
   public:
-    Simulation(double side,double spread_radius, double alpha, Data data); // constructor
-    void check_zones(); // verify Clusters color
+    Simulation(double side, double spread_radius, double alpha, Data data); // constructor
+    void check_zones();                                                     // verify Clusters color
     void evolve();
     void move();
     void spread();
 };
 
-  double weight_function(double distance, double LATP_parameter); // weight function of LATP algorithm
-  bool check_group(Group const& group,Location try_location);                            //helper function for first_group_step()
-  bool check_cluster(Cluster const& cluster,Location try_location);     //helper function for first_group_step()
-  bool check_labeled_clusters(int label, Location try_waypoint);  //helper function for first_group_step()
+double weight_function(double distance, double LATP_parameter);    // weight function of LATP algorithm
+bool check_group(Group const& group, Location try_location);       // helper function for first_group_step()
+bool check_cluster(Cluster const& cluster, Location try_location); // helper function for first_group_step()
+bool check_labeled_clusters(int label, Location try_waypoint);     // helper function for first_group_step()
 
 } // namespace SMOOTH
 
 #endif // SIMULATION_HPP
-
-
-
-
-
-
-
-
-

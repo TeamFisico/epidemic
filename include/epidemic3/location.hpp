@@ -1,31 +1,29 @@
 #ifndef LOCATION_HPP
 #define LOCATION_HPP
 
-namespace SMOOTH
+#include "position.hpp"
+
+namespace smooth_simulation
 {
 
 class Location
 {
   private:
-    double x;
-    double y;
-
+    Position position;
+    double radius;
   public:
-    Location(double X, double Y); // constructor
+    Location(Position const& loc_position, double location_radius = 0.0);
     Location();                   // default constructor
 
-    double X() const { return x; }
-    double Y() const { return y; }
-    double& X() { return x; }
-    double& Y() { return y; }
+    Position get_position() const { return position; }
+    double get_radius() const { return radius; }
+    void set_radius(double rad) { radius = rad; }
+    void set_position(Position pos) { position = pos; }
 
-    double distance(Location loc2) const;
     bool in_radius(Location loc2, double r) const;
-    bool within_transmission_range(Location loc2) const;
 };
-
-  bool operator==(const Location& l1, const Location& l2);  //equality operator
-
+    bool operator==(const Location& l1, const Location& l2); // equality operator
+    Location generate_close_location(Position const& center,double min_distance, double max_distance);
 
 } // namespace SMOOTH
 

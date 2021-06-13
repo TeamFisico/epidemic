@@ -5,9 +5,8 @@
 #include "parameters.hpp"
 #include <array>
 #include <cassert>
-#include <vector>
 
-namespace SMOOTH
+namespace smooth_simulation
 {
 
 class Group

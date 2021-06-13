@@ -1,10 +1,11 @@
 #ifndef PERSON_HPP
 #define PERSON_HPP
 
+#include "../random.hpp"
 #include "location.hpp"
 #include <vector>
 
-namespace SMOOTH
+namespace smooth_simulation
 {
 
 enum class Status

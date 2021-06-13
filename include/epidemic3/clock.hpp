@@ -1,7 +1,7 @@
 #ifndef CLOCK_HPP
 #define CLOCK_HPP
 
-namespace SMOOTH
+namespace smooth_simulation
 {
 class Clock
 {

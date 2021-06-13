@@ -15,6 +15,7 @@ add_subdirectory(epidemic2)
 
 
 set(HEADER_LIST3  "${epidemic_SOURCE_DIR}/include/epidemic3/parameters.hpp"
+                  "${epidemic_SOURCE_DIR}/include/epidemic3/position.hpp"
                   "${epidemic_SOURCE_DIR}/include/epidemic3/location.hpp"
                   "${epidemic_SOURCE_DIR}/include/epidemic3/group.hpp"
                   "${epidemic_SOURCE_DIR}/include/epidemic3/cluster.hpp"

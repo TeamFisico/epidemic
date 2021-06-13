@@ -4,7 +4,7 @@
 #include "group.hpp"
 #include "person.hpp"
 
-namespace SMOOTH
+namespace smooth_simulation
 {
 
 struct Data

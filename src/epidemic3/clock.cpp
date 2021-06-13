@@ -1,6 +1,6 @@
 #include "clock.hpp"
 
-namespace SMOOTH
+namespace smooth_simulation
 {
 Clock::Clock()
 {

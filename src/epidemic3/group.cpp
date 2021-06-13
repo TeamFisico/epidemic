@@ -1,7 +1,7 @@
 #include "group.hpp"
 #include <cassert>
 
-namespace SMOOTH
+namespace smooth_simulation
 {
 
 // constructor

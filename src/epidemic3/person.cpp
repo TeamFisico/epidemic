@@ -1,9 +1,9 @@
 #include "person.hpp"
 #include "simulation.hpp"
+#include "../random.hpp"
 #include <math.h>
-#include <random>
 
-namespace SMOOTH
+namespace smooth_simulation
 {
 Person::Person(Status status, int cluster_label, Location home, Location current_location, Location target_location,
                bool is_at_place, double x_speed, double y_speed)
@@ -62,15 +62,9 @@ void Person::update_speed()
 {
     const double max_std_dev = 1; // TODO Determine maximum standard deviation
     // velocity is measured in units/s
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<double> std_dev(0, max_std_dev); // set the std dev extraction
-
-    std::normal_distribution<double> x_sp(speed_x(), std_dev(gen));
-    std::normal_distribution<double> y_sp(speed_y(), std_dev(gen));
-
-    set_speed_x(x_sp(gen));
-    set_speed_y(y_sp(gen));
+    Random rng{};
+    set_speed_x(rng.gauss(speed_x(),rng.uniform(0,max_std_dev)));
+    set_speed_y(rng.gauss(speed_y(),rng.uniform(0,max_std_dev)));
 }
 
 /////////////////////////////////////////////////////
@@ -79,7 +73,6 @@ void Person::update_speed()
 void Person::update_target(double LATP_parameter)
 // use the Least action trip planning(LATP) algorithm to determine new person target
 {
-
     std::vector<double> distances;
     std::vector<double> probabilities;
     distances.reserve(Paths.size());     // allocate the space
@@ -101,8 +94,7 @@ void Person::update_target(double LATP_parameter)
     // ok now knowing all the probabilities for a person to target an indexed waypoint
     // extract an index based on this probabilities
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    Random rng{};
     // generate one index based on the previously determinated probabilities(weights)
     std::piecewise_constant_distribution<int> rand(std::begin(Paths), std::begin(Paths), probabilities.begin());
     this->set_target(Simulation::Waypoints[rand(gen)]);
@@ -153,13 +145,11 @@ void Person::move_toward()
     double delta_y = std::abs(get_location().Y() - target.Y());
     double theta = atan(delta_y / delta_x); // angle connecting the target through a straight line
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    Random rng{};  //seeded engine
     // generate an angle between velocity vector direction and the target's one so that will not point precisely to the
     // target
-    std::uniform_real_distribution<double> angle(direction(), theta);
-
-    double final_angle = angle(gen);
+    //TODO direction() can be lower than theta: test this case
+    double final_angle = rng.uniform(direction(),theta);
     // calculate new displacement replacing the previous velocity vector with a new one with the same magnitude but
     // different direction so recalculating the new v_x and v_y to determine x_displacement and y_displacement
     x_displacement = speed() * cos(final_angle) * TIME_STEP;
@@ -209,8 +199,7 @@ void fill_path_home(Person& person)
     {
         ending_index = Simulation::Clusters[person.home_cluster()].size() - 1;
     }
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    Random rng{};
     std::uniform_int_distribution<> rand(starting_index, ending_index);
 
     int missing_waypoints = determine_fill_size(person); // number of waypoints to add to person.Paths
@@ -268,14 +257,13 @@ int determine_pause_time()
     double term4 = 0.0;
     double pause_time = 0.0;
 
-    std::random_device rd; // set the seed
-    std::mt19937 gen(rd());
+    Random rng{}; // set the seed
     std::uniform_real_distribution<> rand(0.0, 1.0);
 
-    double u = rand(gen); // number in range [0,1)
+    double u = rng.uniform(0,1); // number in range [0,1)
 
-    term1 =
-        (u * pow(MAX_PAUSE, PAUSE_EXPONENT)) - (u * pow(MIN_PAUSE, PAUSE_EXPONENT)) - pow(MAX_PAUSE, PAUSE_EXPONENT);
+    term1 = (u * pow(MAX_PAUSE, PAUSE_EXPONENT)) - (u * pow(MIN_PAUSE, PAUSE_EXPONENT))
+            - pow(MAX_PAUSE, PAUSE_EXPONENT);
     term2 = pow(MAX_PAUSE, PAUSE_EXPONENT) * pow(MIN_PAUSE, PAUSE_EXPONENT);
     term3 = -(term1 / term2);
     term4 = pow(term3, (-1 / PAUSE_EXPONENT));

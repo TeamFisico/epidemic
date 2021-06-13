@@ -16,6 +16,14 @@ target_compile_options(group3 PRIVATE -Wall -Wextra -fsanitize=address)
 target_link_options(group3 PRIVATE -fsanitize=address)
 target_clangformat_setup(group3) ##allow for code formatting
 
+########## POSITION  #############
+add_library(position3 position.cpp ${HEADER_LIST3})
+target_include_directories(position3 PUBLIC ../../include/epidemic3)
+target_compile_features(position3 PUBLIC cxx_std_17)
+target_compile_options(position3 PRIVATE -Wall -Wextra -fsanitize=address)
+target_link_options(position3 PRIVATE -fsanitize=address)
+target_clangformat_setup(position3) ##allow for code formatting
+
 ########## LOCATION  #############
 add_library(location3 location.cpp ${HEADER_LIST3})
 target_include_directories(location3 PUBLIC ../../include/epidemic3)

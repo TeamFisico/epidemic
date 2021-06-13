@@ -5,7 +5,7 @@
 #include <math.h>
 #include <random>
 
-namespace SMOOTH
+namespace smooth_simulation
 {
 /////////////////////////////////////////////////////
 ////////          CLUSTER CONSTRUCTOR         ///////
