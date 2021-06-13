@@ -4,7 +4,7 @@
 namespace SMOOTH
 {
 
-struct Location
+class Location
 {
   private:
     double x;
@@ -19,11 +19,13 @@ struct Location
     double& X() { return x; }
     double& Y() { return y; }
 
-    double get_distance(Location loc2) const;
+    double distance(Location loc2) const;
     bool in_radius(Location loc2, double r) const;
+    bool within_transmission_range(Location loc2) const;
 };
 
-bool operator==(const Location& l1, const Location& l2);
+  bool operator==(const Location& l1, const Location& l2);  //equality operator
+
 
 } // namespace SMOOTH
 

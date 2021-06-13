@@ -10,8 +10,9 @@ namespace SMOOTH
 /////////////////////////////////////////////////////
 ////////          CLUSTER CONSTRUCTOR         ///////
 /////////////////////////////////////////////////////
-Cluster::Cluster(int size, int label, double weight, Zone zone/*, Data data*/, double x_low, double x_up, double y_low, double y_up)
-        :sz{size},lbl{label},w{weight},zone{zone}/*,data{data}*/
+Cluster::Cluster(int size, int label, double weight, Zone zone /*, Data data*/, double x_low, double x_up, double y_low,
+                 double y_up)
+    : sz{size}, lbl{label}, w{weight}, zone{zone} /*,data{data}*/
 {
     limits[0] = x_low;
     limits[1] = x_up;
@@ -23,14 +24,15 @@ Cluster::Cluster(int size, int label, double weight, Zone zone/*, Data data*/, d
 /////////////////////////////////////////////////////
 const Cluster& default_cluster()
 {
-//    static Data dd {}
-    static Cluster def_cl{0,0,0.0,Zone::White,0.0,0.0,0.0,0.0};
+    //    static Data dd {}
+    static Cluster def_cl{0, 0, 0.0, Zone::White, 0.0, 0.0, 0.0, 0.0};
     return def_cl;
 }
 /////////////////////////////////////////////////////
 ////////    DEFAULT CLUSTER CONSTRUCTOR       ///////
 /////////////////////////////////////////////////////
-Cluster::Cluster() :sz{default_cluster().sz},lbl{default_cluster().lbl},w{default_cluster().w},zone{default_cluster().zone}
+Cluster::Cluster()
+    : sz{default_cluster().sz}, lbl{default_cluster().lbl}, w{default_cluster().w}, zone{default_cluster().zone}
 {
     limits[0] = default_cluster().limits[0];
     limits[1] = default_cluster().limits[1];
@@ -111,7 +113,7 @@ void Cluster::partition_in_groups()
 /////////////////////////////////////////////////////
 ////////   CLUSTER X,Y LIMITS DETERMINATION   ///////
 /////////////////////////////////////////////////////
-//Look into waypoints of this cluster and determine the limits
+// Look into waypoints of this cluster and determine the limits
 void Cluster::set_limits()
 {
     double x_min = Groups[0].pointed_waypoint()[0].X();
@@ -144,7 +146,7 @@ Data Cluster::get_data() const
 ////////        DATA CONSTRUCTOR              ///////
 /////////////////////////////////////////////////////
 Data::Data(int susceptible, int latent, int infected, int recovered, int dead)
-      :S{susceptible},E{latent},I{infected},R{recovered},D{dead}
+    : S{susceptible}, E{latent}, I{infected}, R{recovered}, D{dead}
 {
 }
 

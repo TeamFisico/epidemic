@@ -89,7 +89,7 @@ void Person::update_target(double LATP_parameter)
     for (int& index : Paths)
     {
         Location waypoint = Simulation::Waypoints[index];
-        current_weight = weight_function(location.get_distance(waypoint), LATP_parameter);
+        current_weight = weight_function(location.distance(waypoint), LATP_parameter);
         distances.push_back(current_weight);
     }
     double sum = std::accumulate(std::begin(distances), std::end(distances), 0.0);
@@ -123,7 +123,7 @@ void Person::move_home()
     delta_y = (speed() * sin(theta)) * TIME_STEP; // moving of delta_y on the y axis
     double displacement = sqrt(delta_x * delta_x + delta_y * delta_y);
 
-    if (location.get_distance(target) < displacement)
+    if (location.distance(target) < displacement)
     {
         set_location(home);
         at_place = true;
@@ -142,7 +142,7 @@ void Person::move_toward()
     double y_displacement = speed_y() * TIME_STEP; // y = v_y * ∆t
     double displacement = sqrt(x_displacement * x_displacement + y_displacement * y_displacement);
 
-    if (location.get_distance(target) < displacement)
+    if (location.distance(target) < displacement)
     {
         set_location(target);
         at_place = true;
@@ -160,15 +160,14 @@ void Person::move_toward()
     std::uniform_real_distribution<double> angle(direction(), theta);
 
     double final_angle = angle(gen);
-    // calculate new displacement replacing the previous velocity vector with a new one with the same magnitude but different direction
-    // so recalculating the new v_x and v_y to determine x_displacement and y_displacement
+    // calculate new displacement replacing the previous velocity vector with a new one with the same magnitude but
+    // different direction so recalculating the new v_x and v_y to determine x_displacement and y_displacement
     x_displacement = speed() * cos(final_angle) * TIME_STEP;
     y_displacement = speed() * sin(final_angle) * TIME_STEP;
 
     Location new_location{location.X() + x_displacement, location.Y() + y_displacement};
 
     set_location(new_location);
-
 }
 /////////////////////////////////////////////////////
 ////////            MOVE A PERSON             ///////
@@ -176,7 +175,8 @@ void Person::move_toward()
 void Person::move_person()
 {
     if (target == home) move_home();
-    else move_toward();
+    else
+        move_toward();
 }
 /////////////////////////////////////////////////////
 ////////        DETERMINE PATHS SIZE          ///////
@@ -184,7 +184,7 @@ void Person::move_person()
 int determine_fill_size(const Person& person)
 {
     int current_paths_size = person.Paths.size();
-    double selected_size = Simulation::Clusters[person.home_cluster()].size() * VISITING_PERCENTAGE; //Paths final size
+    double selected_size = Simulation::Clusters[person.home_cluster()].size() * VISITING_PERCENTAGE; // Paths final size
     return static_cast<int>(selected_size - current_paths_size);
 }
 /////////////////////////////////////////////////////
@@ -201,27 +201,27 @@ void fill_path_home(Person& person)
     {
         for (int i = 0; i < person.home_cluster(); ++i)
         {
-            starting_index += Simulation::Clusters[i].size();  //add up the indeces of the previous clusters
+            starting_index += Simulation::Clusters[i].size(); // add up the indeces of the previous clusters
         }
         ending_index = starting_index + Simulation::Clusters[person.home_cluster()].size() - 1;
     }
     else
     {
-        ending_index = Simulation::Clusters[person.home_cluster()].size() -1 ;
+        ending_index = Simulation::Clusters[person.home_cluster()].size() - 1;
     }
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> rand(starting_index, ending_index);
 
-    int missing_waypoints = determine_fill_size(person);  //number of waypoints to add to person.Paths
+    int missing_waypoints = determine_fill_size(person); // number of waypoints to add to person.Paths
 
     std::vector<int> already_chosen_indeces;
 
-    person.Paths.reserve(missing_waypoints);                                       //avoid reallocation when pushing back
+    person.Paths.reserve(missing_waypoints); // avoid reallocation when pushing back
     already_chosen_indeces.reserve(person.Paths.size() + person.Paths.size());
 
-    assert(already_chosen_indeces.empty());   //TODO consider deleting
-    //keep track of the indeces of the waypoints already in person.Paths
+    assert(already_chosen_indeces.empty()); // TODO consider deleting
+    // keep track of the indeces of the waypoints already in person.Paths
     for (int& taken_index : person.Paths)
     {
         already_chosen_indeces.push_back(taken_index);
@@ -236,13 +236,12 @@ void fill_path_home(Person& person)
             {
                 random_index = rand(gen); // try a new one
                 j = 0;
-                continue;  // restart the inner loop
+                continue; // restart the inner loop
             }
         }
 
         already_chosen_indeces.push_back(random_index);
         person.Paths.push_back(random_index);
-
     }
 }
 /////////////////////////////////////////////////////
@@ -260,7 +259,7 @@ void fill_path_white(Person& person)
 /////////////////////////////////////////////////////
 //////        DETERMINE STAY AT A PLACE         /////
 /////////////////////////////////////////////////////
-//generating pause time at a place according to TPL(Truncated power Law) [see
+// generating pause time at a place according to TPL(Truncated power Law) [see
 int determine_pause_time()
 {
     double term1 = 0.0;
@@ -271,12 +270,13 @@ int determine_pause_time()
 
     std::random_device rd; // set the seed
     std::mt19937 gen(rd());
-    std::uniform_real_distribution<> rand(0.0,1.0);
+    std::uniform_real_distribution<> rand(0.0, 1.0);
 
-    double u = rand(gen);  //number in range [0,1)
+    double u = rand(gen); // number in range [0,1)
 
-    term1 = (u*pow(MAX_PAUSE,PAUSE_EXPONENT)) - (u*pow(MIN_PAUSE,PAUSE_EXPONENT)) - pow(MAX_PAUSE,PAUSE_EXPONENT);
-    term2= pow(MAX_PAUSE, PAUSE_EXPONENT) * pow(MIN_PAUSE,PAUSE_EXPONENT);
+    term1 =
+        (u * pow(MAX_PAUSE, PAUSE_EXPONENT)) - (u * pow(MIN_PAUSE, PAUSE_EXPONENT)) - pow(MAX_PAUSE, PAUSE_EXPONENT);
+    term2 = pow(MAX_PAUSE, PAUSE_EXPONENT) * pow(MIN_PAUSE, PAUSE_EXPONENT);
     term3 = -(term1 / term2);
     term4 = pow(term3, (-1 / PAUSE_EXPONENT));
     pause_time = term4;
@@ -285,16 +285,3 @@ int determine_pause_time()
 }
 
 } // namespace SMOOTH
-
-
-
-
-
-
-
-
-
-
-
-
-

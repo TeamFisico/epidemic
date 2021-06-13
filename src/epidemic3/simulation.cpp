@@ -1,5 +1,5 @@
 #include "simulation.hpp"
-#include <random>
+#include "../random.hpp"
 #include <iostream>
 
 namespace SMOOTH
@@ -22,16 +22,13 @@ void Simulation::partition_in_clusters()
     double still_to_choose = CLUSTERS_SIZE;
     int index = 0;
 
-    std::random_device rd;  // set the seed
-    std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+    Random rng{}; //seeded engine
 
     for (int i = 0; i < 100; ++i)
     {
-
         double mean_size = wpts_left / still_to_choose;
         // 68% will be in a 25% change range
-        std::normal_distribution rand(mean_size, mean_size / 4);
-        int current = nearbyint(rand(gen));
+        int current = rng.rounded_gauss(mean_size,mean_size / 4);
 
         assert(current >= 0.0);
         if (still_to_choose == 1) // the last will take the remaining size --> avoid too many more loops
@@ -63,14 +60,9 @@ Location Simulation::first_group_step(int label) const
 // it's not in the transmission range of every waypoint
 // already plotted
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<> rand(0.0, side); // generate the waypoint coordinate in [0,size]
+    Random rng{};   //seeded engine
 
-    double X = rand(gen);
-    double Y = rand(gen);
-
-    Location try_waypoint{X, Y};
+    Location try_waypoint{rng.uniform(0.0,side),rng.uniform(0.0,side)};
 
     if (label == 0) // this is the first group of the first cluster
     {
@@ -78,48 +70,18 @@ Location Simulation::first_group_step(int label) const
     }
     else
     { // if 1 <= label <= C-1
-        // TODO Optimize this code using function returning
-        bool end_loop = false;
-        bool change_wpt = false;
-        // check the already plotted waypoints(from Clusters[0] to Clusters[label-1])
-        while (!end_loop)
+        while (true)
         {
-            for (int curr_cluster_index = 0; curr_cluster_index < label; ++curr_cluster_index) // loop over Clusters
+            if (check_labeled_clusters(label, try_waypoint))
             {
-                if (change_wpt) break;
-                for (auto& current_group : Clusters[curr_cluster_index].Groups) // loop over Groups
-                {
-                    if (change_wpt) break;
-
-                    int it_index = 0;
-                    for (auto it = current_group.pointed_waypoint(); it_index < current_group.size();
-                         ++it) // loop over group Waypoints
-                    {
-
-                        if (it->get_distance(try_waypoint) <= R)
-                        {
-                            change_wpt = true;
-                            break;
-                        }
-
-                        if (it_index == current_group.size() - 1 && curr_cluster_index == label - 1) end_loop = true;
-
-                        ++it_index; // next Location
-                    }               // end loop waypoints
-                }                   // end loop Groups
-            }                       // end loop Clusters
-
-            if (!end_loop)
-            {
-                // retry with new location
-                try_waypoint.X() = rand(gen);
-                try_waypoint.Y() = rand(gen);
+                return try_waypoint; // no waypoints are under transmission range
             }
-        } // end while
-        assert(try_waypoint.X() > 0.0 && try_waypoint.Y() > 0.0 && try_waypoint.X() <= side &&
-               try_waypoint.X() <= side);
-        return try_waypoint;
-    } // else
+            else
+            {
+                try_waypoint = {rng.uniform(0.0, side), rng.uniform(0.0, side)}; // try with a new one
+            }
+        }
+    }
 }
 
 /////////////////////////////////////////////////////
@@ -129,16 +91,12 @@ Location Simulation::first_group_step(int label) const
 Location Simulation::plot_nearby_waypoints(int cluster_label, int group_label, Location const& starting_waypoint) const
 {
 
-    std::random_device gs; // set the seed for gaussian generation
-    std::mt19937 gen_gaus(gs());
+    Random rng{};
 
     for (int i = 1; i < Clusters[cluster_label].Groups[group_label].size(); ++i)
     {
-        std::normal_distribution<double> gaus1(starting_waypoint.X(), 0.1 * R / 3); // generate x of next waypoint
-        std::normal_distribution<double> gaus2(starting_waypoint.Y(), 0.1 * R / 3); // generate y of next waypoint
-
-        double current_waypoint_x = gaus1(gen_gaus);
-        double current_waypoint_y = gaus2(gen_gaus);
+        double current_waypoint_x = rng.gauss(starting_waypoint.X(),0.1 * TRANSMISSION_RANGE / 3);
+        double current_waypoint_y = rng.gauss(starting_waypoint.Y(),0.1 * TRANSMISSION_RANGE / 3);
 
         // handle cases with a possible negative extraction
         if (current_waypoint_x < 0.0) current_waypoint_x = 0.0;
@@ -162,8 +120,7 @@ Location Simulation::other_groups_step(Location const& prev_group_waypoint) cons
 {
     double const Y = 2 * side / CLUSTERS_SIZE;
 
-    std::random_device rd; // set the seed for the gaussian extraction
-    std::mt19937 gen(rd());
+    Random rng{};
 
     // generate waypoints in a square of side Y/3 (resize if out of bounds)
     double lower_x = prev_group_waypoint.X() - Y / 3;
@@ -176,13 +133,10 @@ Location Simulation::other_groups_step(Location const& prev_group_waypoint) cons
     if (upper_x > side) upper_x = side;
     if (upper_y > side) upper_y = side;
 
-    std::uniform_real_distribution<> rand_x(lower_x, upper_x);
-    std::uniform_real_distribution<> rand_y(lower_y, upper_y);
-
     while (true)
     {
-        Location try_waypoint{rand_x(gen), rand_y(gen)};
-        double distance = try_waypoint.get_distance(prev_group_waypoint);
+        Location try_waypoint{rng.uniform(lower_x,upper_x),rng.uniform(lower_y,upper_y)};
+        double distance = try_waypoint.distance(prev_group_waypoint);
         if (distance >= Y / 4 && distance <= Y / 3)
         {
             assert(try_waypoint.X() > 0.0 && try_waypoint.Y() > 0.0 && try_waypoint.X() <= side &&
@@ -220,8 +174,8 @@ void Simulation::plot_waypoints()
 /////////////////////////////////////////////////////
 ////////       SIMULATION CONSTRUCTOR         ///////
 /////////////////////////////////////////////////////
-Simulation::Simulation(double side, double transmission_range, double spread_radius, double alpha, Data data)
-    : side{side}, R{transmission_range}, spread_radius{spread_radius}, alpha{alpha},data{data}
+Simulation::Simulation(double side,double spread_radius, double alpha, Data data)
+    : side{side},spread_radius{spread_radius}, alpha{alpha}, data{data}
 {
     partition_in_clusters();
     for (Cluster& cluster : Clusters)
@@ -237,24 +191,23 @@ Simulation::Simulation(double side, double transmission_range, double spread_rad
 void Simulation::assign_to_cluster()
 // assign a person to a cluster based on the cluster weight using piecewise-const-dist
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::vector<double> weights(CLUSTERS_SIZE); // weights
+    std::array<double, CLUSTERS_SIZE> weights; // cluster weights
+    std::array<int,POPULATION_SIZE> labels;    // generated labels according to weights
 
-    for (int i = 0; i < CLUSTERS_SIZE; ++i)
+    for (int i = 0; i < CLUSTERS_SIZE; ++i)  //fill with clusters weight
     {
         weights[i] = Clusters[i].weight();
     }
 
-    std::discrete_distribution<int> dis(std::begin(weights), std::end(weights));
-
+    Random rng{};  //seeded random engine
+    // fill labels array
+    rng.engine().generate<std::discrete_distribution>(std::begin(labels),std::end(labels),std::begin(weights),std::end(weights));
+    //iterate over the labels array assigning the corresponding label to each person
     int j = 0;
-    int label = 0;
-    for (auto& person : People)
+    for (auto& label : labels)
     {
-        label = dis(gen);
-        person.set_cluster(label);
-        Clusters[label].People_index.push_back(j);  //add person's index into People array to the cluster
+        People[j].set_cluster(label);
+        Clusters[label].People_index.push_back(j); // add person's index into People array to the cluster
         ++j;
     }
 }
@@ -266,56 +219,98 @@ void Simulation::assign_home()
 // generate home address inside the relating cluster limits and generate groups of
 // 1 to 5 people(families) which are gonna be assigned the same home location
 {
-    std::random_device rd1;
-    std::mt19937 gen1(rd1());
-    std::uniform_int_distribution<> family(1, 5);
-
-    std::random_device rd2;
-    std::mt19937 gen2(rd2());
-
-    int people_left = POPULATION_SIZE;
-    int current_family = 0;
     double lw_x = 0.0;
     double up_x = 0.0;
     double lw_y = 0.0;
     double up_y = 0.0;
+    int family_size = 0;
+    int people_left = POPULATION_SIZE;
 
-    // iterate over People array
-    for (auto it1 = std::begin(People); it1 != std::end(People); ++it1)
+    for (auto& person : People)
     {
         // set the bounds based on the belonging cluster for home generation
-        lw_x = Clusters[it1->home_cluster()].lower_x();
-        up_x = Clusters[it1->home_cluster()].upper_x();
-        lw_y = Clusters[it1->home_cluster()].lower_y();
-        up_y = Clusters[it1->home_cluster()].upper_y();
+        int clust_index = person.home_cluster();
+        lw_x = Clusters[clust_index].lower_x();
+        up_x = Clusters[clust_index].upper_x();
+        lw_y = Clusters[clust_index].lower_y();
+        up_y = Clusters[clust_index].upper_y();
 
-        std::uniform_real_distribution<double> x_home(lw_x, up_x);
-        std::uniform_real_distribution<double> y_home(lw_y, up_y);
+        Random rng{};    //create and seed the engine
 
-        current_family = family(gen1);
-        Location home{x_home(gen2), y_home(gen2)};
+        family_size = rng.int_uniform(1,5);
+        Location home{rng.uniform(lw_x,up_x),rng.uniform(lw_y,up_y)};
 
         if (people_left <= 5)
         {
-            for (auto it2 = it1; it2 != std::end(People); ++it2)
+            for (auto it2 = &person; it2 != std::end(People); ++it2)
             {
                 it2->set_home(home);
             }
             return;
         }
 
-        int i = 0;
-        for (auto it2 = it1; i < current_family; ++it2)
+        int i = 0; //take trace of the setted homes
+        for (auto it2 = &person; i < family_size; ++it2)
         {
             it2->set_home(home);
-            people_left -= current_family;
             ++i;
         }
+        people_left -= family_size;
     }
 }
 double weight_function(double distance, double LATP_parameter)
 {
     return 1 / std::pow(distance, LATP_parameter);
 }
+//return true if no waypoints of this group and a trial location are under transmission range
+//return false otherwise
+bool check_group(Group const& group,Location try_location)
+{
+    for (int i = 0; i < group.size(); ++i)
+    {
+        if (group.pointed_waypoint()[i].within_transmission_range(try_location))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool check_cluster(Cluster const& cluster,Location try_location)
+{
+    for (auto const& group : cluster.Groups)
+    {
+        if(!check_group(group,try_location)) return false;
+    }
+    return true;
+}
+//check up to Clusters[label-1] returning true if all the clusters are okay, false other wise
+bool check_labeled_clusters(int label, Location try_location)
+{
+    for (int i = 0; i < label; ++i)
+    {
+        if(!check_cluster(Simulation::Clusters[i],try_location)) return false;
+    }
+    return true;
+}
 
 } // namespace SMOOTH
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

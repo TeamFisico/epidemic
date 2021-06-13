@@ -7,7 +7,8 @@
 namespace SMOOTH
 {
 
-struct Data{
+struct Data
+{
     int S;
     int E;
     int I;
@@ -26,21 +27,22 @@ enum class Zone
 class Cluster
 {
   private:
-
     int sz;   // num of waypoints
     int lbl;  // corresponding index into Cluster array 0 <= lbl <= clusters_size-1
     double w; // weight to be chosen by a person
-//    Data data;
+              //    Data data;
     Zone zone;
     std::array<double, 4> limits; // [0]= lower_x, [1] = upper_x, [2] = lower_y, [3] = upper_y
 
   private:
     void determine_groups_sizes(); // determine the n. of waypoints associated to every group
   public:
-    std::vector<int> People_index;  //indeces of People array to people belonging to this cluster-->see assign_to_cluster() method
-    std::vector<Group> Groups;      // groups of waypoints in cluster
-    //constructors
-    Cluster(int size,int label,double weight,Zone zone/*,Data data*/,double x_low,double x_up,double y_low,double y_up );
+    std::vector<int>
+        People_index; // indeces of People array to people belonging to this cluster-->see assign_to_cluster() method
+    std::vector<Group> Groups; // groups of waypoints in cluster
+    // constructors
+    Cluster(int size, int label, double weight, Zone zone /*,Data data*/, double x_low, double x_up, double y_low,
+            double y_up);
     Cluster();
     // non-modifying members
     int size() const { return sz; }
@@ -51,7 +53,7 @@ class Cluster
     double upper_x() const { return limits[1]; }
     double lower_y() const { return limits[2]; }
     double upper_y() const { return limits[3]; }
-    Data get_data() const ;
+    Data get_data() const;
     // modifying members
     void set_limits();
     void set_size(int n) { sz = n; }
@@ -59,7 +61,6 @@ class Cluster
     void set_weight(double weight) { w = weight; };
     void set_zone(Zone newZone) { zone = newZone; }
     void partition_in_groups();
-
 };
 
 } // namespace SMOOTH

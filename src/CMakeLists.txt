@@ -20,11 +20,19 @@ set(HEADER_LIST3  "${epidemic_SOURCE_DIR}/include/epidemic3/parameters.hpp"
                   "${epidemic_SOURCE_DIR}/include/epidemic3/cluster.hpp"
                   "${epidemic_SOURCE_DIR}/include/epidemic3/person.hpp"
                   "${epidemic_SOURCE_DIR}/include/epidemic3/simulation.hpp"
-                  "${epidemic_SOURCE_DIR}/include/epidemic3/random.hpp"
-                  "${epidemic_SOURCE_DIR}/include/epidemic3/clock.hpp")
+                  "${epidemic_SOURCE_DIR}/include/epidemic3/clock.hpp"
+                  "${epidemic_SOURCE_DIR}/include/random.hpp")
 
 add_subdirectory(epidemic3)
 # IDE will put headers in a nice way
+
+########## COMMON RANDOM LIBRARY  #############
+add_library(random random.cpp "${epidemic_SOURCE_DIR}/include/random.hpp")
+target_include_directories(random PUBLIC ../../include)
+target_compile_features(random PUBLIC cxx_std_17)
+target_compile_options(random PRIVATE -Wall -Wextra -fsanitize=address)
+target_link_options(random PRIVATE -fsanitize=address)
+target_clangformat_setup(random) ##allow for code formatting
 
 
 

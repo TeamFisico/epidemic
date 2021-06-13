@@ -39,7 +39,8 @@ target_compile_options(app2 PRIVATE -Wall -Wextra -fsanitize=address)
 target_link_options(app2 PRIVATE -fsanitize=address)
 target_link_libraries(app2 PRIVATE position
                                    person2
-                                   simulation2)
+                                   simulation2
+                                   random)
 target_include_directories(app2 PUBLIC "${PROJECT_BINARY_DIR}"
                                     ../include/epidemic2)
 target_clangformat_setup(app2) ##allow for code formatting
@@ -55,8 +56,8 @@ target_link_libraries(app3 PRIVATE   location3
                                      cluster3
                                      simulation3
                                      clock3
-                                     random3)
-target_include_directories(app3 PUBLIC "${PROJECT_BINARY_DIR}"
-        ../include/epidemic3)
+                                     random)
+target_include_directories(app3 PUBLIC "${PROJECT_BINARY_DIR}" ../include/epidemic3
+                                                               ../include)
 target_clangformat_setup(app3) ##allow for code formatting
 
