@@ -147,5 +147,11 @@ int main(int argc, char *argv[])
     rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
     app.Run();
 
+    delete c0;
+    delete mg;
+    delete gS;
+    delete gE;
+    delete gI;
+    delete gR;
     return 0;
 }

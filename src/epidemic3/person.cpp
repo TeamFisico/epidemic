@@ -15,7 +15,7 @@ Person::Person(Status status, int cluster_label, Location home, Location current
 }
 const Person& default_person()
 {
-    static Location def_loc{0.0, 0.0};
+    static Location def_loc{};
     static Person def_per{Status::Susceptible, 0, def_loc, def_loc, def_loc, false, 0.0, 0.0};
     return def_per;
 }
@@ -78,11 +78,11 @@ void Person::update_target(double LATP_parameter)
     distances.reserve(Paths.size());     // allocate the space
     probabilities.reserve(Paths.size()); // allocate the space
     double current_weight = 0.0;
-    // compute distances
+    // compute distances and calculate weight
     for (int& index : Paths)
     {
         Location waypoint = Simulation::Waypoints[index];
-        current_weight = weight_function(location.distance(waypoint), LATP_parameter);
+        current_weight = weight_function(location.get_position().distance_to(waypoint.get_position()), LATP_parameter);
         distances.push_back(current_weight);
     }
     double sum = std::accumulate(std::begin(distances), std::end(distances), 0.0);
@@ -96,8 +96,8 @@ void Person::update_target(double LATP_parameter)
 
     Random rng{};
     // generate one index based on the previously determinated probabilities(weights)
-    std::piecewise_constant_distribution<int> rand(std::begin(Paths), std::begin(Paths), probabilities.begin());
-    this->set_target(Simulation::Waypoints[rand(gen)]);
+    int index = rng.piecewise(Paths,probabilities);
+    set_target(Simulation::Waypoints[index]);
     // TODO TESTING
 }
 /////////////////////////////////////////////////////
@@ -107,21 +107,22 @@ void Person::update_target(double LATP_parameter)
 void Person::move_home()
 {
     update_speed();
-    double delta_x = std::abs(location.X() - home.X());
-    double delta_y = std::abs(location.Y() - home.Y());
+    double delta_x = std::abs(location.get_X() - home.get_X());
+    double delta_y = std::abs(location.get_Y() - home.get_Y());
     double theta = atan(delta_y / delta_x); // angle connecting the target through a straight line
     // now determine the displacement on each axis based on the current person speed
     delta_x = (speed() * cos(theta)) * TIME_STEP; // moving of delta_x on the x axis
     delta_y = (speed() * sin(theta)) * TIME_STEP; // moving of delta_y on the y axis
     double displacement = sqrt(delta_x * delta_x + delta_y * delta_y);
 
-    if (location.distance(target) < displacement)
+    if (location.get_position().distance_to(target.get_position()) < displacement)
     {
         set_location(home);
         at_place = true;
     }
-    Location new_location{location.X() + delta_x, location.Y() + delta_y};
-    set_location(new_location);
+    Position new_position {location.get_X() + delta_x, location.get_Y() + delta_y};
+
+    location.set_position(new_position);
 }
 /////////////////////////////////////////////////////
 /// CASE OF PERSON MOVING TO A NON-HOME LOCATION ////
@@ -134,15 +135,15 @@ void Person::move_toward()
     double y_displacement = speed_y() * TIME_STEP; // y = v_y * ∆t
     double displacement = sqrt(x_displacement * x_displacement + y_displacement * y_displacement);
 
-    if (location.distance(target) < displacement)
+    if (location.get_position().distance_to(target.get_position()) < displacement)
     {
         set_location(target);
         at_place = true;
         return;
     }
 
-    double delta_x = std::abs(get_location().X() - target.X());
-    double delta_y = std::abs(get_location().Y() - target.Y());
+    double delta_x = std::abs(get_location().get_X() - target.get_X());
+    double delta_y = std::abs(get_location().get_Y() - target.get_Y());
     double theta = atan(delta_y / delta_x); // angle connecting the target through a straight line
 
     Random rng{};  //seeded engine
@@ -155,9 +156,9 @@ void Person::move_toward()
     x_displacement = speed() * cos(final_angle) * TIME_STEP;
     y_displacement = speed() * sin(final_angle) * TIME_STEP;
 
-    Location new_location{location.X() + x_displacement, location.Y() + y_displacement};
+    Position new_position {location.get_X() + x_displacement, location.get_Y() + y_displacement};
 
-    set_location(new_location);
+    location.set_position(new_position); //set new position
 }
 /////////////////////////////////////////////////////
 ////////            MOVE A PERSON             ///////
@@ -199,8 +200,6 @@ void fill_path_home(Person& person)
     {
         ending_index = Simulation::Clusters[person.home_cluster()].size() - 1;
     }
-    Random rng{};
-    std::uniform_int_distribution<> rand(starting_index, ending_index);
 
     int missing_waypoints = determine_fill_size(person); // number of waypoints to add to person.Paths
 
@@ -215,15 +214,17 @@ void fill_path_home(Person& person)
     {
         already_chosen_indeces.push_back(taken_index);
     }
+    Random rng{}; //seeded engine
+
     int random_index = 0;
     for (int i = 0; i < missing_waypoints; ++i)
     {
-        random_index = rand(gen);
+        random_index = rng.int_uniform(starting_index,ending_index);
         for (unsigned long j = 0; j < already_chosen_indeces.size(); ++j)
         {
             if (already_chosen_indeces[j] == random_index)
             {
-                random_index = rand(gen); // try a new one
+                random_index = rng.int_uniform(starting_index,ending_index); // try a new one
                 j = 0;
                 continue; // restart the inner loop
             }

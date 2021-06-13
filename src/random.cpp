@@ -3,21 +3,9 @@
 
 namespace smooth_simulation
 {
-Random::Random(int seeding_type)
-{
-    assert(seeding_type == 256 || seeding_type == 128);
-    if (seeding_type == 128)
-    {
-        mt19937_rng eng1{auto_seed_128{}}; // 128 bit seeding
-        eng = eng1;
-    }
-    else if (seeding_type == 256)
-    {
-        mt19937_rng eng2{auto_seed_256{}}; // 256 bit seeding
-        eng = eng2;
-    }
-}
-
+/////////////////////////////////////////////////////
+////////     RANDOM DEFAULT CONSTRUCTOR       ///////
+/////////////////////////////////////////////////////
 Random::Random()
 {
     mt19937_rng default_engine; // default seed engine with 256 bits of entropy (See
@@ -40,6 +28,10 @@ double Random::gauss(double mean, double stddev)
 int Random::rounded_gauss(double mean, double stddev)
 {
     return round(eng.variate<double, std::normal_distribution>(mean, stddev));
+}
+int Random::piecewise(std::vector<int> nums, std::vector<double> weights)
+{
+   return eng.variate<int,std::piecewise_constant_distribution>(std::begin(nums),std::end(nums),std::begin(weights));
 }
 
 } // namespace SMOOTH

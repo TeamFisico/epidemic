@@ -116,20 +116,20 @@ void Cluster::partition_in_groups()
 // Look into waypoints of this cluster and determine the limits
 void Cluster::set_limits()
 {
-    double x_min = Groups[0].pointed_waypoint()[0].X();
-    double y_min = Groups[0].pointed_waypoint()[0].Y();
-    double x_max = Groups[0].pointed_waypoint()[0].X();
-    double y_max = Groups[0].pointed_waypoint()[0].Y();
+    double x_min = Groups[0].pointed_waypoint()[0].get_X();
+    double y_min = Groups[0].pointed_waypoint()[0].get_Y();
+    double x_max = Groups[0].pointed_waypoint()[0].get_X();
+    double y_max = Groups[0].pointed_waypoint()[0].get_Y();
 
     for (auto& group : Groups)
     {
         int i = 0;
         for (auto it = group.pointed_waypoint(); i < group.size(); ++it)
         {
-            if (it->X() < x_min) x_min = it->X();
-            if (it->X() > x_max) x_max = it->X();
-            if (it->Y() < y_min) y_min = it->Y();
-            if (it->Y() > y_max) y_max = it->Y();
+            if (it->get_X() < x_min) x_min = it->get_X();
+            if (it->get_X() > x_max) x_max = it->get_X();
+            if (it->get_Y() < y_min) y_min = it->get_Y();
+            if (it->get_Y() > y_max) y_max = it->get_Y();
             ++i;
         }
     }

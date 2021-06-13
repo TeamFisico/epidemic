@@ -12,19 +12,21 @@ class Location
     Position position;
     double radius;
   public:
-    Location(Position const& loc_position, double location_radius = 0.0);
+    explicit Location(Position const& loc_position);
+    Location(Position const& loc_position, double radius);
     Location();                   // default constructor
 
     Position get_position() const { return position; }
+    double get_X() const { return position.get_X(); }
+    double get_Y() const { return position.get_Y(); }
     double get_radius() const { return radius; }
-    void set_radius(double rad) { radius = rad; }
     void set_position(Position pos) { position = pos; }
+    //void set_radius(double rad) { radius = rad; }
 
-    bool in_radius(Location loc2, double r) const;
 };
     bool operator==(const Location& l1, const Location& l2); // equality operator
-    Location generate_close_location(Position const& center,double min_distance, double max_distance);
+    double generate_radius();
 
-} // namespace SMOOTH
+} // namespace smooth_simulation
 
 #endif // LOCATION_HPP

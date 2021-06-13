@@ -1,6 +1,8 @@
 #ifndef POSITION_HPP
 #define POSITION_HPP
 
+#define PI 3.14159265358979323846 // pi
+
 namespace smooth_simulation
 {
   class Position{
@@ -12,8 +14,8 @@ namespace smooth_simulation
       Position(double X,double Y);  //constructor
       Position();       //default constructor
 
-      double get_x() const { return x; }
-      double get_y() const { return y; }
+      double get_X() const { return x; }
+      double get_Y() const { return y; }
       void set_x(double X) { x = X; }
       void set_y(double Y) { y = Y; }
 
@@ -23,6 +25,7 @@ namespace smooth_simulation
   };
 
   bool operator==(const Position& p1, const Position& p2);
+  Position generate_close_position(Position const& center,double max_distance);
 
 
 }

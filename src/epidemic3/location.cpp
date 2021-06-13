@@ -6,17 +6,26 @@ namespace smooth_simulation
 {
 
 /////////////////////////////////////////////////////
-////////        LOCATION CONSTRUCTOR          ///////
+////////        LOCATION CONSTRUCTOR 1        ///////
 /////////////////////////////////////////////////////
-Location::Location(Position const& loc_position, double location_radius)
-         : position{loc_position},radius{location_radius}
+//construct a location with a randomly generated radius
+Location::Location(Position const& loc_position)
+         : position{loc_position},radius{generate_radius()}
+{
+}
+/////////////////////////////////////////////////////
+////////        LOCATION CONSTRUCTOR 2        ///////
+/////////////////////////////////////////////////////
+//used when position == home
+Location::Location(const Position& loc_position, double radius)
+         :position{loc_position},radius{radius}
 {
 }
 /////////////////////////////////////////////////////
 ////////    LOCATION DEFAULT CONSTRUCTOR      ///////
 /////////////////////////////////////////////////////
 Location::Location()
-         :position{0.0,0.0},radius{0.0}
+         :position{0.0,0.0},radius{generate_radius()}
 {
 }
 
@@ -27,11 +36,18 @@ bool operator==(const Location& l1, const Location& l2)
             l1.get_radius() == l2.get_radius());
 }
 
-Location generate_close_location(Position const& center,double min_distance, double max_distance)
+/////////////////////////////////////////////////////
+////////          RADIUS GENERATION           ///////
+/////////////////////////////////////////////////////
+//TODO come up with a good generation -->must depend on Area,number of waypoints ecc
+double generate_radius()
 {
-    //TODO Define
+
+
+
 }
 
 
 
-} // namespace SMOOTH
+
+} // namespace smooth_simulation

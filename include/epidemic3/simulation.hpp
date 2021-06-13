@@ -36,10 +36,10 @@ class Simulation
     void spread();
 };
 
-double weight_function(double distance, double LATP_parameter);    // weight function of LATP algorithm
-bool check_group(Group const& group, Location try_location);       // helper function for first_group_step()
-bool check_cluster(Cluster const& cluster, Location try_location); // helper function for first_group_step()
-bool check_labeled_clusters(int label, Location try_waypoint);     // helper function for first_group_step()
+  double weight_function(double distance, double LATP_parameter);    // weight function of LATP algorithm
+  bool check_group(Group const& group, Position try_position);       // helper function for first_group_step()
+  bool check_cluster(Cluster const& cluster, Position try_position); // helper function for first_group_step()
+  bool check_labeled_clusters(int label, Position try_position);     // helper function for first_group_step()
 
 } // namespace SMOOTH
 

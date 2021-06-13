@@ -59,24 +59,24 @@ Location Simulation::first_group_step(int label) const
 // of any already plotted waypoint
 {
     Random rng{}; // seeded engine
+    Position try_position {rng.uniform(0.0, side), rng.uniform(0.0, side)};
 
-    Location try_waypoint{rng.uniform(0.0, side), rng.uniform(0.0, side)};
 
     if (label == 0) // this is the first group of the first cluster
     {
-        return try_waypoint;
+        return Location{try_position};
     }
     else
     { // if 1 <= label <= C-1
         while (true)
         {
-            if (check_labeled_clusters(label, try_waypoint)) //no other wpts are under trans range
+            if (check_labeled_clusters(label, try_position)) //no other wpts are under trans range
             {
-                return try_waypoint;
+                return Location{try_position};
             }
             else  //try with another one
             {
-                try_waypoint = {rng.uniform(0.0, side), rng.uniform(0.0, side)};
+                try_position  = {rng.uniform(0.0, side), rng.uniform(0.0, side)};
             }
         }
     }
@@ -89,9 +89,36 @@ Location Simulation::first_group_step(int label) const
 //the return value is the last plotted waypoint of this group
 Location Simulation::plot_nearby_waypoints(int cluster_label, int group_label, Location const& starting_waypoint) const
 {
+    int num_to_plot = Clusters[cluster_label].Groups[group_label].size();
+    Position try_position{};
+    Position current_center{};
+    std::vector<Position> already_setted_wpts {starting_waypoint.get_position()};
 
+    Random rng{};  //seeded engine
+    for (int i = 0; i < num_to_plot; ++i)
+    {
+        current_center = rng.engine().pick(already_setted_wpts);  //randomly pick a center position
+        try_position = generate_close_position(current_center,TRANSMISSION_RANGE / 10.0);
 
+        for (auto j = 0; j < already_setted_wpts.size();++j)   //check already setted waypoints
+        {
+            if (try_position.distance_to(already_setted_wpts[j]) > TRANSMISSION_RANGE / 10.0) //if it doesn't respect the condition
+            {
+                try_position = generate_close_position(current_center,TRANSMISSION_RANGE / 10.0);
+                j = 0;     //generate a new position and restart the loop
+                continue;
+            }
+        } //end inner for
+
+        already_setted_wpts.push_back(try_position);  //take trace of the setted position
+        //now set the Location in the corresponding place in Waypoints array
+        Clusters[cluster_label].Groups[group_label].pointed_waypoint()[i] = Location{try_position};
+        if (i == 0) std::cout << "----------------------------------------------------\nGroup size == " << Clusters[cluster_label].Groups[group_label].size()<<std::endl;
+        std::cout << " Groups["<<i<<"] == "<< Clusters[cluster_label].Groups[group_label].pointed_waypoint()[i].get_X()
+                  << "\t"<<Clusters[cluster_label].Groups[group_label].pointed_waypoint()[i].get_Y()<<std::endl;
+    } // end for
     // return the last plotted waypoint of this group
+    return Clusters[cluster_label].Groups[group_label].pointed_waypoint()[num_to_plot-1];
 
 }
 /////////////////////////////////////////////////////
@@ -105,10 +132,10 @@ Location Simulation::other_groups_step(Location const& prev_group_waypoint) cons
     Random rng{};
 
     // generate waypoints in a square of side Y/3 (resize if out of bounds)
-    double lower_x = prev_group_waypoint.X() - Y / 3;
-    double upper_x = prev_group_waypoint.X() + Y / 3;
-    double lower_y = prev_group_waypoint.Y() - Y / 3;
-    double upper_y = prev_group_waypoint.Y() + Y / 3;
+    double lower_x = prev_group_waypoint.get_X() - Y / 3;
+    double upper_x = prev_group_waypoint.get_X() + Y / 3;
+    double lower_y = prev_group_waypoint.get_Y() - Y / 3;
+    double upper_y = prev_group_waypoint.get_Y() + Y / 3;
 
     if (lower_x < 0.0) lower_x = 0.0;
     if (lower_y < 0.0) lower_y = 0.0;
@@ -117,13 +144,12 @@ Location Simulation::other_groups_step(Location const& prev_group_waypoint) cons
 
     while (true)
     {
-        Location try_waypoint{rng.uniform(lower_x, upper_x), rng.uniform(lower_y, upper_y)};
-        double distance = try_waypoint.distance(prev_group_waypoint);
+        Position try_position {rng.uniform(lower_x, upper_x), rng.uniform(lower_y, upper_y)};
+        double distance = try_position.distance_to(prev_group_waypoint.get_position());
+
         if (distance >= Y / 4 && distance <= Y / 3)
         {
-            assert(try_waypoint.X() > 0.0 && try_waypoint.Y() > 0.0 && try_waypoint.X() <= side &&
-                   try_waypoint.Y() <= side);
-            return try_waypoint;
+            return Location{try_position};
         }
     } // end while
 }
@@ -140,7 +166,7 @@ void Simulation::plot_waypoints()
         Location previous_group_last_waypoint =
             plot_nearby_waypoints(i, 0, Clusters[i].Groups[0].pointed_waypoint()[0]);
 
-        for (unsigned int j = 1; j < Clusters[i].Groups.size(); ++j) // now set the other groups' wpts
+        for (auto j = 1; j < Clusters[i].Groups.size(); ++j) // now set the other groups' wpts
         {
             // setting the first waypoint of this group
             Clusters[i].Groups[j].pointed_waypoint()[0] = other_groups_step(previous_group_last_waypoint);
@@ -221,7 +247,8 @@ void Simulation::assign_home()
         Random rng{}; // create and seed the engine
 
         family_size = rng.int_uniform(1, 5);
-        Location home{rng.uniform(lw_x, up_x), rng.uniform(lw_y, up_y)};
+        Position pos {rng.uniform(lw_x,up_x),rng.uniform(lw_y,up_y)};
+        Location home{pos,HOME_RADIUS};
 
         if (people_left <= 5)
         {
@@ -245,31 +272,34 @@ double weight_function(double distance, double LATP_parameter)
 {
     return 1 / std::pow(distance, LATP_parameter);
 }
+/////////////////////////////////////////////////////
+////////   FIRST GROUP PLOT HELPER FUNCTIONS  ///////
+/////////////////////////////////////////////////////
 // return true if no waypoints of this group and a trial location are under transmission range
 // return false otherwise
-bool check_group(Group const& group, Location try_location)
+bool check_group(Group const& group, Position try_position)
 {
     for (int i = 0; i < group.size(); ++i)
     {
-        if (group.pointed_waypoint()[i].within_transmission_range(try_location)) { return false; }
+        if (group.pointed_waypoint()[i].get_position().in_radius(try_position,TRANSMISSION_RANGE)) { return false; }
     }
     return true;
 }
 
-bool check_cluster(Cluster const& cluster, Location try_location)
+bool check_cluster(Cluster const& cluster, Position try_position)
 {
     for (auto const& group : cluster.Groups)
     {
-        if (!check_group(group, try_location)) return false;
+        if (!check_group(group, try_position)) return false;
     }
     return true;
 }
 // check up to Clusters[label-1] returning true if all the clusters are okay, false other wise
-bool check_labeled_clusters(int label, Location try_location)
+bool check_labeled_clusters(int cl_label, Position try_position)
 {
-    for (int i = 0; i < label; ++i)
+    for (int i = 0; i < cl_label; ++i)
     {
-        if (!check_cluster(Simulation::Clusters[i], try_location)) return false;
+        if (!check_cluster(Simulation::Clusters[i], try_position)) return false;
     }
     return true;
 }

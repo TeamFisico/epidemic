@@ -1,4 +1,5 @@
 #include "position.hpp"
+#include "../random.hpp"
 #include <cassert>
 #include <cmath>
 namespace smooth_simulation
@@ -26,7 +27,25 @@ bool Position::in_radius(const Position& other_pos, double r) const
 
 bool operator==(const Position& p1, const Position& p2)
 {
-    return (p1.get_x() == p2.get_y() && p1.get_y() == p2.get_y());
+    return (p1.get_X() == p2.get_Y() && p1.get_Y() == p2.get_Y());
+}
+
+/////////////////////////////////////////////////////
+////////      CLOSE LOCATION GENERATION       ///////
+/////////////////////////////////////////////////////
+//generate a location within a maximum distance from a center position
+Position generate_close_position(Position const& center,double max_distance)
+{
+    Random rng{}; //seeded engine
+    double angle = rng.uniform(0,2*PI);
+    double distance = rng.uniform(0,max_distance);
+    double v_x = distance * cos(angle); // x coordinate of the traslation vector
+    double v_y = distance * sin(angle); // y coordinate of the traslation vector
+    double x = center.get_X() + v_x;
+    double y = center.get_Y() + v_y;
+
+    Position gen_pos{x, y};
+    return gen_pos;
 }
 
 
