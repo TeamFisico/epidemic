@@ -81,7 +81,6 @@ Location Simulation::first_group_step(int label) const
         }
     }
 }
-
 /////////////////////////////////////////////////////
 ////////     NEIGHBOURING WAYPOINTS PLOT      ///////
 /////////////////////////////////////////////////////
@@ -113,9 +112,9 @@ Location Simulation::plot_nearby_waypoints(int cluster_label, int group_label, L
         already_setted_wpts.push_back(try_position);  //take trace of the setted position
         //now set the Location in the corresponding place in Waypoints array
         Clusters[cluster_label].Groups[group_label].pointed_waypoint()[i] = Location{try_position};
-        if (i == 0) std::cout << "----------------------------------------------------\nGroup size == " << Clusters[cluster_label].Groups[group_label].size()<<std::endl;
-        std::cout << " Groups["<<i<<"] == "<< Clusters[cluster_label].Groups[group_label].pointed_waypoint()[i].get_X()
-                  << "\t"<<Clusters[cluster_label].Groups[group_label].pointed_waypoint()[i].get_Y()<<std::endl;
+//        if (i == 0) std::cout << "----------------------------------------------------\nGroup size == " << Clusters[cluster_label].Groups[group_label].size()<<std::endl;
+//        std::cout << " Groups["<<i<<"] == "<< Clusters[cluster_label].Groups[group_label].pointed_waypoint()[i].get_X()
+//                  << "\t"<<Clusters[cluster_label].Groups[group_label].pointed_waypoint()[i].get_Y()<<std::endl;
     } // end for
     // return the last plotted waypoint of this group
     return Clusters[cluster_label].Groups[group_label].pointed_waypoint()[num_to_plot-1];
@@ -199,8 +198,8 @@ Simulation::Simulation(double side, double spread_radius, double alpha, Data dat
 void Simulation::assign_to_cluster()
 // assign a person to a cluster based on the cluster weight using piecewise-const-dist
 {
-    std::array<double, CLUSTERS_SIZE> weights; // cluster weights
-    std::array<int, POPULATION_SIZE> labels;   // generated labels according to weights
+    std::array<double, CLUSTERS_SIZE> weights; // fill with clusters weights
+    std::array<int, POPULATION_SIZE> labels;   // fill with generated labels according to weights
 
     for (int i = 0; i < CLUSTERS_SIZE; ++i) // fill with clusters weight
     {
@@ -208,19 +207,18 @@ void Simulation::assign_to_cluster()
     }
 
     Random rng{}; // seeded random engine
-    // fill labels array
+    // fill labels array with generated labels
     rng.engine().generate<std::discrete_distribution>(std::begin(labels), std::end(labels), std::begin(weights),
                                                       std::end(weights));
     // iterate over the labels array assigning the corresponding label to each person
     int j = 0;
     for (auto& label : labels)
     {
-        People[j].set_cluster(label);
+        People[j].set_cluster(label);               //label the person with its home cluster
         Clusters[label].People_index.push_back(j); // add person's index into People array to the cluster
         ++j;
     }
 }
-
 /////////////////////////////////////////////////////
 ////////          HOME ASSIGNMENT             ///////
 /////////////////////////////////////////////////////

@@ -28,7 +28,6 @@ class Random
     double gauss(double mean, double stddev);
     int rounded_gauss(double mean, double stddev);
     int piecewise(std::vector<int> nums, std::vector<double> weights);    // fill a container with numbers generated according to a distribution (see randutils::generate)
-    //    void discrete_gen(std::arrayIter first, Iter last); //TODO valuta se aggiungere
 };
 
 } // namespace SMOOTH

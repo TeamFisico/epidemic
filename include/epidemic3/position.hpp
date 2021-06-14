@@ -12,7 +12,7 @@ namespace smooth_simulation
 
     public:
       Position(double X,double Y);  //constructor
-      Position();       //default constructor
+      Position();                   //default constructor
 
       double get_X() const { return x; }
       double get_Y() const { return y; }

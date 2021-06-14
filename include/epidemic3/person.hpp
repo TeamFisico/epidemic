@@ -56,17 +56,19 @@ class Person
   private:
     void move_toward();
     void move_home();
-    void update_speed();
+    void update_velocity();
 
   public:
     void upgrade_status();
     void update_target(double LATP_parameter);
     void move_person();
+
 };
-int determine_fill_size(const Person& person); // determine how many indeces Paths must be filled with
-void fill_path_home(Person& person);           // select next visiting locations from the person cluster
-void fill_path_white(Person& person); // TODO define               // select next visiting locations from green clusters
-int determine_pause_time();
+    //helper functions
+    int determine_fill_size(const Person& person);   // determine how many indeces Paths must be filled with
+    void fill_path_home(Person& person);             // select next visiting locations from the person cluster
+    void fill_path_white(Person& person);            // TODO define , select next visiting locations from green clusters
+    int determine_pause_time();
 // bool try_infect(); // TODO Define
 
 } // namespace SMOOTH

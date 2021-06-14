@@ -12,3 +12,5 @@ double constexpr VISITING_PERCENTAGE = 0.4;
 double constexpr PAUSE_EXPONENT = 0.5;
 double constexpr MAX_PAUSE = 60.0;
 double constexpr MIN_PAUSE = 5.0;
+double constexpr STARTING_VELOCITY[2] {0.5,0.5};  //units/step
+double constexpr MAXIMUM_VELOCITY_STDDEV = 1.0;

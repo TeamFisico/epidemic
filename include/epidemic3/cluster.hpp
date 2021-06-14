@@ -30,18 +30,17 @@ class Cluster
     int sz;   // num of waypoints
     int lbl;  // corresponding index into Cluster array 0 <= lbl <= clusters_size-1
     double w; // weight to be chosen by a person
-              //    Data data;
     Zone zone;
     std::array<double, 4> limits; // [0]= lower_x, [1] = upper_x, [2] = lower_y, [3] = upper_y
+    Data data;
 
   private:
     void determine_groups_sizes(); // determine the n. of waypoints associated to every group
   public:
-    std::vector<int>
-        People_index; // indeces of People array to people belonging to this cluster-->see assign_to_cluster() method
+    std::vector<int> People_index;  //ref to People array for people in this clust(assign_to_clust() initialized)
     std::vector<Group> Groups; // groups of waypoints in cluster
     // constructors
-    Cluster(int size, int label, double weight, Zone zone /*,Data data*/, double x_low, double x_up, double y_low,
+    Cluster(int size, int label, double weight, Zone zone, double x_low, double x_up, double y_low,
             double y_up);
     Cluster();
     // non-modifying members
@@ -60,7 +59,9 @@ class Cluster
     void set_label(int n) { lbl = n; }
     void set_weight(double weight) { w = weight; };
     void set_zone(Zone newZone) { zone = newZone; }
+
     void partition_in_groups();
+
 };
 
 } // namespace SMOOTH

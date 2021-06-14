@@ -1,5 +1,6 @@
 #include "person.hpp"
 #include "simulation.hpp"
+#include "parameters.hpp"
 #include "../random.hpp"
 #include <math.h>
 
@@ -23,8 +24,8 @@ Person::Person()
     : status{default_person().status}, label{default_person().label}, home{default_person().home},
       location{default_person().location}, target{default_person().target}, at_place{default_person().at_place}
 {
-    velocity[0] = default_person().velocity[0];
-    velocity[1] = default_person().velocity[1];
+    velocity[0] = STARTING_VELOCITY[0];
+    velocity[1] = STARTING_VELOCITY[1];
 }
 double Person::speed() const
 {
@@ -56,15 +57,16 @@ void Person::upgrade_status()
     }
 }
 /////////////////////////////////////////////////////
-////////            SPEED UPDATE              ///////
+////////          VELOCITY UPDATE             ///////
 /////////////////////////////////////////////////////
-void Person::update_speed()
+//uniformly generate a new velocity stddev in the range [0,MAXIMUM_VELOCITY_STDDEV) and then extract
+//the x and y components from a normal distributions centerd on AVERAGE_VELOCITY
+void Person::update_velocity()
 {
-    const double max_std_dev = 1; // TODO Determine maximum standard deviation
     // velocity is measured in units/s
-    Random rng{};
-    set_speed_x(rng.gauss(speed_x(),rng.uniform(0,max_std_dev)));
-    set_speed_y(rng.gauss(speed_y(),rng.uniform(0,max_std_dev)));
+    Random rng{};    //seeded engine
+    set_speed_x(rng.gauss(speed_x(),rng.uniform(0, MAXIMUM_VELOCITY_STDDEV)));
+    set_speed_y(rng.gauss(speed_y(),rng.uniform(0, MAXIMUM_VELOCITY_STDDEV)));
 }
 
 /////////////////////////////////////////////////////
@@ -130,21 +132,12 @@ void Person::move_home()
 void Person::move_toward()
 // move a person by an amount determined by the current speed slightly varying the angle
 {
-    update_speed();
-    double x_displacement = speed_x() * TIME_STEP; // x = v_x * ∆t
-    double y_displacement = speed_y() * TIME_STEP; // y = v_y * ∆t
-    double displacement = sqrt(x_displacement * x_displacement + y_displacement * y_displacement);
-
-    if (location.get_position().distance_to(target.get_position()) < displacement)
-    {
-        set_location(target);
-        at_place = true;
-        return;
-    }
-
-    double delta_x = std::abs(get_location().get_X() - target.get_X());
-    double delta_y = std::abs(get_location().get_Y() - target.get_Y());
+    //compute data for shortest possible path
+    double delta_x = std::abs(location.get_X() - target.get_X());
+    double delta_y = std::abs(location.get_Y() - target.get_Y());
     double theta = atan(delta_y / delta_x); // angle connecting the target through a straight line
+
+    update_speed();   //assign this person a new velocity vector
 
     Random rng{};  //seeded engine
     // generate an angle between velocity vector direction and the target's one so that will not point precisely to the
@@ -172,7 +165,7 @@ void Person::move_person()
 /////////////////////////////////////////////////////
 ////////        DETERMINE PATHS SIZE          ///////
 /////////////////////////////////////////////////////
-int determine_fill_size(const Person& person)
+int determine_fill_size(Person const& person)
 {
     int current_paths_size = person.Paths.size();
     double selected_size = Simulation::Clusters[person.home_cluster()].size() * VISITING_PERCENTAGE; // Paths final size

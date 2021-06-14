@@ -20,6 +20,7 @@ class Location
     double get_X() const { return position.get_X(); }
     double get_Y() const { return position.get_Y(); }
     double get_radius() const { return radius; }
+    double minimum_distance_to(Location const& other_loc) const;
     void set_position(Position pos) { position = pos; }
     //void set_radius(double rad) { radius = rad; }
 
