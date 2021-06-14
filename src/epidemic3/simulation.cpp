@@ -100,7 +100,7 @@ Location Simulation::plot_nearby_waypoints(int cluster_label, int group_label, L
         current_center = rng.engine().pick(already_setted_wpts);  //randomly pick a center position
         try_position = generate_close_position(current_center,TRANSMISSION_RANGE / 10.0);
 
-        for (auto j = 0; j < already_setted_wpts.size();++j)   //check already setted waypoints
+        for (unsigned int j = 0; j < already_setted_wpts.size();++j)   //check already setted waypoints
         {
             if (try_position.distance_to(already_setted_wpts[j]) > TRANSMISSION_RANGE / 10.0) //if it doesn't respect the condition
             {
@@ -166,7 +166,7 @@ void Simulation::plot_waypoints()
         Location previous_group_last_waypoint =
             plot_nearby_waypoints(i, 0, Clusters[i].Groups[0].pointed_waypoint()[0]);
 
-        for (auto j = 1; j < Clusters[i].Groups.size(); ++j) // now set the other groups' wpts
+        for (unsigned int j = 1; j < Clusters[i].Groups.size(); ++j) // now set the other groups' wpts
         {
             // setting the first waypoint of this group
             Clusters[i].Groups[j].pointed_waypoint()[0] = other_groups_step(previous_group_last_waypoint);
