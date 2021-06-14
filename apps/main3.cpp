@@ -1,7 +1,5 @@
-#include "../include/random.hpp"
 #include "simulation.hpp"
 #include <iostream>
-#include <random>
 
 int main()
 {
@@ -11,23 +9,17 @@ int main()
 
     auto start = std::chrono::high_resolution_clock::now();
     Data starting{POPULATION_SIZE, 0, 0, 0, 0};
-    Simulation sim{1000, 0.5, 0.7, starting};
+    Simulation sim{10000, 0.5, starting};
     auto end = std::chrono::high_resolution_clock::now();
-//
-//        for (auto& wpt : sim.Waypoints)
-//        {
-//            std::cout << wpt.get_X() << '\t' << wpt.get_Y() << std::endl;
-//        }
-//    int i = 0;
-//    for (Cluster& cl : sim.Clusters)
+
+//    int j = 0;
+//    for (auto& person : sim.People)
 //    {
-//        std::cout << "First waypoint of first group in Cluster " << i + 1 << std::endl;
-//        std::cout << cl.Groups[i].pointed_waypoint()[0].get_X();
-//        std::cout << '\t';
-//        std::cout << cl.Groups[i].pointed_waypoint()[0].get_Y() << std::endl;
-//        ++i;
+//        std::cout << "People[" << j<< "].home_cluster == " << person.home_cluster() << std::endl;
+//        std::cout << "People[" << j<< "].home == " << person.get_home().get_X() << "\t" << person.get_home().get_Y() << std::endl;
+//        ++j;
 //    }
 
     std::chrono::duration<float> duration = end - start;
-    std::cout << "Time taken : " << duration.count() << " s " << std::endl;
+    std::cout << "Time taken for world construction: " << duration.count() << " s " << std::endl;
 }

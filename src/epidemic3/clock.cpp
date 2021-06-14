@@ -28,4 +28,4 @@ void Clock::update(int time_step_in_minutes)
     }
 }
 
-} // namespace SMOOTH
+} // namespace smooth_simulation

@@ -19,7 +19,7 @@ class Random
   private:
     mt19937_rng eng; // Marsenne Twister engine
   public:
-    Random();         // engine constructor
+    Random();                                  // engine constructor
     mt19937_rng engine() const { return eng; } // return the engine to perform other actions
 
     // extract one number from a distributions
@@ -27,9 +27,11 @@ class Random
     int int_uniform(int lower, int upper);      // extract an int uniformly in [lower,upper] range
     double gauss(double mean, double stddev);
     int rounded_gauss(double mean, double stddev);
-    int piecewise(std::vector<int> nums, std::vector<double> weights);    // fill a container with numbers generated according to a distribution (see randutils::generate)
+    int piecewise(std::vector<int> nums,
+                  std::vector<double> weights); // fill a container with numbers generated according to a distribution
+                                                // (see randutils::generate)
 };
 
-} // namespace SMOOTH
+} // namespace smooth_simulation
 
 #endif // RANDOM_HPP

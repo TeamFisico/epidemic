@@ -10,9 +10,9 @@ namespace smooth_simulation
 /////////////////////////////////////////////////////
 ////////          CLUSTER CONSTRUCTOR         ///////
 /////////////////////////////////////////////////////
-Cluster::Cluster(int size, int label, double weight, Zone zone /*, Data data*/, double x_low, double x_up, double y_low,
-                 double y_up)
-    : sz{size}, lbl{label}, w{weight}, zone{zone} /*,data{data}*/
+Cluster::Cluster(int size, int label, double weight, Zone zone,double alpha, double x_low, double x_up, double y_low,
+                 double y_up,Data cluster_data)
+    : sz{size}, lbl{label}, w{weight}, zone{zone},alpha{alpha},data{cluster_data}
 {
     limits[0] = x_low;
     limits[1] = x_up;
@@ -24,15 +24,15 @@ Cluster::Cluster(int size, int label, double weight, Zone zone /*, Data data*/, 
 /////////////////////////////////////////////////////
 const Cluster& default_cluster()
 {
-    //    static Data dd {}
-    static Cluster def_cl{0, 0, 0.0, Zone::White, 0.0, 0.0, 0.0, 0.0};
+    static Data dd {0,0,0,0,0};
+    static Cluster def_cl{0, 0, 0.0, Zone::White, STARTING_LATP_PARAMETER,0.0, 0.0, 0.0, 0.0,dd};
     return def_cl;
 }
 /////////////////////////////////////////////////////
 ////////    DEFAULT CLUSTER CONSTRUCTOR       ///////
 /////////////////////////////////////////////////////
 Cluster::Cluster()
-    : sz{default_cluster().sz}, lbl{default_cluster().lbl}, w{default_cluster().w}, zone{default_cluster().zone}
+    : sz{default_cluster().sz}, lbl{default_cluster().lbl}, w{default_cluster().w}, zone{default_cluster().zone},data{default_cluster().data}
 {
     limits[0] = default_cluster().limits[0];
     limits[1] = default_cluster().limits[1];
@@ -65,13 +65,13 @@ void Cluster::determine_groups_sizes()
 
         if (all_groups_size + current == sz)
         {
-            Group g{current, group_index};
+            Group g{current};
             Groups.push_back(g);
             break;
         }
         if (all_groups_size + current < sz)
         {
-            Group g{current, group_index};
+            Group g{current};
             Groups.push_back(g);
             ++group_index;
             all_groups_size += current;
@@ -150,4 +150,4 @@ Data::Data(int susceptible, int latent, int infected, int recovered, int dead)
 {
 }
 
-} // namespace SMOOTH
+} // namespace smooth_simulation

@@ -5,7 +5,7 @@ namespace smooth_simulation
 {
 
 // constructor
-Group::Group(int size, int label) : sz{size}, lbl{label}
+Group::Group(int size) : sz{size}
 {
     assert(size > 0);
 }
@@ -23,4 +23,4 @@ void Group::set_to_waypoint(std::array<Location, WAYPOINTS> &wpts, int n)
     assert(group_ptr);
 }
 
-} // namespace SMOOTH
+} // namespace smooth_simulation

@@ -13,11 +13,10 @@ class Group
 {
   private:
     int sz; // num of waypoints
-    int lbl;
     Location* group_ptr;
 
   public:
-    Group(int size, int label); // constructor
+    explicit Group(int size); // constructor
     Group();                    // default contructor
     Location* pointed_waypoint() const { return group_ptr; }
 
@@ -28,6 +27,6 @@ class Group
     int& size() { return sz; } // return a ref to size
 };
 
-} // namespace SMOOTH
+} // namespace smooth_simulation
 
 #endif // GROUP_HPP

@@ -31,7 +31,8 @@ int Random::rounded_gauss(double mean, double stddev)
 }
 int Random::piecewise(std::vector<int> nums, std::vector<double> weights)
 {
-   return eng.variate<int,std::piecewise_constant_distribution>(std::begin(nums),std::end(nums),std::begin(weights));
+    return eng.variate<int, std::piecewise_constant_distribution>(std::begin(nums), std::end(nums),
+                                                                  std::begin(weights));
 }
 
-} // namespace SMOOTH
+} // namespace smooth_simulation

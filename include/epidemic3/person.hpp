@@ -27,13 +27,14 @@ class Person
     Location target;    // next target location
     bool at_place;      // is the person staying at a place
     double velocity[2]; // [0] == x_speed , [1] == y_speed
+    int stay;           // time a person will spend to a place
 
   public:
     std::vector<int> Paths; // indeces to waypoints to visit in Waypoints array
 
     friend class Simulation;
     Person(Status status, int cluster_label, Location home, Location current_location, Location target_location,
-           bool at_place, double x_speed, double y_speed);
+           bool at_place, double x_speed, double y_speed, int stay_time);
     Person(); // default constructor
 
     int home_cluster() const { return label; }
@@ -62,15 +63,17 @@ class Person
     void upgrade_status();
     void update_target(double LATP_parameter);
     void move_person();
-
+    void refill();
 };
-    //helper functions
-    int determine_fill_size(const Person& person);   // determine how many indeces Paths must be filled with
-    void fill_path_home(Person& person);             // select next visiting locations from the person cluster
-    void fill_path_white(Person& person);            // TODO define , select next visiting locations from green clusters
-    int determine_pause_time();
+// helper functions
+int determine_fill_size(const Person& person); // determine how many indeces Paths must be filled with
+void determine_fill_path(const Person& person);  //determine from which clusters the path should be filled from
+void fill_path_home(Person& person);           // select next visiting locations from the person cluster
+void fill_path_white(Person& person);          // TODO define , select next visiting locations from green clusters
+int determine_pause_time();
+void remove_target(Person& person,Location to_remove);   //remove a visited target from person.Path
 // bool try_infect(); // TODO Define
 
-} // namespace SMOOTH
+} // namespace smooth_simulation
 
 #endif // PERSON_HPP

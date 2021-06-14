@@ -30,18 +30,18 @@ class Cluster
     int sz;   // num of waypoints
     int lbl;  // corresponding index into Cluster array 0 <= lbl <= clusters_size-1
     double w; // weight to be chosen by a person
-    Zone zone;
+    Zone zone;           //Restriction type for this zone
+    double alpha;        //LATP_parameter of this Cluster
     std::array<double, 4> limits; // [0]= lower_x, [1] = upper_x, [2] = lower_y, [3] = upper_y
     Data data;
 
   private:
     void determine_groups_sizes(); // determine the n. of waypoints associated to every group
   public:
-    std::vector<int> People_index;  //ref to People array for people in this clust(assign_to_clust() initialized)
-    std::vector<Group> Groups; // groups of waypoints in cluster
+    std::vector<int> People_index; // ref to People array for people in this clust(assign_to_clust() initialized)
+    std::vector<Group> Groups;     // groups of waypoints in cluster
     // constructors
-    Cluster(int size, int label, double weight, Zone zone, double x_low, double x_up, double y_low,
-            double y_up);
+    Cluster(int size, int label, double weight, Zone zone,double alpha, double x_low, double x_up, double y_low, double y_up,Data cluster_data);
     Cluster();
     // non-modifying members
     int size() const { return sz; }
@@ -61,9 +61,8 @@ class Cluster
     void set_zone(Zone newZone) { zone = newZone; }
 
     void partition_in_groups();
-
 };
 
-} // namespace SMOOTH
+} // namespace smooth_simulation
 
 #endif // CLUSTER_HPP
