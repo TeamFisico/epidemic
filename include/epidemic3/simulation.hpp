@@ -12,7 +12,7 @@ class Simulation
 {
   private:
     double side; // side of the simulation area
-    double spread_radius;
+    double spread_radius;  //radius under which 2 people can infect each other
     Data data;    // Data of People status of the simulation
   public:
     static std::array<Location, WAYPOINTS_SIZE> Waypoints; // array with waypoints
@@ -25,22 +25,21 @@ class Simulation
     Location plot_nearby_waypoints(int cluster_label, int group_label, Location const& starting_waypoint) const;
     void plot_waypoints();
     void world_generation();
-    void assign_cluster_to_people(); // assign each person to a Cluster
-    void assign_home_to_people();       // assign each person a home
-    void update_zones();      // check the numbers of the epidemic and change Zones color
+    void assign_cluster_to_people();     // assign each person to a Cluster
+    void assign_home_to_people();        // assign each person a home
+    void update_zones();                 // check the numbers of the epidemic and change Zones color
   public:
     Simulation(double side, double spread_radius,Data data); // constructor
-    void check_zones();                                                     // verify Clusters color
-    void evolve();
-    void move();
-    void spread();
+    void check_zones();         // verify Clusters color
+    void simulate();           //simulate
+    void move();              //move all the people
+    void spread();            //spread the disease
 };
-
+//helper functions
 double weight_function(double distance, double LATP_parameter);    // weight function of LATP algorithm
 bool check_group(Group const& group, Position try_position);       // helper function for first_group_step()
 bool check_cluster(Cluster const& cluster, Position try_position); // helper function for first_group_step()
 bool check_labeled_clusters(int label, Position try_position);     // helper function for first_group_step()
-
 } // namespace smooth_simulation
 
 #endif // SIMULATION_HPP

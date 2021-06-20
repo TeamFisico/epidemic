@@ -66,13 +66,13 @@ class Person
     void refill();
 };
 // helper functions
-int determine_fill_size(const Person& person); // determine how many indeces Paths must be filled with
-void determine_fill_path(const Person& person);  //determine from which clusters the path should be filled from
-void fill_path_home(Person& person);           // select next visiting locations from the person cluster
+int determine_fill_size(const Person& person);   // determine how many indeces Paths must be filled with
+bool are_white_available(const Person& person);  // return true if there are any white clusters available
+void fill_path_home(Person& person);
 void fill_path_white(Person& person);          // TODO define , select next visiting locations from green clusters
 int determine_pause_time();
 void remove_target(Person& person,Location to_remove);   //remove a visited target from person.Path
-// bool try_infect(); // TODO Define
+std::vector<int> white_clusters_labels();       //return a vector with white clusters labels
 
 } // namespace smooth_simulation
 

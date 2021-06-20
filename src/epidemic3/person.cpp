@@ -107,6 +107,7 @@ void Person::update_target(double LATP_parameter)
 ////////     CASE OF DIRECT HOME FLIGHT       ///////
 /////////////////////////////////////////////////////
 // move a person in a straight line to its home location
+//when the person arrives refill path
 void Person::move_home()
 {
     // compute data for shortest possible path
@@ -128,6 +129,8 @@ void Person::move_home()
         at_place = true;                     // the person is now at a place
         stay = determine_pause_time();       // how much time he/she will spend there
         //determine and fill path from home of green clusters
+        if (are_white_available(*this)) { fill_path_white(*this); }
+        else { fill_path_home(*this); }
         return;
     }
 
@@ -194,6 +197,21 @@ int determine_fill_size(Person const& person)
     int current_paths_size = person.Paths.size();
     double selected_size = Simulation::Clusters[person.home_cluster()].size() * VISITING_PERCENTAGE; // Paths final size
     return static_cast<int>(selected_size - current_paths_size);
+}
+/////////////////////////////////////////////////////
+////////      DETERMINE HOW TO FILL PATH      ///////
+/////////////////////////////////////////////////////
+//return true if there are any white clusters available
+bool are_white_available(const Person& person)
+{
+    for (auto& cluster : Simulation::Clusters)
+    {
+        if (cluster.zone_type() == Zone::White && cluster.label() != person.home_cluster())
+        {
+            return true;
+        }
+    }
+    return false;
 }
 /////////////////////////////////////////////////////
 ////////  PATH ASSIGNMENT FROM HOME CLUSTER   ///////
@@ -305,6 +323,15 @@ void remove_target(Person& person,Location to_remove)
     }
     //if we get here there's a problem
     std::cerr<<"The target is not in person.Paths!.Aborting.";
+}
+//return a vector with white clusters labels
+std::vector<int> white_clusters_labels()
+{
+    std::vector<int> labels;
+    for (auto& cl : Simulation::Clusters)
+    {
+        if (cl.zone_type() == Zone::White) labels.push_back(cl.label());
+    }
 }
 
 } // namespace smooth_simulation
