@@ -27,7 +27,7 @@ class Person
     Location target;    // next target location
     bool at_place;      // is the person staying at a place
     double velocity[2]; // [0] == x_speed , [1] == y_speed
-    int stay;           // time a person will spend to a place
+    int stay_counter;   // time a person will spend to a place
 
   public:
     std::vector<int> Paths; // indeces to waypoints to visit in Waypoints array
@@ -53,7 +53,7 @@ class Person
     void set_home(Location loc) { home = loc; }
     void set_target(Location loc) { target = loc; }
     void set_location(Location loc) { location = loc; }
-
+    bool is_staying();               //determine if person can move
   private:
     void move_toward();
     void move_home();
@@ -71,6 +71,7 @@ bool are_white_available(const Person& person);  // return true if there are any
 void fill_path_home(Person& person);
 void fill_path_white(Person& person);          // TODO define , select next visiting locations from green clusters
 int determine_pause_time();
+void remove_target_index(Person& person,int index_to_remove);
 void remove_target(Person& person,Location to_remove);   //remove a visited target from person.Path
 std::vector<int> white_clusters_labels();       //return a vector with white clusters labels
 

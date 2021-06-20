@@ -12,7 +12,7 @@ namespace smooth_simulation
 class Group
 {
   private:
-    int sz; // num of waypoints
+    int sz;                // num of waypoints
     Location* group_ptr;
 
   public:

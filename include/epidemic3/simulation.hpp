@@ -20,9 +20,9 @@ class Simulation
     static std::array<Person, POPULATION_SIZE> People;     // People in the simulation
   private:
     void partition_in_clusters();               // divide area in clusters
-    Location first_group_step(int label) const; //
-    Location other_groups_step(Location const& prev_waypoint) const;
-    Location plot_nearby_waypoints(int cluster_label, int group_label, Location const& starting_waypoint) const;
+    Location first_group_step(int clust_lab) const; //
+    Location other_groups_step(Location const& prev_waypoint,int clust_lab) const;
+    Location plot_nearby_waypoints(int clust_lab, int grp_lab, Location const& starting_waypoint) const;
     void plot_waypoints();
     void world_generation();
     void assign_cluster_to_people();     // assign each person to a Cluster
@@ -40,6 +40,7 @@ double weight_function(double distance, double LATP_parameter);    // weight fun
 bool check_group(Group const& group, Position try_position);       // helper function for first_group_step()
 bool check_cluster(Cluster const& cluster, Position try_position); // helper function for first_group_step()
 bool check_labeled_clusters(int label, Position try_position);     // helper function for first_group_step()
+int corresponding
 } // namespace smooth_simulation
 
 #endif // SIMULATION_HPP

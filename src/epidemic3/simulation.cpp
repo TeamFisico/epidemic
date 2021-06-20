@@ -85,24 +85,24 @@ bool check_labeled_clusters(int cl_label, Position try_position)
 /////////////////////////////////////////////////////
 ////////    1st WAYPOINT OF THE GROUP PLOT    ///////
 /////////////////////////////////////////////////////
-Location Simulation::first_group_step(int label) const
+Location Simulation::first_group_step(int clust_lab) const
 // Plot the 1st waypoint of the group so that it's not in the transmission range
 // of any already plotted waypoint
 {
     Random rng{}; // seeded engine
     Position try_position{rng.uniform(0.0, side), rng.uniform(0.0, side)};
 
-    if (label == 0) // this is the first group of the first cluster
+    if (clust_lab == 0) // this is the first group of the first cluster
     {
-        return Location{try_position};
+        return Location{try_position,clust_lab};
     }
     else
     { // if 1 <= label <= C-1
         while (true)
         {
-            if (check_labeled_clusters(label, try_position)) // no other wpts are under trans range
+            if (check_labeled_clusters(clust_lab, try_position)) // no other wpts are under trans range
             {
-                return Location{try_position};
+                return Location{try_position,clust_lab};
             }
             else // try with another one
             {
@@ -116,9 +116,9 @@ Location Simulation::first_group_step(int label) const
 /////////////////////////////////////////////////////
 // Plot the other waypoints of this group in such a way that their distance in never < TRANSMISSION_RANGE / 10
 // the return value is the last plotted waypoint of this group
-Location Simulation::plot_nearby_waypoints(int cluster_label, int group_label, Location const& starting_waypoint) const
+Location Simulation::plot_nearby_waypoints(int clust_lab, int grp_lab, Location const& starting_waypoint) const
 {
-    int num_to_plot = Clusters[cluster_label].Groups[group_label].size();
+    int num_to_plot = Clusters[clust_lab].Groups[grp_lab].size();
     Position try_position{};
     Position current_center{};
     std::vector<Position> already_setted_wpts{starting_waypoint.get_position()};
@@ -140,18 +140,18 @@ Location Simulation::plot_nearby_waypoints(int cluster_label, int group_label, L
             }
         } // end inner for
 
-        already_setted_wpts.push_back(try_position); // take trace of the setted position
+        already_setted_wpts.push_back(try_position); // keep track of the setted position
         // now set the Location in the corresponding place in Waypoints array
-        Clusters[cluster_label].Groups[group_label].pointed_waypoint()[i] = Location{try_position};
+        Clusters[clust_lab].Groups[grp_lab].pointed_waypoint()[i] = Location{try_position,clust_lab};
 
     } // end for
-    return Clusters[cluster_label].Groups[group_label].pointed_waypoint()[num_to_plot - 1]; //last plotted wpt
+    return Clusters[clust_lab].Groups[grp_lab].pointed_waypoint()[num_to_plot - 1]; //last plotted wpt
 }
 /////////////////////////////////////////////////////
 ////////  1st WAYPOINT OF OTHER GROUPS PLOT   ///////
 /////////////////////////////////////////////////////
 // plot the first waypoint of the current group within a distance Y/4 <= d <= Y/3
-Location Simulation::other_groups_step(Location const& prev_group_waypoint) const
+Location Simulation::other_groups_step(Location const& prev_group_waypoint,int clust_lab) const
 {
     double const Y = 2 * side / CLUSTERS_SIZE;
 
@@ -173,7 +173,7 @@ Location Simulation::other_groups_step(Location const& prev_group_waypoint) cons
         Position try_position{rng.uniform(lower_x, upper_x), rng.uniform(lower_y, upper_y)};
         double distance = try_position.distance_to(prev_group_waypoint.get_position());
 
-        if (distance >= Y / 4 && distance <= Y / 3) { return Location{try_position}; }
+        if (distance >= Y / 4 && distance <= Y / 3) { return Location{try_position,clust_lab}; }
     } // end while
 }
 /////////////////////////////////////////////////////
@@ -181,20 +181,20 @@ Location Simulation::other_groups_step(Location const& prev_group_waypoint) cons
 /////////////////////////////////////////////////////
 void Simulation::plot_waypoints()
 {
-    for (int i = 0; i < CLUSTERS_SIZE; ++i)
+
+    for (int cl_index = 0; cl_index < CLUSTERS_SIZE; ++cl_index)
     {
         // set the first waypoint associated with the first group
-        Clusters[i].Groups[0].pointed_waypoint()[0] = first_group_step(i);
+        Clusters[cl_index].Groups[0].pointed_waypoint()[0] = first_group_step(cl_index);
         // plot all the waypoints of the group around this one and return a reference to the last one
-        Location previous_group_last_waypoint =
-            plot_nearby_waypoints(i, 0, Clusters[i].Groups[0].pointed_waypoint()[0]);
+        Location previous_group_last_waypoint = plot_nearby_waypoints(cl_index, 0, Clusters[cl_index].Groups[0].pointed_waypoint()[0]);
 
-        for (unsigned int j = 1; j < Clusters[i].Groups.size(); ++j) // now set the other groups' wpts
+        for (unsigned int gr_index = 1; gr_index < Clusters[cl_index].Groups.size(); ++gr_index) // now set the other groups' wpts
         {
             // setting the first waypoint of this group
-            Clusters[i].Groups[j].pointed_waypoint()[0] = other_groups_step(previous_group_last_waypoint);
+            Clusters[cl_index].Groups[gr_index].pointed_waypoint()[0] = other_groups_step(previous_group_last_waypoint,cl_index);
             // plot the neighbourhood and set the la
-            previous_group_last_waypoint = plot_nearby_waypoints(i, j, Clusters[i].Groups[j].pointed_waypoint()[0]);
+            previous_group_last_waypoint = plot_nearby_waypoints(cl_index, gr_index, Clusters[cl_index].Groups[gr_index].pointed_waypoint()[0]);
         }
     }
 }
