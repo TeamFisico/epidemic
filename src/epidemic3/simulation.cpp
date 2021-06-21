@@ -221,7 +221,7 @@ void Simulation::assign_cluster_to_people()
     for (auto& label : labels)
     {
         People[j].set_cluster(label);              // label the person with its home cluster
-        Clusters[label].People_index.push_back(j); // add person's index into People array to the cluster
+        Clusters[label].People_i.push_back(j); // add person's index into People array to the cluster
         ++j;
     }
 }
@@ -317,7 +317,26 @@ Simulation::Simulation(double side, double spread_radius,Data data)
     world_generation();
     std::cout << "World successfully constructed!" << std::endl;
 }
+/////////////////////////////////////////////////////
+////////            MOVE PEOPLE               ///////
+/////////////////////////////////////////////////////
+void Simulation::move()
+{
+    for (auto& c : Clusters)
+    {
 
+    }
+}
+//////////////// HELPER FUNCTIONS  //////////////////
+//return a vector with white clusters labels
+std::vector<int> white_clusters_labels()
+{
+    std::vector<int> labels;
+    for (auto& cl : Simulation::Clusters)
+    {
+        if (cl.zone_type() == Zone::White) labels.push_back(cl.label());
+    }
+}
 double weight_function(double distance, double LATP_parameter)
 {
     return 1 / std::pow(distance, LATP_parameter);

@@ -7,9 +7,9 @@
 namespace smooth_simulation
 {
 Person::Person(Status status, int cluster_label, Location home, Location current_location, Location target_location,
-               bool is_at_place, double x_speed, double y_speed, int stay_time)
+               bool is_at_place, bool going_home,double x_speed, double y_speed, int stay_time)
     : status{status}, label{cluster_label}, home{home}, location{current_location}, target{target_location},
-      at_place{is_at_place}, stay_counter{stay_time}
+      at_place{is_at_place}, going_home{going_home},stay_counter{stay_time}
 {
     velocity[0] = x_speed;
     velocity[1] = y_speed;
@@ -17,7 +17,7 @@ Person::Person(Status status, int cluster_label, Location home, Location current
 const Person& default_person()
 {
     static Location def_loc{};
-    static Person def_per{Status::Susceptible, 0, def_loc, def_loc, def_loc, false, 0.0, 0.0, 0};
+    static Person def_per{Status::Susceptible, 0, def_loc, def_loc, def_loc, false, false,0.0, 0.0, 0};
     return def_per;
 }
 Person::Person()
@@ -73,16 +73,18 @@ void Person::update_velocity()
 /////////////////////////////////////////////////////
 ////////            TARGET UPDATE             ///////
 /////////////////////////////////////////////////////
-void Person::update_target(double LATP_parameter)
+void Person::update_target()
 // use the Least action trip planning(LATP) algorithm to determine new person target
 {
+    double LATP_parameter = Simulation::Clusters[label].LATP_parameter();  //LATP parameter from the person cluster
+
     std::vector<double> distances;
     std::vector<double> probabilities;
-    distances.reserve(Paths.size());     // allocate the space
-    probabilities.reserve(Paths.size()); // allocate the space
+    distances.reserve(Paths_i.size());     // allocate the space
+    probabilities.reserve(Paths_i.size()); // allocate the space
     double current_weight = 0.0;
 
-    for (int& index : Paths)     // compute distances and calculate weight
+    for (int& index : Paths_i)     // compute distances and calculate weight
     {
         Location waypoint = Simulation::Waypoints[index];
         current_weight = weight_function(location.get_position().distance_to(waypoint.get_position()), LATP_parameter);
@@ -97,7 +99,8 @@ void Person::update_target(double LATP_parameter)
     }
     //select a waypoint index weighted on the just calculated probabilities
     Random rng{};
-    int index = rng.piecewise(Paths, probabilities);
+    int i = rng.discrete(probabilities); //extract an number from 1 to weights.size()-1 based on weights(probabilities)
+    int index = Paths_i[i]; //correspondin waypoint index
     // Still need to check if this waypoint is inside a White Cluster:things could've changed in the meanwhile
     Zone waypoint_zone = Simulation::Clusters[Simulation::Waypoints[index].get_label()].zone_type();
     if (waypoint_zone == Zone::White) //ok nothing's changed
@@ -108,7 +111,7 @@ void Person::update_target(double LATP_parameter)
     else //now the zone is not White anymore
     {
         remove_target_index(*this,index);
-        update_target(LATP_parameter); //apply again LATP algo and look for a new one
+        update_target(); //apply again LATP algo and look for a new one
     }
     // TODO TESTING
 }
@@ -132,11 +135,12 @@ void Person::move_home()
     Position new_position{location.get_X() + x_displacement, location.get_Y() + y_displacement};
 
     // check if the person will enter the target location radius
-    if (new_position.in_radius(home.get_position(),HOME_RADIUS)) // the person has arrived to the target
+    if (new_position.in_radius(home.get_position(),HOME_RADIUS)) // the person has arrived home
     {
         location.set_position(home.get_position()); // set new position
         at_place = true;                     // the person is now at a place
         stay_counter = determine_pause_time();       // how much time he/she will spend there
+        going_home = false;
         //determine and fill path from home of green clusters
         if (are_white_available(*this)) { fill_path_white(*this); }
         else { fill_path_home(*this); }
@@ -182,7 +186,7 @@ void Person::move_toward()
         location.set_position(new_position); // set new position
         at_place = true;                     // the person is now at a place
         stay_counter = determine_pause_time();       // how much time he/she will spend there
-                                             //erase the current target from Paths
+                                             //erase the current target from Paths_i
         remove_target(*this, target); //remove target from path
         return;
     }
@@ -192,9 +196,52 @@ void Person::move_toward()
 /////////////////////////////////////////////////////
 ////////            MOVE A PERSON             ///////
 /////////////////////////////////////////////////////
-void Person::move_person()
+void Person::move()
 {
-
+    if (at_place)
+    {
+        if (is_staying())
+        {
+            if (at_home())
+            {
+                //TODO FILL PATH refill path
+                pathfinder(*this);
+                update_target();
+                move_toward();
+                return;
+            }else  //the person is at place outside
+            {
+                if (empty_path())
+                {
+                    going_home = true;
+                    move_home();
+                    return;
+                }
+                else //there are available targets
+                {
+                    update_target();
+                    move_toward();
+                    return;
+                }
+            }
+        }else  //the person is staying at a place
+        {
+            --stay_counter;
+            return;
+        }
+    }
+    else  //not at a place
+    {
+        if (going_home)
+        {
+            move_home();
+            return;
+        }
+        else{
+            move_toward();
+            return;
+        }
+    }
 }
 /////////////////////////////////////////////////////
 ////////         CAN THE PERSON MOVE?         ///////
@@ -202,20 +249,44 @@ void Person::move_person()
 //return true if the person's time to spend to the current place is up
 bool Person::is_staying()
 {
-    assert(at_place); //delete after testing
     if (stay_counter == 0) return true;
     else return false;
 }
+//*************************************************** HELPER FUNCTIONS *************************************************************//
 /////////////////////////////////////////////////////
-////////        DETERMINE PATHS SIZE          ///////
+////////            PATHFINDER                ///////
+/////////////////////////////////////////////////////
+void pathfinder(Person& person)
+{
+    Zone const& zone = Simulation::Clusters[person.home_cluster()].zone_type();
+    switch (zone)
+    {
+    case Zone::White:
+        pathfinder_white(person);
+        break;
+    case Zone::Yellow:
+        pathfinder_yellow(person);
+        break;
+    case Zone::Orange:
+        pathfinder_orange(person);
+        break;
+    case Zone::Red:
+        pathfinder_red(person);
+        break;
+    default:
+        break;
+    }
+}
+/////////////////////////////////////////////////////
+////////        DETERMINE PATH SIZE          ///////
 /////////////////////////////////////////////////////
 //TODO Delete this function cuz the path is filled only when it's empty
 
 int determine_fill_size(Person const& person)
 {
-    int current_paths_size = person.Paths.size();
-    double selected_size = Simulation::Clusters[person.home_cluster()].size() * VISITING_PERCENTAGE; // Paths final size
-    return static_cast<int>(selected_size - current_paths_size);
+    int current_Paths_i_size = person.Paths_i.size();
+    double selected_size = Simulation::Clusters[person.home_cluster()].size() * VISITING_PERCENTAGE; // Paths_i final size
+    return static_cast<int>(selected_size - current_Paths_i_size);
 }
 /////////////////////////////////////////////////////
 ////////      DETERMINE HOW TO FILL PATH      ///////
@@ -254,16 +325,16 @@ void fill_path_home(Person& person)
     {
         ending_index = Simulation::Clusters[person.home_cluster()].size() - 1;
     }
-    int missing_waypoints = determine_fill_size(person); // number of waypoints to add to person.Paths
+    int missing_waypoints = determine_fill_size(person); // number of waypoints to add to person.Paths_i
 
     std::vector<int> already_chosen_indeces;
 
-    person.Paths.reserve(missing_waypoints); // avoid reallocation when pushing back
-    already_chosen_indeces.reserve(person.Paths.size() + person.Paths.size());
+    person.Paths_i.reserve(missing_waypoints); // avoid reallocation when pushing back
+    already_chosen_indeces.reserve(person.Paths_i.size() + person.Paths_i.size());
 
     assert(already_chosen_indeces.empty()); // TODO consider deleting
-    // keep track of the indeces of the waypoints already in person.Paths
-    for (int& taken_index : person.Paths)
+    // keep track of the indeces of the waypoints already in person.Paths_i
+    for (int& taken_index : person.Paths_i)
     {
         already_chosen_indeces.push_back(taken_index);
     }
@@ -284,7 +355,7 @@ void fill_path_home(Person& person)
         }
 
         already_chosen_indeces.push_back(random_index);
-        person.Paths.push_back(random_index);
+        person.Paths_i.push_back(random_index);
     }
 }
 /////////////////////////////////////////////////////
@@ -326,37 +397,29 @@ int determine_pause_time()
 // the end and remove it preventing moving all items after it
 void remove_target(Person& person,Location to_remove)
 {
-    for (int& targ_index : person.Paths)
+    for (int& targ_index : person.Paths_i)
     {
         if (Simulation::Waypoints[targ_index] == to_remove)
         {
-            std::swap(targ_index,person.Paths.back()); //swap the last element with the one to be removed
-            person.Paths.pop_back(); //erase the last element of the vector
+            std::swap(targ_index,person.Paths_i.back()); //swap the last element with the one to be removed
+            person.Paths_i.pop_back(); //erase the last element of the vector
             return;
         }
     }
     //if we get here there's a problem
-    std::cerr<<"The target is not in person.Paths!.Aborting.";
+    std::cerr<<"The target is not in person.Paths_i!.Aborting.";
 }
 //remove a visited target index from person.Path: since we don't care about the targets order, move the one to remove to
 // the end and remove it preventing moving all items after it
 void remove_target_index(Person& person,int index_to_remove)
 {
-     std::swap(index_to_remove,person.Paths.back()); //swap the last element with the one to be removed
-     person.Paths.pop_back(); //erase the last element of the vector
+     std::swap(index_to_remove,person.Paths_i.back()); //swap the last element with the one to be removed
+     person.Paths_i.pop_back(); //erase the last element of the vector
      return;
     //if we get here there's a problem
-    std::cerr<<"The target is not in person.Paths!.Aborting.";
+    std::cerr<<"The target is not in person.Paths_i!.Aborting.";
 }
-//return a vector with white clusters labels
-std::vector<int> white_clusters_labels()
-{
-    std::vector<int> labels;
-    for (auto& cl : Simulation::Clusters)
-    {
-        if (cl.zone_type() == Zone::White) labels.push_back(cl.label());
-    }
-}
+
 
 } // namespace smooth_simulation
 

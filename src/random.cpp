@@ -29,10 +29,9 @@ int Random::rounded_gauss(double mean, double stddev)
 {
     return round(eng.variate<double, std::normal_distribution>(mean, stddev));
 }
-int Random::piecewise(std::vector<int> nums, std::vector<double> weights)
+int Random::discrete(std::vector<double> weights)
 {
-    return eng.variate<int, std::piecewise_constant_distribution>(std::begin(nums), std::end(nums),
-                                                                  std::begin(weights));
+    return eng.variate<int,std::discrete_distribution>(std::begin(weights),std::end(weights));
 }
 
 } // namespace smooth_simulation

@@ -89,6 +89,24 @@ void Cluster::determine_groups_sizes()
     Groups[Groups.size() - 1].size() += difference;
 }
 /////////////////////////////////////////////////////
+////////       MOVE FOR WHITE CLUSTER         ///////
+/////////////////////////////////////////////////////
+void Cluster::move_people_white()
+{
+    for (auto& i : People_i)
+    {
+        Person& p = Simulation::People[i];  //current person
+        p.move();
+    }
+}
+/////////////////////////////////////////////////////
+////////     MOVE FOR NON-WHITE CLUSTER       ///////
+/////////////////////////////////////////////////////
+void Cluster::move_people_non_white()
+{
+
+}
+/////////////////////////////////////////////////////
 ////////        CLUSTER PARTITIONING          ///////
 /////////////////////////////////////////////////////
 void Cluster::partition_in_groups()
@@ -137,10 +155,12 @@ void Cluster::set_limits()
     limits = {x_min, x_max, y_min, y_max};
 }
 /////////////////////////////////////////////////////
-////////         GET CLUSTER DATA             ///////
+////////      MOVE PEOPLE IN THIS CLUSTER     ///////
 /////////////////////////////////////////////////////
-Data Cluster::get_data() const
+void Cluster::move()
 {
+    if (zone == Zone::White){ move_people_white(); }
+    else { move_people_non_white(); }
 }
 /////////////////////////////////////////////////////
 ////////        DATA CONSTRUCTOR              ///////

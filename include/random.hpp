@@ -27,9 +27,7 @@ class Random
     int int_uniform(int lower, int upper);      // extract an int uniformly in [lower,upper] range
     double gauss(double mean, double stddev);
     int rounded_gauss(double mean, double stddev);
-    int piecewise(std::vector<int> nums,
-                  std::vector<double> weights); // fill a container with numbers generated according to a distribution
-                                                // (see randutils::generate)
+    int discrete(std::vector<double> weights);  //extract a number
 };
 
 } // namespace smooth_simulation
