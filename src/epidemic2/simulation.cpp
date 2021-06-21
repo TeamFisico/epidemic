@@ -1,6 +1,6 @@
 #include "simulation.hpp"
 #include <cassert>
-#include <random>
+#include "random.hpp"
 
 #define HOME_PROBABILITY 0.5
 
@@ -145,13 +145,14 @@ void Simulation::update_Colors()
 
 void Simulation::spread()
 {
+    Random rng;
     for(auto& c: world.Clusters())
     {
         for (auto& a : c.population())
         {
             if (a.Person_ref().get_condition() == State::E)
             { // if current person is in dormant state
-                if (try_event(alpha))
+                if (rng.try_event(alpha))
                 {
                     a.Person_ref().get_new_condition() = State::I;
                 }
@@ -171,10 +172,10 @@ void Simulation::spread()
                     }
                     for (auto b : close_people)
                     {
-                        if (try_event(beta)) { b->get_new_condition() = State::E; }
+                        if (rng.try_event(beta)) { b->get_new_condition() = State::E; }
                     }
                 }
-                if (try_event(gamma))
+                if (rng.try_event(gamma))
                 {
                     a.Person_ref().get_new_condition() = State::R;
                 }
@@ -185,6 +186,7 @@ void Simulation::spread()
 
 void Simulation::move()
 {
+    Random rng;
     std::vector<Location*> green_list = green_loc_list();
     for(auto& c: world.Clusters())
     { // check every person in mobility model in order
@@ -197,10 +199,10 @@ void Simulation::move()
                 {
                     if (a.Stay() <= 0)
                     {
-                        if (!try_event(a.home_prob()))
+                        if (!rng.try_event(a.home_prob()))
                         {                    // check if the person leave home
                             a.not_at_home(); // set the person as not at home
-                            if (try_event(0.50))
+                            if (rng.try_event(0.50))
                             { // select the location from the cluster in which the person is located
                                 //a.path() = sim::generate_path(list, 5, 1);
                                 a.path() = c.generate_path(5,1);
@@ -239,7 +241,7 @@ void Simulation::move()
                 {
                     if (a.Stay() <= 0)
                     {
-                        if (!try_event(a.home_prob()))
+                        if (!rng.try_event(a.home_prob()))
                         {                    // check if the person leave home
                             a.not_at_home(); // set the person as not at home
                             //a.path() = sim::generate_path(list, 3, 0.5);
@@ -273,7 +275,7 @@ void Simulation::move()
                 {
                     if (a.Stay() <= 0)
                     {
-                        if (!try_event(a.home_prob()))
+                        if (!rng.try_event(a.home_prob()))
                         {                    // check if the person leave home
                             a.not_at_home(); // set the person as not at home
                             //a.path() = sim::generate_path(list, 1, 0.2);

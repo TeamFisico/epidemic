@@ -1,5 +1,6 @@
 #include "cluster.hpp"
 #include <random>
+#include "random.hpp"
 
 using namespace sim;
 
@@ -9,14 +10,12 @@ Cluster::Cluster(int S, int E, int I, int R, int number_of_location, Rectangle A
 : Area{Area}, color{color}, cluster_index{cluster_index}
 {
     int N = S + E + I + R;
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution rand(1,5);  //number of people in a home
+    Random rng;
     Population.clear();
     Population.reserve(N); //reserve space for the population vector
     //generate the population vector; initialize all person as susceptible and at home
     for(int i = 0; i < N;){
-        int home_pop = rand(gen); // number of people in the current home
+        int home_pop = rng.int_uniform(1,5); // number of people in the current home
         Location current_home = rand_loc(Area.get_blh_corner(), Area.get_trh_corner(), HOME_RADIUS); //TODO add a macro for HOME_RADIUS value
         for(int j = 0; j < home_pop && i < N; ++j){
             Person curr{State::S,current_home.get_pos(),State::S,current_home, cluster_index};
@@ -38,8 +37,7 @@ Cluster::Cluster(int S, int E, int I, int R, int number_of_location, Rectangle A
         }
     }
     //Determine the number of groups
-    std::normal_distribution<double> rnum(number_of_location/8, number_of_location/32);
-    int number_of_groups = nearbyint(rnum(gen));
+    int number_of_groups = rng.rounded_gauss(number_of_location/8, number_of_location/32);
     // Create a Vector which will have the partition of locations in group, every group has at least one location
     std::vector<int> loc_num(number_of_groups,1);
     //std::uniform_int_distribution<int> rand_index(0, number_of_groups - 1);
@@ -55,7 +53,7 @@ Cluster::Cluster(int S, int E, int I, int R, int number_of_location, Rectangle A
         else
         {
             std::uniform_int_distribution<> rand_num(1, nearbyint(loc_left / 2));
-            int rnum = rand_num(gen);
+            int rnum = rng.int_uniform(1, nearbyint(loc_left/2));
             loc_num.operator[](i) += rnum;
             loc_left -= rnum;
         }
@@ -130,14 +128,12 @@ Position Cluster::gen_group_center(int num_of_loc)
 
 std::vector<Location*> Cluster::generate_path(double mean, double dev)
 {
-    int to_visit = rounded_norm(mean - 1, dev) + 1; // make sure is always >= 1
+    Random rng;
+    int to_visit = rng.rounded_gauss(mean - 1, dev) + 1; // make sure is always >= 1
     int last_index = -1;
     for(auto& a: groups){
         last_index += a.size();
     }
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> rand(0, last_index);
     std::vector<Location*> result;
     std::vector<int> result_indexes;
     for(int i = 0; i < to_visit; ++i){ // select the random indexes
@@ -146,7 +142,7 @@ std::vector<Location*> Cluster::generate_path(double mean, double dev)
         while(continue_loop)
         {
             continue_loop = false;
-            curr_index = rand(gen);
+            curr_index = rng.int_uniform(0, last_index);
             for (auto& a: result_indexes){
                 if (curr_index == a){
                     continue_loop = true;

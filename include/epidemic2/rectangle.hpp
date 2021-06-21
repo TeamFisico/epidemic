@@ -19,8 +19,6 @@ class Rectangle{
     std::vector<Rectangle> Divide(int n); //Divide the Rectangle in n part using Split() function
 };
 
-Rectangle* rand_rec(std::vector<Rectangle*> list); // function that will select a random member of the list vector
-
 }
 
 #endif

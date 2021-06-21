@@ -1,5 +1,6 @@
 #include "rectangle.hpp"
 #include <random>
+#include "random.hpp"
 
 using namespace sim;
 
@@ -21,10 +22,8 @@ std::vector<Rectangle> Rectangle::Split()
 {
     std::vector<Rectangle> result;
     result.clear();
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution side(0, 1); // decide the random side to divide
-    int selected_side = side(gen);            // if 0 select the x-axis side, if 1 select the y-axis side
+    Random rng;
+    int selected_side = rng.int_uniform(0,1);            //Select the random side to divide, if 0 select the x-axis side, if 1 select the y-axis side
     // make sure that rectangle that have a side at least three times the other have the longest_side as the selected
     if ((trh_corner.get_x() - blh_corner.get_x()) <= 3 * (trh_corner.get_y() - blh_corner.get_y()))
     {
@@ -46,8 +45,7 @@ std::vector<Rectangle> Rectangle::Split()
         min = blh_corner.get_y() + blh_corner.get_y() / 6;
         max = trh_corner.get_y() - trh_corner.get_y() / 6;
     }
-    std::uniform_real_distribution<> rand(min, max);
-    double rnum = rand(gen);
+    double rnum = rng.uniform(min, max);
     if (selected_side == 0)
     {
         Position first_top_corner{rnum, trh_corner.get_y()};
@@ -74,8 +72,7 @@ std::vector<Rectangle> Rectangle::Split()
 // as the current method favor a too uneven division.
 std::vector<Rectangle> Rectangle::Divide(int n)
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    Random rng;
     std::vector<Rectangle> result = {
         {blh_corner, trh_corner}}; // construct result vector with the object as the only member
     if (n == 1)
@@ -98,18 +95,7 @@ std::vector<Rectangle> Rectangle::Divide(int n)
         {
             probabilities.push_back(a / total_area); // the probability to be chosen is proportional to the area
         }
-        std::uniform_real_distribution<> rand(0, 1);
-        double rnum = rand(gen);
-        int index{};
-        for (int i = 0; i < probabilities.size(); ++i)
-        {
-            if (rnum <= probabilities.operator[](i))
-            {
-                index = i;
-                break;
-            }
-            rnum -= probabilities.operator[](i);
-        }
+        int index = rng.discrete(probabilities);
         auto it = result.begin();
         it += index;
         // Split the selected Rectangle in 2 rectangle
@@ -123,11 +109,3 @@ std::vector<Rectangle> Rectangle::Divide(int n)
     return result;
 }
 
-Rectangle *sim::rand_rec(std::vector<Rectangle *> list)
-{
-    int last_index = list.size() - 1;
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution index(0, last_index); // decide the random index
-    return list.operator[](index(gen));
-}

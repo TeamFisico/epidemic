@@ -11,7 +11,7 @@
 
 using namespace randutils;
 
-namespace smooth_simulation
+namespace sim
 {
 
 class Random
@@ -27,9 +27,11 @@ class Random
     int int_uniform(int lower, int upper);      // extract an int uniformly in [lower,upper] range
     double gauss(double mean, double stddev);
     int rounded_gauss(double mean, double stddev);
+    int discrete(std::vector<double> weights);
     int piecewise(std::vector<int> nums,
                   std::vector<double> weights); // fill a container with numbers generated according to a distribution
                                                 // (see randutils::generate)
+    bool try_event(double prob);
 };
 
 } // namespace smooth_simulation

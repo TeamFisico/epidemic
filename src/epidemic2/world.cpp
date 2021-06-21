@@ -1,5 +1,6 @@
 #include "world.hpp"
 #include <random>
+#include "random.hpp"
 
 using namespace sim;
 
@@ -8,6 +9,7 @@ World::World(double Side_length, int number_of_clusters, int number_of_location,
     Position blh_corner{0,0};
     Position trh_corner{Side_length,Side_length};
     Area = {blh_corner,trh_corner};
+    Random rng;
     std::random_device rd;
     std::mt19937 gen(rd());
     std::vector<Rectangle> cluster_areas = Area.Divide(number_of_clusters);
@@ -21,10 +23,9 @@ World::World(double Side_length, int number_of_clusters, int number_of_location,
         }
         else{
             double mean = static_cast<double>(loc_left)/static_cast<double>(remaining_cluster);
-            std::normal_distribution<double> rand(mean, mean/4);
-            int current = nearbyint(rand(gen));
+            int current = rng.rounded_gauss(mean, mean/4);
             while(current >= loc_left || current <= 0){ //make sure current value is valid
-                current = nearbyint(rand(gen));
+                current = rng.rounded_gauss(mean, mean/4);
             }
             loc_num.operator[](i) += current;
             loc_left -= current;
@@ -41,10 +42,9 @@ World::World(double Side_length, int number_of_clusters, int number_of_location,
         }
         else{
             double mean = static_cast<double>(S_pop_left)/static_cast<double>(remaining_cluster);
-            std::normal_distribution<double> rand(mean, mean/4);
-            int current = nearbyint(rand(gen));
+            int current = rng.rounded_gauss(mean, mean/4);
             while(current >= 4*S_pop_left/5 || current <= S_pop_left/5){ //make sure current value is valid
-                current = nearbyint(rand(gen));
+                current = rng.rounded_gauss(mean, mean/4);
             }
             S_pop_num.operator[](i) += current;
             S_pop_left -= current;
@@ -52,31 +52,30 @@ World::World(double Side_length, int number_of_clusters, int number_of_location,
         }
     }
     //create and fill 3 vectors with the number of (E,I,R respectively) individuals for each cluster, in this case use an uniform distribution that assign 10 individuals at a time(or the remaiming ones)
-    std::uniform_int_distribution rand_index(0, number_of_clusters - 1); //randomly select the cluster
     //E Individuals
     std::vector<int> E_pop_num(number_of_clusters,0);
     int E_pop_left = E;
     while(E_pop_left > 10){
-        E_pop_num.operator[](rand_index(gen)) += 10;
+        E_pop_num.operator[](rng.int_uniform(0, number_of_clusters - 1)) += 10;
         E_pop_left -= 10;
     }
-    E_pop_num.operator[](rand_index(gen)) += E_pop_left;
+    E_pop_num.operator[](rng.int_uniform(0, number_of_clusters - 1)) += E_pop_left;
     //I individuals
     std::vector<int> I_pop_num(number_of_clusters,0);
     int I_pop_left = I;
     while(I_pop_left > 10){
-        I_pop_num.operator[](rand_index(gen)) += 10;
+        I_pop_num.operator[](rng.int_uniform(0, number_of_clusters - 1)) += 10;
         I_pop_left -= 10;
     }
-    I_pop_num.operator[](rand_index(gen)) += I_pop_left;
+    I_pop_num.operator[](rng.int_uniform(0, number_of_clusters - 1)) += I_pop_left;
     //R Individuals
     std::vector<int> R_pop_num(number_of_clusters,0);
     int R_pop_left = R;
     while(E_pop_left > 10){
-        R_pop_num.operator[](rand_index(gen)) += 10;
+        R_pop_num.operator[](rng.int_uniform(0, number_of_clusters - 1)) += 10;
         R_pop_left -= 10;
     }
-    R_pop_num.operator[](rand_index(gen)) += R_pop_left;
+    R_pop_num.operator[](rng.int_uniform(0, number_of_clusters - 1)) += R_pop_left;
     //fill the cluster vector
     clusters.clear();
     clusters.reserve(number_of_clusters);
@@ -178,11 +177,9 @@ Cluster * World::get_cluster(int index)
 
 std::vector<Location *> sim::generate_path(std::vector<Location *> list, double mean, double dev)
 {
-    int to_visit = rounded_norm(mean - 1, dev) + 1; // make sure is always >= 1
+    Random rng;
+    int to_visit = rng.rounded_gauss(mean - 1, dev) + 1; // make sure is always >= 1
     int last_index = list.size() - 1;
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> rand(0, last_index);
     std::vector<Location *> result;
     result.clear();
     for (int i = 1; i <= to_visit; ++i)
@@ -192,7 +189,7 @@ std::vector<Location *> sim::generate_path(std::vector<Location *> list, double 
         while (continue_loop)
         {
             continue_loop = false;
-            current = list.operator[](rand(gen));
+            current = list.operator[](rng.int_uniform(0, last_index));
             for (auto a : result)
             {
                 if (current == a) { continue_loop = true; }
