@@ -34,7 +34,7 @@ void mobility_model::next_location()
     { // if Path ha only one element select that element
         target_location = Path.operator[](0);
         Path.clear();
-        stay = rng.rand_stay()); //TODO set random stay from 2 to 5, to change into the power rule
+        stay = rng.rand_stay();
     }
     else // if Path vector has more than one element ran the LATP Algorithm to select next Location
     {
