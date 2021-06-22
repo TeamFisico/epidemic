@@ -1,8 +1,8 @@
 #include "simulation.hpp"
 #include <cassert>
 #include "random.hpp"
+#include "parameters.hpp"
 
-#define HOME_PROBABILITY 0.5
 
 using namespace sim;
 
@@ -50,7 +50,7 @@ std::vector<Person *> Simulation::Close_Cluster_People(Person &current_person)
     std::vector<Person *> result;
     for (auto & a: world.Clusters().operator[](current_person.get_cluster_index()).population()){
         auto pos = a.Person_ref().get_pos();
-        if (pos.InRadius(current_person.get_pos(), spread_radius) && a.Person_ref().get_condition() == State::S && a.is_at_home())
+        if (pos.InRadius(current_person.get_pos(), spread_radius) && a.Person_ref().get_condition() == State::S && !a.is_at_home())
         {                                          // check if person is close_enough, Susceptible and not at_home
             result.push_back(&a.Person_ref()); // push a pointer to the current person back to the end of the vector
         }
@@ -159,7 +159,7 @@ void Simulation::spread()
             }
             else if (a.Person_ref().get_condition() == State::I)
             {                        // if current person is infected
-                if (!a.is_at_home()) // if current person is not at home, the spread the virus
+                if (!a.is_at_home()) // if current person is not at home, then spread the virus
                 {
                     std::vector<Person *> close_people{};
                     if (c.get_color() == Color::Green) //if cluster is Green

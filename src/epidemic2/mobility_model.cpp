@@ -2,6 +2,7 @@
 #include <cassert>
 #include <numeric>
 #include "random.hpp"
+#include "parameters.hpp"
 
 using namespace sim;
 
@@ -23,7 +24,7 @@ void mobility_model::next_location()
     Random rng;
     if(target_location == person.get_home()){ //called when person is at home with target location home
         at_home = true;
-        stay = rng.int_uniform(2,5); //TODO set random stay from 2 to 5, to change into the power rule
+        stay = rng.rand_stay(); //TODO set random stay from 2 to 5, to change into the power rule
     }
     if (Path.empty())
     { // if Path vector empty select home
@@ -33,7 +34,7 @@ void mobility_model::next_location()
     { // if Path ha only one element select that element
         target_location = Path.operator[](0);
         Path.clear();
-        stay = rng.int_uniform(2,5); //TODO set random stay from 2 to 5, to change into the power rule
+        stay = rng.rand_stay()); //TODO set random stay from 2 to 5, to change into the power rule
     }
     else // if Path vector has more than one element ran the LATP Algorithm to select next Location
     {
@@ -63,7 +64,7 @@ void mobility_model::next_location()
         auto it = Path.begin(); // generate an iterator to the star of the Path vector
         it = it + index_result; // make sure the iterator point to the selected location
         Path.erase(it);         // erase the selected Location from the Path vector
-        stay = rng.int_uniform(2,5); //TODO set random stay from 2 to 5, to change into the power rule
+        stay = rng.rand_stay();
     }
 }
 
@@ -101,10 +102,3 @@ double sim::rand_speed(double min, double max)
     return rng.uniform(min, max);
 }
 
-int sim::rand_stay(int min, int max) //TODO change to the power rule
-{
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> rand(min, max);
-    return rand(gen);
-}

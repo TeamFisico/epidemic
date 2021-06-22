@@ -1,8 +1,7 @@
 #include "location.hpp"
 #include <cmath>
 #include "random.hpp"
-
-#define PI 3.14159265358979323846 /* pi */
+#include "parameters.hpp"
 
 using namespace sim;
 // Constructor

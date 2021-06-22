@@ -59,7 +59,7 @@ int main()
     std::vector<Data> result{};
     for(int i = 0; i < 10; ++i){
         start = std::chrono::high_resolution_clock::now();
-        for(int j = 0; j < 30; ++j){
+        for(int j = 0; j < 10; ++j){
             prova.move();
             prova.spread();
             prova.update_Condition();

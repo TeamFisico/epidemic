@@ -35,7 +35,6 @@ class mobility_model
 };
 
 double rand_speed(double min, double max);
-int rand_stay(int min, int max);
 }
 
 #endif

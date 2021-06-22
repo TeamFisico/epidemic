@@ -32,6 +32,7 @@ class Random
                   std::vector<double> weights); // fill a container with numbers generated according to a distribution
                                                 // (see randutils::generate)
     bool try_event(double prob);
+    int rand_stay();
 };
 
 } // namespace smooth_simulation

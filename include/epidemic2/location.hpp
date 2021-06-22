@@ -2,9 +2,7 @@
 #define LOCATION_HPP
 
 #include "position.hpp"
-
-#define TRANSMISSION_RANGE 0.5
-#define HOME_RADIUS 0.5
+#include "parameters.hpp"
 
 namespace sim{
 class Location{

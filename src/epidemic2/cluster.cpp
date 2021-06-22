@@ -1,10 +1,10 @@
 #include "cluster.hpp"
 #include <random>
 #include "random.hpp"
+#include "parameters.hpp"
 
 using namespace sim;
 
-#define HOME_PROBABILITY 0.5
 
 Cluster::Cluster(int S, int E, int I, int R, int number_of_location, Rectangle Area, Color color, int cluster_index)
 : Area{Area}, color{color}, cluster_index{cluster_index}
