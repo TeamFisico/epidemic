@@ -26,7 +26,7 @@ std::vector<Person *> Simulation::Close_People(Person &current_person)
                 if (pos.InRadius(current_person.get_pos(), spread_radius) &&
                     world.Clusters().operator[](i).population().operator[](j).Person_ref().get_condition() ==
                         State::S &&
-                    world.Clusters().operator[](i).population().operator[](j).is_at_home())
+                    !world.Clusters().operator[](i).population().operator[](j).is_at_home())
                 { // check if person is close_enough, Susceptible and not at_home
                     result.push_back(
                         &world.Clusters().operator[](i).population().operator[](j).Person_ref()); // push a pointer to the current person back to the end of the vector
