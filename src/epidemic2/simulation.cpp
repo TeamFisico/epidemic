@@ -187,10 +187,8 @@ void Simulation::spread()
 void Simulation::move()
 {
     Random rng;
-    std::vector<Location*> green_list = green_loc_list();
     for(auto& c: world.Clusters())
     { // check every person in mobility model in order
-        std::vector<Location *> list = c.Location_list();
         if (c.get_color() == Color::Green)
         {
             for (auto &a : c.population())

@@ -46,7 +46,7 @@ int main()
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    Simulation prova{50000 ,3, 7, 4, 5, 200, 300,0.1,0.02,0.3,0.5,20,10};
+    Simulation prova{25000 ,3, 7, 4, 5, 400, 300,0.1,0.02,0.3,0.5,20,10};
     for(int k = 0; k < 10; ++k){
         prova.move();
     }
@@ -57,7 +57,7 @@ int main()
     std::cout << "Generation and first movement : " << duration.count() << " s " << std::endl;
 
     std::vector<Data> result{};
-    for(int i = 0; i < 10; ++i){
+    for(int i = 0; i < 4; ++i){
         start = std::chrono::high_resolution_clock::now();
         for(int j = 0; j < 10; ++j){
             prova.move();

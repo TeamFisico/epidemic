@@ -14,6 +14,7 @@ class mobility_model
     int stay; //How much time people stay at a location //TODO make some of these variables as macro
     double home_probability;
     bool at_home; //true if the pointed person is at home, false otherwise
+    bool going_home; //true if it is moving home, false otherwise
     double alpha; //exponent of the LATP algorithm, used to calculate the next location
   public:
     friend Person;

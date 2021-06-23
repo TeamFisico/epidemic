@@ -3,6 +3,7 @@
 #include <numeric>
 #include "random.hpp"
 #include "parameters.hpp"
+#include <iostream>
 
 using namespace sim;
 
@@ -10,7 +11,7 @@ using namespace sim;
 mobility_model::mobility_model(Person person, int stay,
                                double home_probability, bool at_home)
     : person{person}, target_location{nullptr}, stay{stay},
-      home_probability{home_probability}, at_home{at_home}
+      home_probability{home_probability}, at_home{at_home}, going_home{false}
 {
 }
 
@@ -22,13 +23,15 @@ mobility_model::mobility_model(Person person, int stay,
 void mobility_model::next_location()
 {
     Random rng;
-    if(target_location == person.get_home()){ //called when person is at home with target location home
+    if(going_home && target_location == person.get_home()){ //called when person is at home with target location home
         at_home = true;
+        going_home = false;
         stay = rng.rand_stay(); //TODO set random stay from 2 to 5, to change into the power rule
     }
     if (Path.empty())
     { // if Path vector empty select home
         target_location = person.get_home();
+        going_home = true;
     }
     else if (Path.size() == 1)
     { // if Path ha only one element select that element
