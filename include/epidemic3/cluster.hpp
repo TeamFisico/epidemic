@@ -33,12 +33,12 @@ class Cluster
     Zone zone;           //Restriction type for this zone
     double alpha;        //LATP_parameter of this Cluster
     std::array<double, 4> limits; // [0]= lower_x, [1] = upper_x, [2] = lower_y, [3] = upper_y
+    std::array<int,2> wpts_range;   //starting and ending index of this groups waypoints inside Waypoints array
     Data data;
 
   private:
     void determine_groups_sizes(); // determine the n. of waypoints associated to every group
-    void move_people_white();      //move people considering this is  a White cluster
-    void move_people_non_white();  //move people considering this is not a White cluster
+    void move_people();      //move people
   public:
     std::vector<int> People_i; // ref to People array for people in this clust(assign_to_clust() initialized)
     std::vector<Group> Groups;     // groups of waypoints in cluster
@@ -50,11 +50,13 @@ class Cluster
     Zone zone_type() const { return zone; }
     int label() const { return lbl; }
     double weight() const { return w; }
+    double LATP_parameter() const { return alpha; }
     double lower_x() const { return limits[0]; }
     double upper_x() const { return limits[1]; }
     double lower_y() const { return limits[2]; }
     double upper_y() const { return limits[3]; }
-    double LATP_parameter() const { return alpha; }
+    int lower_index() const { return wpts_range[0]; }
+    int upper_index() const { return wpts_range[1]; }
     Data get_data() const { return data; }
     // modifying members
     void set_limits();
@@ -62,6 +64,8 @@ class Cluster
     void set_label(int n) { lbl = n; }
     void set_weight(double weight) { w = weight; };
     void set_zone(Zone newZone) { zone = newZone; }
+    void set_lower_index(int n) { wpts_range[0] = n; }
+    void set_upper_index(int n) { wpts_range[1] = n; }
     void partition_in_groups();
 
     void move();  //move people belonging to this cluster

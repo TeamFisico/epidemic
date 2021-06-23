@@ -181,7 +181,6 @@ Location Simulation::other_groups_step(Location const& prev_group_waypoint,int c
 /////////////////////////////////////////////////////
 void Simulation::plot_waypoints()
 {
-
     for (int cl_index = 0; cl_index < CLUSTERS_SIZE; ++cl_index)
     {
         // set the first waypoint associated with the first group
@@ -204,8 +203,8 @@ void Simulation::plot_waypoints()
 void Simulation::assign_cluster_to_people()
 // assign a person to a cluster based on the cluster weight using piecewise-const-dist
 {
-    std::array<double, CLUSTERS_SIZE> weights; // fill with clusters weights
-    std::array<int, POPULATION_SIZE> labels;   // fill with generated labels according to weights
+    std::array<double, CLUSTERS_SIZE> weights{}; // fill with clusters weights
+    std::array<int, POPULATION_SIZE> labels{};   // fill with generated labels according to weights
 
     for (int i = 0; i < CLUSTERS_SIZE; ++i) // fill with clusters weight
     {
@@ -328,6 +327,18 @@ void Simulation::move()
     }
 }
 //////////////// HELPER FUNCTIONS  //////////////////
+// calculates the index range [lower,upper] (referred to Waypoints array)of the waypoints belonging to each cluster.
+void set_clusters_bounds_indeces()
+{
+    int lower_index = 0;
+    int upper_index = 0;
+    int index = 0;
+    for (int i = 0; i < CLUSTERS_SIZE; index+=Simulation::Clusters[i].size())
+    {
+
+    }
+}
+
 //return a vector with white clusters labels
 std::vector<int> white_clusters_labels()
 {

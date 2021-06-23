@@ -75,7 +75,7 @@ void pathfinder_yellow(Person& person);      //find paths for a person in orange
 void pathfinder_red(Person& person);        //find paths for a person in red Zone
 void fill_path_home(Person& person);
 void fill_path_white(Person& person);          // TODO define , select next visiting locations from green clusters
-int determine_pause_time();
+int generate_pause_time();
 void remove_target_index(Person& person,int index_to_remove);
 void remove_target(Person& person,Location to_remove);   //remove a visited target from person.Path
 std::vector<int> get_close_people_in_cluster(Person const& person);   //returns indeces of in-spread-radius people inside person's cluster

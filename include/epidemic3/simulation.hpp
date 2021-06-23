@@ -41,7 +41,7 @@ bool check_group(Group const& group, Position try_position);       // helper fun
 bool check_cluster(Cluster const& cluster, Position try_position); // helper function for first_group_step()
 bool check_labeled_clusters(int label, Position try_position);     // helper function for first_group_step()
 std::vector<int> white_clusters_labels();
-
+void set_clusters_bounds_indeces();   //set wpts range of each cindeces referred to Waypoints array
 } // namespace smooth_simulation
 
 #endif // SIMULATION_HPP

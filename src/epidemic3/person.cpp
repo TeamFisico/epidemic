@@ -1,6 +1,6 @@
 #include "person.hpp"
 #include "simulation.hpp"
-#include <math.h>
+#include <cmath>
 #include <algorithm>
 #include <iostream>
 
@@ -139,7 +139,7 @@ void Person::move_home()
     {
         location.set_position(home.get_position()); // set new position
         at_place = true;                     // the person is now at a place
-        stay_counter = determine_pause_time();       // how much time he/she will spend there
+        stay_counter = generate_pause_time();       // how much time he/she will spend there
         going_home = false;
         //determine and fill path from home of green clusters
         if (are_white_available(*this)) { fill_path_white(*this); }
@@ -185,7 +185,7 @@ void Person::move_toward()
     {
         location.set_position(new_position); // set new position
         at_place = true;                     // the person is now at a place
-        stay_counter = determine_pause_time();       // how much time he/she will spend there
+        stay_counter = generate_pause_time();       // how much time he/she will spend there
                                              //erase the current target from Paths_i
         remove_target(*this, target); //remove target from path
         return;
@@ -200,34 +200,37 @@ void Person::move()
 {
     if (at_place)
     {
-        if (is_staying())
+        if (is_staying())  //still has to wait
         {
-            if (at_home())
+            --stay_counter;
+            return;
+        }
+        else            //the waiting time is up
+        {
+            if (at_home())  // is at home
             {
                 //TODO FILL PATH refill path
                 pathfinder(*this);
                 update_target();
                 move_toward();
                 return;
-            }else  //the person is at place outside
+            }
+            else  //the person is at a place other than home
             {
-                if (empty_path())
+                if (empty_path()) //there are no more available waypoints
                 {
                     going_home = true;
                     move_home();
                     return;
                 }
-                else //there are available targets
+                else  //there are available targets
                 {
                     update_target();
                     move_toward();
                     return;
                 }
             }
-        }else  //the person is staying at a place
-        {
-            --stay_counter;
-            return;
+
         }
     }
     else  //not at a place
@@ -237,7 +240,8 @@ void Person::move()
             move_home();
             return;
         }
-        else{
+        else
+        {
             move_toward();
             return;
         }
@@ -303,6 +307,26 @@ bool are_white_available(const Person& person)
     }
     return false;
 }
+/////////////////////////////////////////////////////
+///   FIND PATHS FOR PEOPLE IN WHITE CLUSTERS     ///
+/////////////////////////////////////////////////////
+void pathfinder_white(Person& person)
+{}
+/////////////////////////////////////////////////////
+///   FIND PATHS FOR PEOPLE IN YELLOW CLUSTERS    ///
+/////////////////////////////////////////////////////
+void pathfinder_yellow(Person& person)
+{}
+/////////////////////////////////////////////////////
+///   FIND PATHS FOR PEOPLE IN ORANGE CLUSTERS    ///
+/////////////////////////////////////////////////////
+void pathfinder_orange(Person& person)
+{}
+/////////////////////////////////////////////////////
+///   FIND PATHS FOR PEOPLE IN RED CLUSTERS       ///
+/////////////////////////////////////////////////////
+void pathfinder_red(Person& person)
+{}
 /////////////////////////////////////////////////////
 ////////  PATH ASSIGNMENT FROM HOME CLUSTER   ///////
 /////////////////////////////////////////////////////
@@ -371,7 +395,7 @@ void fill_path_white(Person& person)
 //////        DETERMINE STAY AT A PLACE         /////
 /////////////////////////////////////////////////////
 // generating pause time at a place according to TPL(Truncated power Law) [see paper for details]
-int determine_pause_time()
+int generate_pause_time()
 {
     double term1 = 0.0;
     double term2 = 0.0;
@@ -415,9 +439,6 @@ void remove_target_index(Person& person,int index_to_remove)
 {
      std::swap(index_to_remove,person.Paths_i.back()); //swap the last element with the one to be removed
      person.Paths_i.pop_back(); //erase the last element of the vector
-     return;
-    //if we get here there's a problem
-    std::cerr<<"The target is not in person.Paths_i!.Aborting.";
 }
 
 
