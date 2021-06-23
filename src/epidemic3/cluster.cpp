@@ -93,11 +93,7 @@ void Cluster::determine_groups_sizes()
 /////////////////////////////////////////////////////
 void Cluster::move_people()
 {
-    for (auto& i : People_i)
-    {
-        Person& p = Simulation::People[i];  //current person
-        p.move();
-    }
+
 }
 /////////////////////////////////////////////////////
 ////////        CLUSTER PARTITIONING          ///////
@@ -152,8 +148,11 @@ void Cluster::set_limits()
 /////////////////////////////////////////////////////
 void Cluster::move()
 {
-    if (zone == Zone::White){ move_people_white(); }
-    else { move_people_non_white(); }
+    for (auto& i : People_i)
+    {
+        Person& p = Simulation::People[i];  //current person
+        p.move();
+    }
 }
 /////////////////////////////////////////////////////
 ////////        DATA CONSTRUCTOR              ///////
@@ -163,4 +162,14 @@ Data::Data(int susceptible, int latent, int infected, int recovered, int dead)
 {
 }
 
+//returns a vector with white clusters labels except the one taken as argument
+std::vector<int> available_white_clusters(int lbl)
+{
+    std::vector<int> labels;
+    for (auto& cl : Simulation::Clusters)
+    {
+        if (cl.zone_type() == Zone::White && cl.label() != lbl) labels.push_back(cl.label());
+    }
+    return labels;
+}
 } // namespace smooth_simulation

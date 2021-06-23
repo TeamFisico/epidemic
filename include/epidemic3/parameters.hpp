@@ -16,4 +16,4 @@ double constexpr MAX_PAUSE = 60.0;
 double constexpr MIN_PAUSE = 5.0;
 double constexpr STARTING_VELOCITY[2]{0.5, 0.5}; // units/step
 double constexpr MAXIMUM_VELOCITY_STDDEV = 1.0;
-double constexpr OTHER_CLUSTERS_PERCENTAGE = 0.30; //percentage of waypoints picked from white clusters other than one person's
+double constexpr OTHER_CLUSTERS_PROBABILITY = 0.30; //percentage of waypoints picked from white clusters other than one person's

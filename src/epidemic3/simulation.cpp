@@ -300,6 +300,7 @@ void Simulation::world_generation()
     }
     assign_cluster_to_people();
     assign_home_to_people();
+    set_clusters_bounds_indeces();
 
 }
 
@@ -333,21 +334,24 @@ void set_clusters_bounds_indeces()
     int lower_index = 0;
     int upper_index = 0;
     int index = 0;
-    for (int i = 0; i < CLUSTERS_SIZE; index+=Simulation::Clusters[i].size())
-    {
 
-    }
+    //first cluster
+    upper_index = Simulation::Clusters[0].size() - 1;
+    Simulation::Clusters[0].set_lower_index(0);
+    Simulation::Clusters[0].set_upper_index(upper_index);
+    lower_index = upper_index;  //the upper becomes now lower for the second
+    for (int i = 1; i < CLUSTERS_SIZE; index+=Simulation::Clusters[i].size())
+    {
+        auto& current = Simulation::Clusters[i];  //current cluster
+
+        upper_index = lower_index + current.size() - 1;
+        current.set_lower_index(lower_index);
+        current.set_upper_index(upper_index);
+        lower_index = upper_index;   //the upper becomes now lower for the next
+    } //end for
 }
 
-//return a vector with white clusters labels
-std::vector<int> white_clusters_labels()
-{
-    std::vector<int> labels;
-    for (auto& cl : Simulation::Clusters)
-    {
-        if (cl.zone_type() == Zone::White) labels.push_back(cl.label());
-    }
-}
+
 double weight_function(double distance, double LATP_parameter)
 {
     return 1 / std::pow(distance, LATP_parameter);

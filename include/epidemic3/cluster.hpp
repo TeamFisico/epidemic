@@ -71,6 +71,9 @@ class Cluster
     void move();  //move people belonging to this cluster
 };
 
+std::vector<int> available_white_clusters(int lbl);
+
+
 } // namespace smooth_simulation
 
 #endif // CLUSTER_HPP

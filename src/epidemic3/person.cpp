@@ -230,7 +230,6 @@ void Person::move()
                     return;
                 }
             }
-
         }
     }
     else  //not at a place
@@ -310,8 +309,57 @@ bool are_white_available(const Person& person)
 /////////////////////////////////////////////////////
 ///   FIND PATHS FOR PEOPLE IN WHITE CLUSTERS     ///
 /////////////////////////////////////////////////////
+// Fills person 's Path_i with indeces to waypoints. Total waypoints== VISITING_PERCENTAGE * cluster_size
+//Case no other white cluster is available : fill with wpts just from the person homw cluster
+//Case there are other white clusters available : fill path with 50% wpts from the home clusters and the other 50%
+// waypoints taken from other white clusters proportionally to their sizes. In particular the weight of the cluster
+// of the person is chosen so that the probability to get a wpt from there is 1- OTHER_CLUSTERS_PROBABILITY
 void pathfinder_white(Person& person)
-{}
+{
+    std::vector<int> white_clust = available_white_clusters(person.home_cluster());
+    if (white_clust.empty())
+    {
+
+    }else //there are available white clusters
+    {
+        std::vector<double> weights;
+        weights.reserve(white_clust.size() + 1); //allocate the needed space
+
+        //fill the first white_clust.size() elements w/ other white clusters weights
+        for (int& index : white_clust)
+        {
+            double current_weight = Simulation::Clusters[index].weight();
+            weights.push_back(current_weight);
+        }
+
+        double person_cluster_weight = 0.0;
+        for (int& index : white_clust)
+        {
+            person_cluster_weight += Simulation::Clusters[index].weight(); //add i-th white clust weight
+        }
+        //this way this cluster's waypoints will account for the right percentage in the extraction
+        person_cluster_weight *= (1 - OTHER_CLUSTERS_PROBABILITY) / OTHER_CLUSTERS_PROBABILITY;
+
+        //now adding this person's cluster weight
+        white_clust.push_back(person.home_cluster());
+        weights.push_back(person_cluster_weight);
+
+        //now extracting from the discrete distribution indeces i from 0...weights.size()-1
+        // we then get the corresponding cluster index ,namely, white_clust[i]
+        int n_waypoints = VISITING_PERCENTAGE * Simulation::Clusters[person.home_cluster()].size();
+        std::vector<int> result; //vector containing labels of the chosen clusters to choose wpts from
+        result.reserve(n_waypoints);
+
+        Random rng{};  //seeded engine
+        for (int i = 0; i < n_waypoints; ++i)
+        {
+           int white_clust_label = white_clust[rng.discrete(weights)];
+           result.push_back(white_clust_label);
+        }
+
+        //TODO now use result vector to fill path
+    }
+}
 /////////////////////////////////////////////////////
 ///   FIND PATHS FOR PEOPLE IN YELLOW CLUSTERS    ///
 /////////////////////////////////////////////////////
@@ -381,14 +429,6 @@ void fill_path_home(Person& person)
         already_chosen_indeces.push_back(random_index);
         person.Paths_i.push_back(random_index);
     }
-}
-/////////////////////////////////////////////////////
-//////   PATH ASSIGNMENT(FROM WHITE CLUSTERS)   /////
-/////////////////////////////////////////////////////
-// select some waypoints among the current cluster and the others
-void fill_path_white(Person& person)
-{
-    std::vector<int> white = white_clusters_labels(); //currently white labels
 }
 
 /////////////////////////////////////////////////////
