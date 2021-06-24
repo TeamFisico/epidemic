@@ -137,14 +137,11 @@ void Person::move_home()
     // check if the person will enter the target location radius
     if (new_position.in_radius(home.get_position(),HOME_RADIUS)) // the person has arrived home
     {
+        Random rng{};
         location.set_position(home.get_position()); // set new position
         at_place = true;                     // the person is now at a place
-        stay_counter = generate_pause_time();       // how much time he/she will spend there
+        stay_counter = rng.rand_stay();       // how much time he/she will spend there
         going_home = false;
-        //determine and fill path from home of green clusters
-        if (are_white_available(*this)) { fill_path_white(*this); }
-        else { fill_path_home(*this); }
-        return;
     }
 
     location.set_position(new_position); // set new position
@@ -185,7 +182,7 @@ void Person::move_toward()
     {
         location.set_position(new_position); // set new position
         at_place = true;                     // the person is now at a place
-        stay_counter = generate_pause_time();       // how much time he/she will spend there
+        stay_counter = rng.rand_stay();       // how much time he/she will spend there
                                              //erase the current target from Paths_i
         remove_target(*this, target); //remove target from path
         return;
@@ -321,7 +318,7 @@ void pathfinder_white(Person& person)
         for (int i = 0; i < n_waypoints; ++i)
         {
             waypoint_index = rng.int_uniform(lw_index,up_index);  //uniformly extract an index
-            for (int j = 0; i < already_chosen.size() ;++j)
+            for (unsigned long j = 0; j < already_chosen.size() ;++j)
             {
                 if(waypoint_index == already_chosen[j]) //already chosen!
                 {
@@ -350,7 +347,7 @@ void pathfinder_white(Person& person)
             int lw_index = Simulation::Clusters[clust_index].lower_index();
             int up_index = Simulation::Clusters[clust_index].upper_index();
             waypoint_index = rng.int_uniform(lw_index,up_index);  //uniformly extract an index
-            for (int i = 0; i < already_chosen.size() ;++i)
+            for (unsigned long i = 0; i < already_chosen.size() ;++i)
             {
                 if(waypoint_index == already_chosen[i]) //already chosen!
                 {
@@ -381,7 +378,7 @@ void pathfinder_yellow(Person& person)
     for (int i = 0; i < n_waypoints; ++i)
     {
         waypoint_index = rng.int_uniform(lw_index,up_index);  //uniformly extract an index
-        for (int j = 0; i < already_chosen.size() ;++j)
+        for (unsigned long j = 0; j < already_chosen.size() ;++j)
         {
             if(waypoint_index == already_chosen[j]) //already chosen!
             {
@@ -412,7 +409,7 @@ void pathfinder_orange(Person& person)
     for (int i = 0; i < n_waypoints; ++i)
     {
         waypoint_index = rng.int_uniform(lw_index,up_index);  //uniformly extract an index
-        for (int j = 0; i < already_chosen.size() ;++j)
+        for (unsigned long j = 0; j < already_chosen.size() ;++j)
         {
             if(waypoint_index == already_chosen[j]) //already chosen!
             {
@@ -443,7 +440,7 @@ void pathfinder_red(Person& person)
     for (int i = 0; i < n_waypoints; ++i)
     {
         waypoint_index = rng.int_uniform(lw_index,up_index);  //uniformly extract an index
-        for (int j = 0; i < already_chosen.size() ;++j)
+        for (unsigned long j = 0; j < already_chosen.size() ;++j)
         {
             if(waypoint_index == already_chosen[j]) //already chosen!
             {
@@ -455,32 +452,6 @@ void pathfinder_red(Person& person)
         person.Paths_i.push_back(waypoint_index);   //add it to path
         already_chosen.push_back(waypoint_index);   //take track of it
     }
-}
-/////////////////////////////////////////////////////
-//////        DETERMINE STAY AT A PLACE         /////
-/////////////////////////////////////////////////////
-// TODO add in random class generating pause time at a place according to TPL(Truncated power Law) [see paper for details]
-int generate_pause_time()
-{
-    double term1 = 0.0;
-    double term2 = 0.0;
-    double term3 = 0.0;
-    double term4 = 0.0;
-    double pause_time = 0.0;
-
-    Random rng{}; // set the seed
-    std::uniform_real_distribution<> rand(0.0, 1.0);
-
-    double u = rng.uniform(0, 1); // number in range [0,1)
-
-    term1 =
-        (u * pow(MAX_PAUSE, PAUSE_EXPONENT)) - (u * pow(MIN_PAUSE, PAUSE_EXPONENT)) - pow(MAX_PAUSE, PAUSE_EXPONENT);
-    term2 = pow(MAX_PAUSE, PAUSE_EXPONENT) * pow(MIN_PAUSE, PAUSE_EXPONENT);
-    term3 = -(term1 / term2);
-    term4 = pow(term3, (-1 / PAUSE_EXPONENT));
-    pause_time = term4;
-
-    return round(pause_time);
 }
 //remove a visited target from person.Path: since we don't care about the targets order, move the one to remove to
 // the end and remove it preventing moving all items after it
@@ -508,8 +479,6 @@ void remove_target_index(Person& person,int index_to_remove)
 //calculate weights for each cluster so to respect the condition of OTHER_CLUSTERS_PROBABILITY
 void weights_fill(Person const& person,std::vector<int>& white_labels, std::vector<double>& weights)
 {
-    const int n_waypoints = (int)(VISITING_PERCENTAGE_WHITE * Simulation::Clusters[person.home_cluster()].size());
-
     assert(weights.empty()); //gotta make sure weights vector is empty since it'll be filled
     weights.reserve(white_labels.size() + 1); //allocate the needed space
 

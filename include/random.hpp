@@ -28,6 +28,7 @@ class Random
     double gauss(double mean, double stddev);
     int rounded_gauss(double mean, double stddev);
     int discrete(std::vector<double> weights);  //extract a number
+    int rand_stay();        //generate a stay according to TPL(see //TODO)
 };
 
 } // namespace smooth_simulation

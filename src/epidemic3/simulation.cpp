@@ -294,13 +294,26 @@ void Simulation::world_generation()
         cluster.partition_in_groups();
     }
     plot_waypoints();  //plot the waypoints on the map
+    std::cout << "Waypoints successfully plotted on the map" << std::endl;
     for (auto& cluster : Clusters)  //set (x,y) limits for each cluster
     {
         cluster.set_limits();
     }
+    std::cout << "Limits setted" << std::endl;
+
     assign_cluster_to_people();
+    std::cout << "Clusters assigned" << std::endl;
+
     assign_home_to_people();
+    std::cout << "Home assigned" << std::endl;
+
     set_clusters_bounds_indeces();
+    std::cout << "bound setted" << std::endl;
+    for (auto& p : People)
+    {
+        p.location = p.home;
+    }
+    std::cout << "People initial location setted being home\n";
 
 }
 
@@ -322,10 +335,14 @@ Simulation::Simulation(double side, double spread_radius,Data data)
 /////////////////////////////////////////////////////
 void Simulation::move()
 {
-    for (auto& c : Clusters)
+    for (int i = 0; i < 50; ++i)
     {
-
+        for (auto& c : Clusters)
+        {
+            c.move();
+        }
     }
+
 }
 //////////////// HELPER FUNCTIONS  //////////////////
 // calculates the index range [lower,upper] (referred to Waypoints array)of the waypoints belonging to each cluster.
@@ -333,21 +350,20 @@ void set_clusters_bounds_indeces()
 {
     int lower_index = 0;
     int upper_index = 0;
-    int index = 0;
 
     //first cluster
     upper_index = Simulation::Clusters[0].size() - 1;
     Simulation::Clusters[0].set_lower_index(0);
     Simulation::Clusters[0].set_upper_index(upper_index);
-    lower_index = upper_index;  //the upper becomes now lower for the second
-    for (int i = 1; i < CLUSTERS_SIZE; index+=Simulation::Clusters[i].size())
+    lower_index = upper_index + 1;  //the upper becomes now lower for the second
+    for (int i = 1; i < CLUSTERS_SIZE;++i)
     {
         auto& current = Simulation::Clusters[i];  //current cluster
 
         upper_index = lower_index + current.size() - 1;
         current.set_lower_index(lower_index);
         current.set_upper_index(upper_index);
-        lower_index = upper_index;   //the upper becomes now lower for the next
+        lower_index = upper_index + 1;   //the upper becomes now lower for the next
     } //end for
 }
 

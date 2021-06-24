@@ -1,4 +1,5 @@
 #include "../include/random.hpp"
+#include "../include/epidemic3/parameters.hpp"
 #include <cassert>
 
 namespace smooth_simulation
@@ -32,6 +33,24 @@ int Random::rounded_gauss(double mean, double stddev)
 int Random::discrete(std::vector<double> weights)
 {
     return eng.variate<int,std::discrete_distribution>(std::begin(weights),std::end(weights));
+}
+int Random::rand_stay()
+{
+    double term1 = 0.0;
+    double term2 = 0.0;
+    double term3 = 0.0;
+    double term4 = 0.0;
+    double pause_time = 0.0;
+
+    double u = uniform(0, 1); // number in range [0,1)
+
+    term1 =
+        (u * pow(MAX_PAUSE, PAUSE_EXPONENT)) - (u * pow(MIN_PAUSE, PAUSE_EXPONENT)) - pow(MAX_PAUSE, PAUSE_EXPONENT);
+    term2 = pow(MAX_PAUSE, PAUSE_EXPONENT) * pow(MIN_PAUSE, PAUSE_EXPONENT);
+    term3 = -(term1 / term2);
+    term4 = pow(term3, (-1 / PAUSE_EXPONENT));
+    pause_time = term4;
+    return round(pause_time);
 }
 
 } // namespace smooth_simulation

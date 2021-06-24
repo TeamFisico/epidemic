@@ -42,10 +42,10 @@ class Cluster
   public:
     std::vector<int> People_i; // ref to People array for people in this clust(assign_to_clust() initialized)
     std::vector<Group> Groups;     // groups of waypoints in cluster
-    // constructors
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
     Cluster(int size, int label, double weight, Zone zone,double alpha, double x_low, double x_up, double y_low, double y_up,Data cluster_data);
     Cluster();
-    // non-modifying members
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
     int size() const { return sz; }
     Zone zone_type() const { return zone; }
     int label() const { return lbl; }
@@ -58,7 +58,7 @@ class Cluster
     int lower_index() const { return wpts_range[0]; }
     int upper_index() const { return wpts_range[1]; }
     Data get_data() const { return data; }
-    // modifying members
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
     void set_limits();
     void set_size(int n) { sz = n; }
     void set_label(int n) { lbl = n; }
@@ -66,8 +66,8 @@ class Cluster
     void set_zone(Zone newZone) { zone = newZone; }
     void set_lower_index(int n) { wpts_range[0] = n; }
     void set_upper_index(int n) { wpts_range[1] = n; }
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
     void partition_in_groups();
-
     void move();  //move people belonging to this cluster
 };
 

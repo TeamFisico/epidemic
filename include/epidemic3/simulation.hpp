@@ -30,6 +30,7 @@ class Simulation
     void update_zones();                 // check the numbers of the epidemic and change Zones color
   public:
     Simulation(double side, double spread_radius,Data data); // constructor
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
     void check_zones();         // verify Clusters color
     void simulate();           //simulate
     void move();              //move all the people
