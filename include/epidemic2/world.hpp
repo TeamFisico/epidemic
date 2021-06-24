@@ -16,6 +16,7 @@ class World{
     int number_of_people(); //get the number of total people in the world
     Cluster* get_cluster(int index); // return a pointer to index cluster
     std::vector<Cluster> &Clusters(){return clusters; };
+    std::vector<Location*> generate_path(int mean, int dev, std::vector<int> green_cluster_index, std::vector<double> weights, Random& rng); //generate path from selecting from all green clusters
 };
 
 std::vector<Location*> generate_path(std::vector<Location*> list, double mean, double dev); //generate a random number of pointer to Location from the provided one

@@ -4,6 +4,7 @@
 #include "group.hpp"
 #include "rectangle.hpp"
 #include "mobility_model.hpp"
+#include "random.hpp"
 
 namespace sim{
 
@@ -22,14 +23,14 @@ class Cluster{
     std::vector<Location*> Location_list();//get a vector of pointer to all locations in the cluster
     std::vector<Person*> Person_list();//get a vector of pointer to all People in the cluster
     std::vector<Group> &Groups(){ return groups; }
+    int index(){ return cluster_index; }
     int number_of_locations(); //return the number of locations in the cluster
     int number_of_people(); //return the number of people in the cluster
     Position gen_group_center(int num_of_loc); //generate a valid center location for the next group
     Color& get_color(){ return color; }
     std::vector<mobility_model> &population(){ return Population; }
-    std::vector<Location*> generate_path(double mean, double dev);
-
-
+    std::vector<Location*> generate_path(double mean, double dev, Random& rng);
+    Location* select_location(int n); // select the nth location and return his pointer, used for generate_path
 };
 
 }

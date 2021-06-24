@@ -126,15 +126,13 @@ Position Cluster::gen_group_center(int num_of_loc)
 
 }
 
-std::vector<Location*> Cluster::generate_path(double mean, double dev)
+std::vector<Location*> Cluster::generate_path(double mean, double dev, Random& rng)
 {
-    Random rng;
     int to_visit = rng.rounded_gauss(mean - 1, dev) + 1; // make sure is always >= 1
     int last_index = -1;
     for(auto& a: groups){
         last_index += a.size();
     }
-    std::vector<Location*> result;
     std::vector<int> result_indexes;
     for(int i = 0; i < to_visit; ++i){ // select the random indexes
         bool continue_loop = true;
@@ -152,19 +150,24 @@ std::vector<Location*> Cluster::generate_path(double mean, double dev)
         }
         result_indexes.push_back(curr_index);
     }
+    std::vector<Location*> result;
+    result.reserve(to_visit);
     for(int i = 0; i < to_visit; ++i){
-        int index = result_indexes.operator[](i);
-        int g_size = groups.size();
-        for(int j = 0; j < g_size; ++j){
-            int size = groups.operator[](j).size();
-            if(index < size){
-                result.push_back(&groups.operator[](j).Locations().operator[](index));
-                j = g_size + 1;
-            }
-            else{
-                index -= size;
-            }
-        }
+        result.push_back(select_location(result_indexes[i]));
     }
     return result;
+}
+
+Location * Cluster::select_location(int n)
+{
+    int g_size = groups.size();
+    for(int j = 0; j < g_size; ++j){
+        int size = groups.operator[](j).size();
+        if(n < size){
+            return &groups.operator[](j).Locations().operator[](n);
+        }
+        else{
+            n -= size;
+        }
+    }
 }

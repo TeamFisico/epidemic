@@ -20,9 +20,8 @@ mobility_model::mobility_model(Person person, int stay,
 {
 }*/
 
-void mobility_model::next_location()
+void mobility_model::next_location(Random& rng)
 {
-    Random rng;
     if(going_home && target_location == person.get_home()){ //called when person is at home with target location home
         at_home = true;
         going_home = false;
@@ -76,9 +75,9 @@ bool mobility_model::at_target_location()
     return person.at_location(target_location);
 }
 
-void mobility_model::move(double speed)
+void mobility_model::move(double speed, Random& rng)
 {
-    person.get_pos().move_toward(target_location->get_pos(), speed);
+    person.get_pos().move_toward(target_location->get_pos(), speed, rng);
 }
 
 void mobility_model::recall_home()

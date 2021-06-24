@@ -191,6 +191,21 @@ void Simulation::move()
     { // check every person in mobility model in order
         if (c.get_color() == Color::Green)
         {
+            std::vector<int> green_cluster_index{};
+            for(int i = 0; i < world.Clusters().size(); ++i){ // fill the cluster with all the Green cluster except the current one
+                if(world.Clusters()[i].get_color() == Color::Green && i != c.index()){
+                    green_cluster_index.push_back(i);
+                }
+            }
+            green_cluster_index.push_back(c.index()); //at the end add the current cluster
+            std::vector<double> weights{};
+            weights.reserve(green_cluster_index.size());
+            for (int i = 0; i < green_cluster_index.size() - 1; ++i){ //fill the weight fot the various cluster, except for the current
+                weights.push_back(world.Clusters()[green_cluster_index[i]].number_of_locations());
+            }
+            double sum = std::accumulate(weights.begin(), weights.end(), 0.);
+            weights.push_back(sum); //make sure there is a 50 percent probability hat chosen location is from current cluster
+
             for (auto &a : c.population())
             {
                 if (a.is_at_home())
@@ -200,16 +215,17 @@ void Simulation::move()
                         if (!rng.try_event(a.home_prob()))
                         {                    // check if the person leave home
                             a.not_at_home(); // set the person as not at home
-                            if (rng.try_event(0.50))
+                            /*if (rng.try_event(0.50))
                             { // select the location from the cluster in which the person is located
                                 //a.path() = sim::generate_path(list, 5, 1);
-                                a.path() = c.generate_path(5,1);
+                                a.path() = c.generate_path(5,1,rng);
                             }
                             else
                             { // select from all green locations
                                 //a.path() = sim::generate_path(green_list, 5, 1);
-                                a.path() = c.generate_path(5,1);
-                            }
+                                a.path() = c.generate_path(5,1,rng);
+                            }*/
+                             a.path() = world.generate_path(5,1,green_cluster_index,weights,rng);
                         }
                     }
                     else
@@ -220,14 +236,14 @@ void Simulation::move()
                 else if (a.at_target_location())
                 {
                     if (a.Stay() <= 0) {
-                        a.next_location();
+                        a.next_location(rng);
                     }
                     else{
                         --a.Stay();
                     }
                 }
                 else{
-                    a.move(rng.uniform(2,5));
+                    a.move(rng.uniform(2,5),rng);
                 }
             }
         }
@@ -243,7 +259,7 @@ void Simulation::move()
                         {                    // check if the person leave home
                             a.not_at_home(); // set the person as not at home
                             //a.path() = sim::generate_path(list, 3, 0.5);
-                            a.path() = c.generate_path(3,0.5);
+                            a.path() = c.generate_path(3,0.5,rng);
                         }
                     }
                     else
@@ -254,14 +270,14 @@ void Simulation::move()
                 else if (a.at_target_location())
                 {
                     if (a.Stay() <= 0) {
-                        a.next_location();
+                        a.next_location(rng);
                     }
                     else{
                         --a.Stay();
                     }
                 }
                 else{
-                    a.move(rng.uniform(2,5));
+                    a.move(rng.uniform(2,5),rng);
                 }
             }
         }
@@ -277,7 +293,7 @@ void Simulation::move()
                         {                    // check if the person leave home
                             a.not_at_home(); // set the person as not at home
                             //a.path() = sim::generate_path(list, 1, 0.2);
-                            a.path() = c.generate_path(1, 0.2);
+                            a.path() = c.generate_path(1, 0.2,rng);
                         }
                     }
                     else
@@ -288,14 +304,14 @@ void Simulation::move()
                 else if (a.at_target_location())
                 {
                     if (a.Stay() <= 0) {
-                        a.next_location();
+                        a.next_location(rng);
                     }
                     else{
                         --a.Stay();
                     }
                 }
                 else{
-                    a.move(rng.uniform(2,5));
+                    a.move(rng.uniform(2,5),rng);
                 }
             }
         }

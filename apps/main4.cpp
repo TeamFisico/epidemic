@@ -46,7 +46,7 @@ int main()
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    Simulation prova{25000 ,3, 70, 4, 5, 400, 300,0.1,0.02,0.3,0.5,20,10};
+    Simulation prova{25000 ,3, 200, 4, 5, 1000, 500,0.1,0.02,0.1,0.5,20,10};
     for(int k = 0; k < 10; ++k){
         prova.move();
     }
@@ -59,7 +59,7 @@ int main()
     std::vector<Data> result{};
     std::vector<Position> positions{};
     std::vector<bool> at_home{};
-    for(int i = 0; i < 40; ++i){
+    for(int i = 0; i < 10; ++i){
         start = std::chrono::high_resolution_clock::now();
         for(int j = 0; j < 10; ++j){
             prova.move();

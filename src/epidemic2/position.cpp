@@ -19,9 +19,8 @@ bool Position::InRadius(Position other, double r)
     return false;
 }
 
-void Position::move_toward(Position target, double speed)
+void Position::move_toward(Position target, double speed, Random& rng)
 {
-    Random rng;
     double dx = target.x - x;
     double dy = target.y - y;
     double angle = std::atan2(dy,dx);
