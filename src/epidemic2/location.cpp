@@ -24,8 +24,8 @@ Location sim::generate_close_loc(Position &pos, double min_distance, double max_
     double x = pos.get_x() + v_x;
     double y = pos.get_y() + v_y;
     Position res{x, y};
-    double radius =
-        rng.gauss(max_distance / 4, max_distance / 10); // arbitrary way to generate Locatio radius, still WIP
+    double radius = 2;
+        //rng.gauss(max_distance / 4, max_distance / 10); // arbitrary way to generate Locatio radius, still WIP
     return {res, radius};
 }
 

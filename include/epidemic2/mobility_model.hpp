@@ -22,7 +22,7 @@ class mobility_model
     mobility_model(); //Default constructor
     void next_location(); //Randomly select the new location to visit; or home if you do not have anymore location to visit
     bool at_target_location(); //return true if the pointed person is inside pointed location Radius, return false otherwise
-    void move(); //move the pointed Person to the pointed target_location
+    void move(double speed); //move the pointed Person to the pointed target_location
     void recall_home(); //set the target_location to home. to be called when curfew start or at a cluster color change
     void change_home_prob(double prob); //change home_probability
     void not_at_home(){ at_home = false; } // set at_home to false

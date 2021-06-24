@@ -46,7 +46,7 @@ int main()
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    Simulation prova{25000 ,3, 7, 4, 5, 400, 300,0.1,0.02,0.3,0.5,20,10};
+    Simulation prova{25000 ,3, 70, 4, 5, 400, 300,0.1,0.02,0.3,0.5,20,10};
     for(int k = 0; k < 10; ++k){
         prova.move();
     }
@@ -57,13 +57,17 @@ int main()
     std::cout << "Generation and first movement : " << duration.count() << " s " << std::endl;
 
     std::vector<Data> result{};
-    for(int i = 0; i < 4; ++i){
+    std::vector<Position> positions{};
+    std::vector<bool> at_home{};
+    for(int i = 0; i < 40; ++i){
         start = std::chrono::high_resolution_clock::now();
         for(int j = 0; j < 10; ++j){
             prova.move();
             prova.spread();
             prova.update_Condition();
             result.push_back(prova.get_data());
+            positions.push_back(prova.person_pos(0,0));
+            at_home.push_back(prova.at_home(0,0));
         }
         prova.update_Colors();
         end = std::chrono::high_resolution_clock::now();
@@ -76,5 +80,10 @@ int main()
     for (auto &a : result)
     {
         out << "S = " << a.S << " E = " << a.E << " I = " << a.I << " R = " << a.R << std::endl;
+    }
+
+    for (int i = 0; i < positions.size(); ++i)
+    {
+        out << "X = " << positions[i].get_x() << " Y = " << positions[i].get_y() << "   at home: " <<at_home[i] << std::endl;
     }
 }

@@ -15,20 +15,25 @@ Position::Position() : x{0}, y{0}
 
 bool Position::InRadius(Position other, double r)
 {
-    if ((x - other.x) * (x - other.x) <= r * r && (y - other.y) * (y - other.y) <= r * r) { return true; }
+    if (((x - other.x) * (x - other.x)) + ((y - other.y) * (y - other.y)) <= r * r) { return true; }
     return false;
 }
 
 void Position::move_toward(Position target, double speed)
 {
     Random rng;
-    double angle = (x - target.x) / (y - target.y);
+    double dx = target.x - x;
+    double dy = target.y - y;
+    double angle = std::atan2(dy,dx);
     double delta_angle =
-        rng.gauss(angle / 10, angle / 100); // random variation to the angle that follow the standard deviation
+        rng.uniform(-0.0872665, 0.0872665); // random variation from -5° to 5°
+    while(distance_to(target) < speed){
+        speed = rng.uniform(0,2);
+    }
     double v_x = speed * std::cos(angle + delta_angle); // x component of velocity vector
     double v_y = speed * std::sin(angle + delta_angle); // y component of velocity vector
-    x = target.x + v_x;
-    y = target.y + v_y;
+    x += v_x;
+    y += v_y;
 }
 
 double Position::distance_to(Position &a)

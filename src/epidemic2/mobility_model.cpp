@@ -76,9 +76,8 @@ bool mobility_model::at_target_location()
     return person.at_location(target_location);
 }
 
-void mobility_model::move()
+void mobility_model::move(double speed)
 {
-    double speed = rand_speed(0, 1);
     person.get_pos().move_toward(target_location->get_pos(), speed);
 }
 

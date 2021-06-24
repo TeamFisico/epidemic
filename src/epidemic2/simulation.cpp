@@ -227,7 +227,7 @@ void Simulation::move()
                     }
                 }
                 else{
-                    a.move();
+                    a.move(rng.uniform(2,5));
                 }
             }
         }
@@ -261,7 +261,7 @@ void Simulation::move()
                     }
                 }
                 else{
-                    a.move();
+                    a.move(rng.uniform(2,5));
                 }
             }
         }
@@ -295,7 +295,7 @@ void Simulation::move()
                     }
                 }
                 else{
-                    a.move();
+                    a.move(rng.uniform(2,5));
                 }
             }
         }
@@ -357,6 +357,16 @@ void Simulation::update_Condition()
         for(auto &a : c.population())//set all the people's condition to new_condition
             a.Person_ref().pass_condition();
     }
+}
+
+Position Simulation::person_pos(int cluster_index, int person_index)
+{
+    return world.Clusters()[cluster_index].population()[person_index].Person_ref().get_pos();
+}
+
+bool Simulation::at_home(int cluster_index, int person_index)
+{
+    return world.Clusters()[cluster_index].population()[person_index].is_at_home();
 }
 
 void Simulation::simulate()
