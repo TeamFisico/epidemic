@@ -280,17 +280,7 @@ void pathfinder(Person& person)
         break;
     }
 }
-/////////////////////////////////////////////////////
-////////        DETERMINE PATH SIZE          ///////
-/////////////////////////////////////////////////////
-//TODO Delete this function cuz the path is filled only when it's empty
 
-int determine_fill_size(Person const& person)
-{
-    int current_Paths_i_size = person.Paths_i.size();
-    double selected_size = Simulation::Clusters[person.home_cluster()].size() * VISITING_PERCENTAGE; // Paths_i final size
-    return static_cast<int>(selected_size - current_Paths_i_size);
-}
 /////////////////////////////////////////////////////
 ////////      DETERMINE HOW TO FILL PATH      ///////
 /////////////////////////////////////////////////////
@@ -316,125 +306,160 @@ bool are_white_available(const Person& person)
 // of the person is chosen so that the probability to get a wpt from there is 1- OTHER_CLUSTERS_PROBABILITY
 void pathfinder_white(Person& person)
 {
-    std::vector<int> white_clust = available_white_clusters(person.home_cluster());
-    if (white_clust.empty())
+    std::vector<int> white_clust_labels = available_white_clusters(person.home_cluster());
+    if (white_clust_labels.empty())
     {
+        const int n_waypoints = (int)(VISITING_PERCENTAGE_WHITE * Simulation::Clusters[person.home_cluster()].size());
 
-    }else //there are available white clusters
-    {
-        std::vector<double> weights;
-        weights.reserve(white_clust.size() + 1); //allocate the needed space
-
-        //fill the first white_clust.size() elements w/ other white clusters weights
-        for (int& index : white_clust)
-        {
-            double current_weight = Simulation::Clusters[index].weight();
-            weights.push_back(current_weight);
-        }
-
-        double person_cluster_weight = 0.0;
-        for (int& index : white_clust)
-        {
-            person_cluster_weight += Simulation::Clusters[index].weight(); //add i-th white clust weight
-        }
-        //this way this cluster's waypoints will account for the right percentage in the extraction
-        person_cluster_weight *= (1 - OTHER_CLUSTERS_PROBABILITY) / OTHER_CLUSTERS_PROBABILITY;
-
-        //now adding this person's cluster weight
-        white_clust.push_back(person.home_cluster());
-        weights.push_back(person_cluster_weight);
-
-        //now extracting from the discrete distribution indeces i from 0...weights.size()-1
-        // we then get the corresponding cluster index ,namely, white_clust[i]
-        int n_waypoints = VISITING_PERCENTAGE * Simulation::Clusters[person.home_cluster()].size();
-        std::vector<int> result; //vector containing labels of the chosen clusters to choose wpts from
-        result.reserve(n_waypoints);
+        //now picking n_waypoints from person home cluster
+        std::vector<int> already_chosen; //contains already chosen waypoints indeces
 
         Random rng{};  //seeded engine
+        int waypoint_index = 0;
+        int lw_index = Simulation::Clusters[person.home_cluster()].lower_index();
+        int up_index = Simulation::Clusters[person.home_cluster()].upper_index();
         for (int i = 0; i < n_waypoints; ++i)
         {
-           int white_clust_label = white_clust[rng.discrete(weights)];
-           result.push_back(white_clust_label);
+            waypoint_index = rng.int_uniform(lw_index,up_index);  //uniformly extract an index
+            for (int j = 0; i < already_chosen.size() ;++j)
+            {
+                if(waypoint_index == already_chosen[j]) //already chosen!
+                {
+                    waypoint_index = rng.int_uniform(lw_index,up_index);  //try with a new one
+                    j = 0;
+                    continue;  //restart the loop
+                }
+            }
+            person.Paths_i.push_back(waypoint_index);   //add it to path
+            already_chosen.push_back(waypoint_index);   //take track of it
         }
+    }
+    else //there are available white clusters
+    {
+        std::vector<double> weights;  //will contain cluster's weights
+        //now fill weights vector:the last element will account for the person's cluster's calculated weight
+        weights_fill(person,white_clust_labels,weights);
 
-        //TODO now use result vector to fill path
+        Random rng{};  //seeded engine
+
+        std::vector<int> already_chosen; //contains already chosen waypoints indeces
+        //picking waypoints according to weights through discrete distribution
+        int waypoint_index = 0;
+        for (int& clust_index : white_clust_labels)
+        {
+            int lw_index = Simulation::Clusters[clust_index].lower_index();
+            int up_index = Simulation::Clusters[clust_index].upper_index();
+            waypoint_index = rng.int_uniform(lw_index,up_index);  //uniformly extract an index
+            for (int i = 0; i < already_chosen.size() ;++i)
+            {
+                if(waypoint_index == already_chosen[i]) //already chosen!
+                {
+                    waypoint_index = rng.int_uniform(lw_index,up_index);  //try with a new one
+                    i = 0;
+                    continue;  //restart the loop
+                }
+            }
+            person.Paths_i.push_back(waypoint_index);   //add it to path
+            already_chosen.push_back(waypoint_index);   //take track of it
+        }
     }
 }
 /////////////////////////////////////////////////////
 ///   FIND PATHS FOR PEOPLE IN YELLOW CLUSTERS    ///
 /////////////////////////////////////////////////////
 void pathfinder_yellow(Person& person)
-{}
+{
+    const int n_waypoints = (int)(VISITING_PERCENTAGE_YELLOW * Simulation::Clusters[person.home_cluster()].size());
+
+    //now picking n_waypoints from person home cluster
+    std::vector<int> already_chosen; //contains already chosen waypoints indeces
+
+    Random rng{};  //seeded engine
+    int waypoint_index = 0;
+    int lw_index = Simulation::Clusters[person.home_cluster()].lower_index();
+    int up_index = Simulation::Clusters[person.home_cluster()].upper_index();
+    for (int i = 0; i < n_waypoints; ++i)
+    {
+        waypoint_index = rng.int_uniform(lw_index,up_index);  //uniformly extract an index
+        for (int j = 0; i < already_chosen.size() ;++j)
+        {
+            if(waypoint_index == already_chosen[j]) //already chosen!
+            {
+                waypoint_index = rng.int_uniform(lw_index,up_index);  //try with a new one
+                j = 0;
+                continue;  //restart the loop
+            }
+        }
+        person.Paths_i.push_back(waypoint_index);   //add it to path
+        already_chosen.push_back(waypoint_index);   //take track of it
+    }
+
+}
 /////////////////////////////////////////////////////
 ///   FIND PATHS FOR PEOPLE IN ORANGE CLUSTERS    ///
 /////////////////////////////////////////////////////
 void pathfinder_orange(Person& person)
-{}
+{
+    const int n_waypoints = (int)(VISITING_PERCENTAGE_ORANGE * Simulation::Clusters[person.home_cluster()].size());
+
+    //now picking n_waypoints from person home cluster
+    std::vector<int> already_chosen; //contains already chosen waypoints indeces
+
+    Random rng{};  //seeded engine
+    int waypoint_index = 0;
+    int lw_index = Simulation::Clusters[person.home_cluster()].lower_index();
+    int up_index = Simulation::Clusters[person.home_cluster()].upper_index();
+    for (int i = 0; i < n_waypoints; ++i)
+    {
+        waypoint_index = rng.int_uniform(lw_index,up_index);  //uniformly extract an index
+        for (int j = 0; i < already_chosen.size() ;++j)
+        {
+            if(waypoint_index == already_chosen[j]) //already chosen!
+            {
+                waypoint_index = rng.int_uniform(lw_index,up_index);  //try with a new one
+                j = 0;
+                continue;  //restart the loop
+            }
+        }
+        person.Paths_i.push_back(waypoint_index);   //add it to path
+        already_chosen.push_back(waypoint_index);   //take track of it
+    }
+}
 /////////////////////////////////////////////////////
 ///   FIND PATHS FOR PEOPLE IN RED CLUSTERS       ///
 /////////////////////////////////////////////////////
+//fills like path_finder_white but n_waypoints is 15% the ones in white zone
 void pathfinder_red(Person& person)
-{}
-/////////////////////////////////////////////////////
-////////  PATH ASSIGNMENT FROM HOME CLUSTER   ///////
-/////////////////////////////////////////////////////
-// fill person Path vector with the waypoints to visit from the home cluster
-void fill_path_home(Person& person)
 {
-    // determine this cluster's indeces range inside Waypoints array
-    int starting_index = 0;
-    int ending_index = 0;
+    const int n_waypoints = (int)(VISITING_PERCENTAGE_RED * Simulation::Clusters[person.home_cluster()].size());
 
-    if (person.home_cluster() > 0) // this is not the first clust
+    //now picking n_waypoints from person home cluster
+    std::vector<int> already_chosen; //contains already chosen waypoints indeces
+
+    Random rng{};  //seeded engine
+    int waypoint_index = 0;
+    int lw_index = Simulation::Clusters[person.home_cluster()].lower_index();
+    int up_index = Simulation::Clusters[person.home_cluster()].upper_index();
+    for (int i = 0; i < n_waypoints; ++i)
     {
-        for (int i = 0; i < person.home_cluster(); ++i)
+        waypoint_index = rng.int_uniform(lw_index,up_index);  //uniformly extract an index
+        for (int j = 0; i < already_chosen.size() ;++j)
         {
-            starting_index += Simulation::Clusters[i].size(); // add up the indeces of the previous clusters
-        }
-        ending_index = starting_index + Simulation::Clusters[person.home_cluster()].size() - 1;
-    }
-    else
-    {
-        ending_index = Simulation::Clusters[person.home_cluster()].size() - 1;
-    }
-    int missing_waypoints = determine_fill_size(person); // number of waypoints to add to person.Paths_i
-
-    std::vector<int> already_chosen_indeces;
-
-    person.Paths_i.reserve(missing_waypoints); // avoid reallocation when pushing back
-    already_chosen_indeces.reserve(person.Paths_i.size() + person.Paths_i.size());
-
-    assert(already_chosen_indeces.empty()); // TODO consider deleting
-    // keep track of the indeces of the waypoints already in person.Paths_i
-    for (int& taken_index : person.Paths_i)
-    {
-        already_chosen_indeces.push_back(taken_index);
-    }
-    Random rng{}; // seeded engine
-
-    int random_index = 0;
-    for (int i = 0; i < missing_waypoints; ++i)
-    {
-        random_index = rng.int_uniform(starting_index, ending_index);
-        for (unsigned long j = 0; j < already_chosen_indeces.size(); ++j)
-        {
-            if (already_chosen_indeces[j] == random_index)
+            if(waypoint_index == already_chosen[j]) //already chosen!
             {
-                random_index = rng.int_uniform(starting_index, ending_index); // try a new one
+                waypoint_index = rng.int_uniform(lw_index,up_index);  //try with a new one
                 j = 0;
-                continue; // restart the inner loop
+                continue;  //restart the loop
             }
         }
-
-        already_chosen_indeces.push_back(random_index);
-        person.Paths_i.push_back(random_index);
+        person.Paths_i.push_back(waypoint_index);   //add it to path
+        already_chosen.push_back(waypoint_index);   //take track of it
     }
 }
-
 /////////////////////////////////////////////////////
 //////        DETERMINE STAY AT A PLACE         /////
 /////////////////////////////////////////////////////
-// generating pause time at a place according to TPL(Truncated power Law) [see paper for details]
+// TODO add in random class generating pause time at a place according to TPL(Truncated power Law) [see paper for details]
 int generate_pause_time()
 {
     double term1 = 0.0;
@@ -480,6 +505,32 @@ void remove_target_index(Person& person,int index_to_remove)
      std::swap(index_to_remove,person.Paths_i.back()); //swap the last element with the one to be removed
      person.Paths_i.pop_back(); //erase the last element of the vector
 }
+//calculate weights for each cluster so to respect the condition of OTHER_CLUSTERS_PROBABILITY
+void weights_fill(Person const& person,std::vector<int>& white_labels, std::vector<double>& weights)
+{
+    const int n_waypoints = (int)(VISITING_PERCENTAGE_WHITE * Simulation::Clusters[person.home_cluster()].size());
+
+    assert(weights.empty()); //gotta make sure weights vector is empty since it'll be filled
+    weights.reserve(white_labels.size() + 1); //allocate the needed space
+
+    double person_cluster_weight = 0.0;
+
+    //fill the first white_clust.size() elements w/ other white clusters weights
+    for (int& index : white_labels)
+    {
+        double current_weight = Simulation::Clusters[index].weight();
+        weights.push_back(current_weight);
+        person_cluster_weight += current_weight; //add upp the the weights
+    }
+
+    //this way this cluster's waypoints will account for the right percentage in the extraction
+    person_cluster_weight *= (1 - OTHER_CLUSTERS_PROBABILITY) / OTHER_CLUSTERS_PROBABILITY;
+
+    //now adding this person's cluster weight
+    white_labels.push_back(person.home_cluster());
+    weights.push_back(person_cluster_weight);   //last weight corresponds to the person's cluster's one
+}
+
 
 
 } // namespace smooth_simulation
