@@ -22,13 +22,14 @@ Location::Location(const Position& loc_position, double radius) : position{loc_p
 ////////        LOCATION CONSTRUCTOR 3       ///////
 /////////////////////////////////////////////////////
 // used when setting label(waypoints plot)
-Location::Location(const Position& loc_position, int label) : position{loc_position}, radius{generate_radius()},label{label}
+Location::Location(const Position& loc_position, int label)
+    : position{loc_position}, radius{generate_radius()}, label{label}
 {
 }
 /////////////////////////////////////////////////////
 ////////    LOCATION DEFAULT CONSTRUCTOR      ///////
 /////////////////////////////////////////////////////
-Location::Location() : position{0.0, 0.0}, radius{generate_radius()},label{0}
+Location::Location() : position{0.0, 0.0}, radius{generate_radius()}, label{0}
 {
 }
 /////////////////////////////////////////////////////

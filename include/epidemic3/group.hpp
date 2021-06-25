@@ -12,12 +12,12 @@ namespace smooth_simulation
 class Group
 {
   private:
-    int sz;                // num of waypoints
+    int sz; // num of waypoints
     Location* group_ptr;
 
   public:
     explicit Group(int size); // constructor
-    Group();                    // default contructor
+    Group();                  // default contructor
     Location* pointed_waypoint() const { return group_ptr; }
 
     // set the iterator to the n-th element on the locations array

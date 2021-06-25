@@ -8,20 +8,17 @@ int main()
     using namespace std::literals::chrono_literals;
 
     Data starting{POPULATION_SIZE, 0, 0, 0, 0};
-
-    Simulation sim{1000, 0.5, starting};
-
-//    printing the locations in initial home locations
     auto start = std::chrono::high_resolution_clock::now();
 
-    sim.move();
+    Simulation sim{1200, 0.5, starting};
     auto end = std::chrono::high_resolution_clock::now();
 
-//    for (auto& p : sim.People)
-//    {
-//        if (p.get_location().get_position() != p.get_home().get_position())
-//        std:: cout << p.get_location().get_position().get_X()  << "\t" << p.get_location().get_Y()<<"\n";
-//    }
+    int i = 1;
+    for (auto& wpt : sim.Waypoints)
+    {
+        std:: cout << "[" << i << "]" << wpt.get_X() << "\t" << wpt.get_Y() << std::endl;
+        ++i;
+    }
 
     std::chrono::duration<float> duration = end - start;
     std::cout << "Time taken: " << duration.count() << " s " << std::endl;

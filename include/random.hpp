@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// The wrapper class 'Random' implements the random features needed for this project gotten from the header library //
+// The wrapper class 'Random' implements the random features needed for this project gotten from the header library
 // https://gist.github.com/imneme/540829265469e673d045 which guarantees high entropy seeding which sometimes may not be
-// // achieved through std::random_device. Additionally it implements some random operations useful for our Simulation.
+// achieved through std::random_device. Additionally it implements some random operations useful for our Simulation.
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifndef RANDOM_HPP
@@ -27,8 +27,10 @@ class Random
     int int_uniform(int lower, int upper);      // extract an int uniformly in [lower,upper] range
     double gauss(double mean, double stddev);
     int rounded_gauss(double mean, double stddev);
-    int discrete(std::vector<double> weights);  //extract a number
-    int rand_stay();        //generate a stay according to TPL(see //TODO)
+    int discrete(std::vector<double> weights); // extract a number
+    int rand_stay();                           // generate a stay according to TPL(see //TODO)
+    double rand_speed();
+    bool try_event(double probability);
 };
 
 } // namespace smooth_simulation

@@ -10,9 +10,9 @@ namespace smooth_simulation
 /////////////////////////////////////////////////////
 ////////          CLUSTER CONSTRUCTOR         ///////
 /////////////////////////////////////////////////////
-Cluster::Cluster(int size, int label, double weight, Zone zone,double alpha, double x_low, double x_up, double y_low,
-                 double y_up,Data cluster_data)
-    : sz{size}, lbl{label}, w{weight}, zone{zone},alpha{alpha},data{cluster_data}
+Cluster::Cluster(int size, int label, double weight, Zone zone, double alpha, double x_low, double x_up, double y_low,
+                 double y_up, Data cluster_data)
+    : sz{size}, lbl{label}, w{weight}, zone{zone}, alpha{alpha}, data{cluster_data}
 {
     limits[0] = x_low;
     limits[1] = x_up;
@@ -24,15 +24,16 @@ Cluster::Cluster(int size, int label, double weight, Zone zone,double alpha, dou
 /////////////////////////////////////////////////////
 const Cluster& default_cluster()
 {
-    static Data dd {0,0,0,0,0};
-    static Cluster def_cl{0, 0, 0.0, Zone::White, STARTING_LATP_PARAMETER,0.0, 0.0, 0.0, 0.0,dd};
+    static Data dd{0, 0, 0, 0, 0};
+    static Cluster def_cl{0, 0, 0.0, Zone::White, STARTING_LATP_PARAMETER, 0.0, 0.0, 0.0, 0.0, dd};
     return def_cl;
 }
 /////////////////////////////////////////////////////
 ////////    DEFAULT CLUSTER CONSTRUCTOR       ///////
 /////////////////////////////////////////////////////
 Cluster::Cluster()
-    : sz{default_cluster().sz}, lbl{default_cluster().lbl}, w{default_cluster().w}, zone{default_cluster().zone},data{default_cluster().data}
+    : sz{default_cluster().sz}, lbl{default_cluster().lbl}, w{default_cluster().w}, zone{default_cluster().zone},
+      data{default_cluster().data}
 {
     limits[0] = default_cluster().limits[0];
     limits[1] = default_cluster().limits[1];
@@ -42,26 +43,19 @@ Cluster::Cluster()
 /////////////////////////////////////////////////////
 ////////      GROUP SIZES DETERMINATION       ///////
 /////////////////////////////////////////////////////
-void Cluster::determine_groups_sizes()
+void Cluster::generate_groups(Random& engine)
 {
-    const double maximum_group_size = sz / 2; // TODO the groups can be as big as 50% of the cluster size(makesense???)
+    int const max_size = MAXIMUM_GROUP_PROBABILITY * sz;
     int all_groups_size = 0;
     int group_index = 0;
 
-    std::random_device rd; // set the seed
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> rand(1, nearbyint(maximum_group_size));
-
     assert(Groups.size() == 0);
 
-    Groups.reserve(sz / 2); // allocate space for half of cluster size-->considering the uniform distribution
-                            // should avoid new allocation in the majority of the cases
-
+    //TODO consider reserving space for cluster.Groups
     int current;
     for (int i = 0; i < sz; ++i)
     {
-
-        current = rand(gen); // pick a rand size
+        current = engine.int_uniform(1,max_size); // pick a rand size
 
         if (all_groups_size + current == sz)
         {
@@ -89,18 +83,13 @@ void Cluster::determine_groups_sizes()
     Groups[Groups.size() - 1].size() += difference;
 }
 /////////////////////////////////////////////////////
-////////       MOVE FOR WHITE CLUSTER         ///////
-/////////////////////////////////////////////////////
-void Cluster::move_people()
-{
-
-}
-/////////////////////////////////////////////////////
 ////////        CLUSTER PARTITIONING          ///////
 /////////////////////////////////////////////////////
-void Cluster::partition_in_groups()
+void Cluster::partition_in_groups(Random& engine)
 {
-    Simulation::Clusters[lbl].determine_groups_sizes(); // filling vector<Groups>
+    auto& cluster_ref = Simulation::Clusters[lbl];  //reference to this cluster in Clusters array
+
+    cluster_ref.generate_groups(engine); // filling vector<Groups>
 
     int already_setted_waypoints = 0;
     for (int i = 0; i < lbl; ++i)
@@ -109,12 +98,11 @@ void Cluster::partition_in_groups()
     }
 
     // set groups pointers to their index in the vector containing all waypoints(Locations)
-    for (auto& group : Simulation::Clusters[lbl].Groups)
+    for (auto& group : cluster_ref.Groups)
     {
         group.set_to_waypoint(Simulation::Waypoints, already_setted_waypoints);
         already_setted_waypoints += group.size();
     }
-
     // TODO Do some kind of check!!
 }
 /////////////////////////////////////////////////////
@@ -150,19 +138,19 @@ void Cluster::move()
 {
     for (auto& i : People_i)
     {
-        Person& p = Simulation::People[i];  //current person
+        Person& p = Simulation::People[i]; // current person
         p.move();
     }
 }
 /////////////////////////////////////////////////////
 ////////        DATA CONSTRUCTOR              ///////
 /////////////////////////////////////////////////////
-Data::Data(int susceptible, int latent, int infected, int recovered, int dead)
+Data::Data(unsigned int susceptible, unsigned int latent, unsigned int infected, unsigned int recovered, unsigned int dead)
     : S{susceptible}, E{latent}, I{infected}, R{recovered}, D{dead}
 {
 }
 
-//returns a vector with white clusters labels except the one taken as argument
+// returns a vector with white clusters labels except the one taken as argument
 std::vector<int> available_white_clusters(int lbl)
 {
     std::vector<int> labels;
@@ -172,4 +160,5 @@ std::vector<int> available_white_clusters(int lbl)
     }
     return labels;
 }
+
 } // namespace smooth_simulation

@@ -9,13 +9,13 @@ namespace smooth_simulation
 class Location
 {
   private:
-    Position position;          //(x,y) position inside the World
-    double radius;              //radius of this location
-    int label;                  //cluster this location is in
+    Position position; //(x,y) position inside the World
+    double radius;     // radius of this location
+    int label;         // cluster this location is in
   public:
     explicit Location(Position const& loc_position);
     Location(Position const& loc_position, double radius);
-    Location(Position const& loc_position,int label);
+    Location(Position const& loc_position, int label);
     Location(); // default constructor
 
     Position get_position() const { return position; }

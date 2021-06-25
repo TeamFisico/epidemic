@@ -32,7 +32,7 @@ int Random::rounded_gauss(double mean, double stddev)
 }
 int Random::discrete(std::vector<double> weights)
 {
-    return eng.variate<int,std::discrete_distribution>(std::begin(weights),std::end(weights));
+    return eng.variate<int, std::discrete_distribution>(std::begin(weights), std::end(weights));
 }
 int Random::rand_stay()
 {
@@ -51,6 +51,14 @@ int Random::rand_stay()
     term4 = pow(term3, (-1 / PAUSE_EXPONENT));
     pause_time = term4;
     return round(pause_time);
+}
+double Random::rand_speed()
+{
+    return gauss(MEAN_SPEED, uniform(0, MAXIMUM_VELOCITY_STDDEV));
+}
+bool Random::try_event(double probability)
+{
+    return uniform(0,1) <= probability;
 }
 
 } // namespace smooth_simulation
