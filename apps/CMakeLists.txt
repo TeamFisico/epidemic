@@ -59,7 +59,7 @@ add_executable(app4 main4.cpp)
 target_compile_features(app4 PRIVATE cxx_std_17)
 target_compile_options(app4 PRIVATE -Wall -Wextra -fsanitize=address)
 target_link_options(app4 PRIVATE -fsanitize=address)
-target_link_libraries(app4 PRIVATE simulation2 world rectangle cluster2 mobility_model2 group2 location2 person2 position random)
+target_link_libraries(app4 PRIVATE simulation2 world rectangle cluster2 mobility_model2 group2 location2 person2 position random ${ROOT_LIBRARIES} ${ROOT_EXE_LINKER_FLAGS})
 target_include_directories(app4 PUBLIC "${PROJECT_BINARY_DIR}"
         ../include/epidemic2)
 target_clangformat_setup(app4) ##allow for code formatting

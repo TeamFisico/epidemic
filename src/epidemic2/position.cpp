@@ -13,7 +13,7 @@ Position::Position() : x{0}, y{0}
 {
 }
 
-bool Position::InRadius(Position other, double r)
+bool Position::InRadius(Position other, double r) const
 {
     if (((x - other.x) * (x - other.x)) + ((y - other.y) * (y - other.y)) <= r * r) { return true; }
     return false;
@@ -35,17 +35,17 @@ void Position::move_toward(Position target, double speed, Random& rng)
     y += v_y;
 }
 
-double Position::distance_to(Position &a)
+double Position::distance_to(Position &a) const
 {
     return std::sqrt((x - a.x) * (x - a.x) + (y - a.y) * (y - a.y));
 }
 
-double Position::get_x()
+double Position::get_x() const
 {
     return x;
 }
 
-double Position::get_y()
+double Position::get_y() const
 {
     return y;
 }

@@ -14,11 +14,11 @@ class Position
     Position(double x, double y); // Constructor
     Position();                   // Default constructor
     bool InRadius(Position other,
-                  double r);                         // Function that determine if two position are close enough
+                  double r) const;                         // Function that determine if two position are close enough
     void move_toward(Position target, double speed, Random& rng); // move position closer to target
-    double distance_to(Position &a);           // return the distance from the 2 Position
-    double get_x();                                  // return the x coordinate
-    double get_y();                                  // return the y coordinate
+    double distance_to(Position &a) const;           // return the distance from the 2 Position
+    double get_x() const;                                  // return the x coordinate
+    double get_y() const;                                  // return the y coordinate
 };\
 
 Position rand_pos(Position blh_corner, Position trh_corner); // get a random position

@@ -2,6 +2,7 @@
 #include <random>
 #include "random.hpp"
 #include "parameters.hpp"
+#include <cassert>
 
 using namespace sim;
 
@@ -126,8 +127,9 @@ Position Cluster::gen_group_center(int num_of_loc)
 
 }
 
-std::vector<Location*> Cluster::generate_path(double mean, double dev, Random& rng)
+void Cluster::generate_path(double mean, double dev, std::vector<Location*> &path, Random& rng)
 {
+    path.clear();
     int to_visit = rng.rounded_gauss(mean - 1, dev) + 1; // make sure is always >= 1
     int last_index = -1;
     for(auto& a: groups){
@@ -153,21 +155,24 @@ std::vector<Location*> Cluster::generate_path(double mean, double dev, Random& r
     std::vector<Location*> result;
     result.reserve(to_visit);
     for(int i = 0; i < to_visit; ++i){
-        result.push_back(select_location(result_indexes[i]));
+        path.push_back(select_location(result_indexes[i]));
     }
-    return result;
 }
 
 Location * Cluster::select_location(int n)
 {
+    assert(n >= 0 && n < number_of_locations());
     int g_size = groups.size();
+    int group_index;
     for(int j = 0; j < g_size; ++j){
         int size = groups.operator[](j).size();
         if(n < size){
-            return &groups.operator[](j).Locations().operator[](n);
+            group_index = j;
+            j = g_size;
         }
         else{
             n -= size;
         }
     }
+    return &groups.operator[](group_index).Locations().operator[](n);
 }

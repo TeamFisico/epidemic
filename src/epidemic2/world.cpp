@@ -1,5 +1,6 @@
 #include "world.hpp"
 #include <random>
+#include <cassert>
 #include "random.hpp"
 
 using namespace sim;
@@ -168,19 +169,19 @@ int World::number_of_people()
     return sum;
 }
 
-std::vector<Location *> World::generate_path(int mean, int dev, std::vector<int> green_cluster_index, std::vector<double> weights, Random& rng) //the vectors green_cluster_index and weights have to be created in Simulation::move() for every cluster so that the weight of the current cluster is equal the sum of the other weights
+void World::generate_path(int mean, int dev, std::vector<double> weights, std::vector<Location *> &path, Random& rng) //the vectors green_cluster_index and weights have to be created in Simulation::move() for every cluster so that the weight of the current cluster is equal the sum of the other weights
 {
-    int to_choose = rng.rounded_gauss(mean, dev); //select number of locations to choose
-    int num_green_clusters = green_cluster_index.size();
-    std::vector<int> choose(num_green_clusters,0); // location to chose from any of the index cluster
-    for(int i = 0; i < to_choose; ++i){
-        ++choose[rng.discrete(weights)];
+    path.clear();
+    int to_visit = rng.rounded_gauss(mean - 1, dev) + 1;//select number of locations to choose
+    std::vector<int> choose(weights.size(),0); // location to chose from any of the index cluster
+    for(int i = 0; i < to_visit; ++i){
+        choose[rng.discrete(weights)] += 1;
     }
-    std::vector<Location*> result{};
-    result.reserve(to_choose);
-    for (int i = 0; i < num_green_clusters; ++i)
+    path.reserve(to_visit);
+    for (int i = 0; i < weights.size(); ++i)
     {
-        std::vector<int> index_result{};
+        std::vector<int> index_result;
+        index_result.clear();
         for (int j = 0; j < choose[i]; ++j)
         {
             bool continue_loop = true;
@@ -188,7 +189,7 @@ std::vector<Location *> World::generate_path(int mean, int dev, std::vector<int>
             while (continue_loop)
             {
                 continue_loop = false;
-                curr_index = rng.int_uniform(0, clusters[green_cluster_index[i]].number_of_locations());
+                curr_index = rng.int_uniform(0, clusters[i].number_of_locations() - 1);
                 for (auto &a : index_result)
                 {
                     if (curr_index == a)
@@ -200,11 +201,11 @@ std::vector<Location *> World::generate_path(int mean, int dev, std::vector<int>
             }
             index_result.push_back(curr_index);
         }
-        for(auto& a : index_result){
-            result.push_back(clusters[green_cluster_index[i]].select_location(a));
+        for(int t = 0; t < choose[i]; ++t){
+            path.push_back(clusters[i].select_location(index_result[t]));
         }
     }
-    return  result;
+    assert(path.size() == to_visit);
 }
 
 Cluster * World::get_cluster(int index)

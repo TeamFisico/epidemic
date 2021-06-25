@@ -22,7 +22,7 @@ mobility_model::mobility_model(Person person, int stay,
 
 void mobility_model::next_location(Random& rng)
 {
-    if(going_home && target_location == person.get_home()){ //called when person is at home with target location home
+    if(going_home){ //called when person is at home with target location home
         at_home = true;
         going_home = false;
         stay = rng.rand_stay(); //TODO set random stay from 2 to 5, to change into the power rule
