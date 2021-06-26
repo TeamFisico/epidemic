@@ -43,6 +43,7 @@ class Simulation
     void move();     // function that use mobility_model class to make a move step
     void simulate(); // function that call move, spread and Person::pass_condition for the necessary amount of time, WIP
                      // concept, will vary based on other addition(as curfew, quarantine, ...)
+    void clean_path(mobility_model &person); //clean person's path, removing all location that are not in green cluster
     Position person_pos(int cluster_index, int person_index);
     bool at_home(int cluster_index, int person_index);
 };

@@ -29,7 +29,7 @@ class Cluster{
     Position gen_group_center(int num_of_loc); //generate a valid center location for the next group
     Color& get_color(){ return color; }
     std::vector<mobility_model> &population(){ return Population; }
-    void generate_path(double mean, double dev, std::vector<Location*> &path, Random& rng);
+    void generate_path(int to_visit, std::vector<Location*> &path, Random& rng);
     Location* select_location(int n); // select the nth location and return his pointer, used for generate_path
 };
 

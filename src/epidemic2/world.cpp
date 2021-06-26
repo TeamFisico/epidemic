@@ -169,15 +169,14 @@ int World::number_of_people()
     return sum;
 }
 
-void World::generate_path(int mean, int dev, std::vector<double> weights, std::vector<Location *> &path, Random& rng) //the vectors green_cluster_index and weights have to be created in Simulation::move() for every cluster so that the weight of the current cluster is equal the sum of the other weights
+void World::generate_path(int to_visit, const std::vector<double>& weights, std::vector<Location *> &path, Random& rng) //the vector weight has to be created in Simulation::move() for every cluster so that the weight of the current cluster is equal the sum of the other weights
 {
-    path.clear();
-    int to_visit = rng.rounded_gauss(mean - 1, dev) + 1;//select number of locations to choose
-    std::vector<int> choose(weights.size(),0); // location to chose from any of the index cluster
+    path.reserve(to_visit);
+    //First Method, gives error with wild pointers
+    /*std::vector<int> choose(weights.size(),0); // number of location to chose from any of the cluster
     for(int i = 0; i < to_visit; ++i){
         choose[rng.discrete(weights)] += 1;
     }
-    path.reserve(to_visit);
     for (int i = 0; i < weights.size(); ++i)
     {
         std::vector<int> index_result;
@@ -185,7 +184,7 @@ void World::generate_path(int mean, int dev, std::vector<double> weights, std::v
         for (int j = 0; j < choose[i]; ++j)
         {
             bool continue_loop = true;
-            int curr_index;
+            int curr_index = rng.int_uniform(0, clusters[i].number_of_locations() - 1);
             while (continue_loop)
             {
                 continue_loop = false;
@@ -204,8 +203,16 @@ void World::generate_path(int mean, int dev, std::vector<double> weights, std::v
         for(int t = 0; t < choose[i]; ++t){
             path.push_back(clusters[i].select_location(index_result[t]));
         }
+    }*/
+
+    //Second Method, using the cluster generate path
+    std::vector<int> choose(weights.size(),0); // number of location to chose from any of the cluster
+    for(int i = 0; i < to_visit; ++i){
+        choose[rng.discrete(weights)] += 1;
     }
-    assert(path.size() == to_visit);
+    for(int i = 0; i < weights.size(); ++i){
+        if(choose[i] > 0) { clusters[i].generate_path(choose[i], path, rng); }
+    }
 }
 
 Cluster * World::get_cluster(int index)

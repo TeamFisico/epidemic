@@ -218,8 +218,8 @@ void Simulation::move()
                                 //a.path() = sim::generate_path(green_list, 5, 1);
                                 a.path() = c.generate_path(5,1,rng);
                             }*/
-                            world.generate_path(5,1,weights,a.path(),rng);
-                            //c.generate_path(5,1,a.path(),rng);
+                            world.generate_path(rng.rounded_gauss(4,1)+1,weights,a.path(),rng);
+                            //c.generate_path(rng.rounded_gauss(4,1)+1,a.path(),rng);
                         }
                     }
                     else
@@ -230,6 +230,7 @@ void Simulation::move()
                 else if (a.at_target_location())
                 {
                     if (a.Stay() <= 0) {
+                        clean_path(a);
                         a.next_location(rng);
                     }
                     else{
@@ -253,7 +254,7 @@ void Simulation::move()
                         {                    // check if the person leave home
                             a.not_at_home(); // set the person as not at home
                             //a.path() = sim::generate_path(list, 3, 0.5);
-                            c.generate_path(3,0.5,a.path(),rng);
+                            c.generate_path(rng.rounded_gauss(2,0.5)+1,a.path(),rng);
                         }
                     }
                     else
@@ -264,6 +265,7 @@ void Simulation::move()
                 else if (a.at_target_location())
                 {
                     if (a.Stay() <= 0) {
+                        clean_path(a);
                         a.next_location(rng);
                     }
                     else{
@@ -287,7 +289,7 @@ void Simulation::move()
                         {                    // check if the person leave home
                             a.not_at_home(); // set the person as not at home
                             //a.path() = sim::generate_path(list, 1, 0.2);
-                            c.generate_path(1,0.2,a.path(),rng);
+                            c.generate_path(rng.rounded_gauss(0,0.2)+1,a.path(),rng);
                         }
                     }
                     else
@@ -298,6 +300,7 @@ void Simulation::move()
                 else if (a.at_target_location())
                 {
                     if (a.Stay() <= 0) {
+                        clean_path(a);
                         a.next_location(rng);
                     }
                     else{
@@ -366,6 +369,17 @@ void Simulation::update_Condition()
     for(auto &c : world.Clusters()){
         for(auto &a : c.population())//set all the people's condition to new_condition
             a.Person_ref().pass_condition();
+    }
+}
+
+void Simulation::clean_path(mobility_model &person)
+{
+    for(auto& a: person.path()){
+        if(world.Clusters()[a->c_index()].get_color() != Color::Green){
+            //delete the last element of the vector to make sure it does not move the vector
+            a = *(person.path().end() -1); //copy the last element of the vector to the current
+            person.path().pop_back(); //delete the last element of a vector
+        }
     }
 }
 

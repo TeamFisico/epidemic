@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
     std::vector<Data> result{};
     std::vector<Position> positions{};
     std::vector<bool> at_home{};
-    for(int i = 0; i < 20; ++i){
+    for(int i = 0; i < 50; ++i){
         start = std::chrono::high_resolution_clock::now();
         for(int j = 0; j < 10; ++j){
             prova.move();
@@ -85,10 +85,10 @@ int main(int argc, char *argv[])
 
     std::ofstream out{"output.txt"};
 
-    /*for (auto &a : result)
+    for (auto &a : result)
     {
         out << "S = " << a.S << " E = " << a.E << " I = " << a.I << " R = " << a.R << std::endl;
-    }*/
+    }
 
     for (int i = 0; i < positions.size(); ++i)
     {

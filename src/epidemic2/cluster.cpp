@@ -17,7 +17,7 @@ Cluster::Cluster(int S, int E, int I, int R, int number_of_location, Rectangle A
     //generate the population vector; initialize all person as susceptible and at home
     for(int i = 0; i < N;){
         int home_pop = rng.int_uniform(1,5); // number of people in the current home
-        Location current_home = rand_loc(Area.get_blh_corner(), Area.get_trh_corner(), HOME_RADIUS); //TODO add a macro for HOME_RADIUS value
+        Location current_home = rand_loc(Area.get_blh_corner(), Area.get_trh_corner(), HOME_RADIUS, cluster_index); //TODO add a macro for HOME_RADIUS value
         for(int j = 0; j < home_pop && i < N; ++j){
             Person curr{State::S,current_home.get_pos(),State::S,current_home, cluster_index};
             Population.emplace_back(curr,0,HOME_PROBABILITY,true);
@@ -64,7 +64,7 @@ Cluster::Cluster(int S, int E, int I, int R, int number_of_location, Rectangle A
     groups.reserve(number_of_groups);
     //fill the group vector
     for(int i = 0; i < number_of_groups; ++i){
-        groups.emplace_back(loc_num.operator[](i), gen_group_center(loc_num.operator[](i)));
+        groups.emplace_back(loc_num.operator[](i), gen_group_center(loc_num.operator[](i)), cluster_index);
     }
 }
 
@@ -127,10 +127,8 @@ Position Cluster::gen_group_center(int num_of_loc)
 
 }
 
-void Cluster::generate_path(double mean, double dev, std::vector<Location*> &path, Random& rng)
+void Cluster::generate_path(int to_visit, std::vector<Location*> &path, Random& rng)
 {
-    path.clear();
-    int to_visit = rng.rounded_gauss(mean - 1, dev) + 1; // make sure is always >= 1
     int last_index = -1;
     for(auto& a: groups){
         last_index += a.size();
@@ -152,8 +150,6 @@ void Cluster::generate_path(double mean, double dev, std::vector<Location*> &pat
         }
         result_indexes.push_back(curr_index);
     }
-    std::vector<Location*> result;
-    result.reserve(to_visit);
     for(int i = 0; i < to_visit; ++i){
         path.push_back(select_location(result_indexes[i]));
     }
