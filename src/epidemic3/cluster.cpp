@@ -145,8 +145,8 @@ void Cluster::move()
 /////////////////////////////////////////////////////
 ////////        DATA CONSTRUCTOR              ///////
 /////////////////////////////////////////////////////
-Data::Data(unsigned int susceptible, unsigned int latent, unsigned int infected, unsigned int recovered, unsigned int dead)
-    : S{susceptible}, E{latent}, I{infected}, R{recovered}, D{dead}
+    Data(unsigned int susceptible, unsigned int latent, unsigned int  infected, unsigned int  recovered, unsigned int  dead,unsigned int capacity)
+    : S{susceptible}, E{latent}, I{infected}, R{recovered}, D{dead},ICU_capacity{capacity}
 {
 }
 

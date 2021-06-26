@@ -345,18 +345,25 @@ void Simulation::update_zones()
     for (auto& cl : Clusters)
     {
         Data const data = cl.get_data();
-        if (data.I < data.S / 5) { cl.set_zone(Zone::White); }
+        if (data.I < data.S / 5) 
+        { 
+            cl.set_zone(Zone::White);
+            cl.set_LATP_parameter(WHITE_LATP_PARAMETER);
+        }
         else if (data.I >= data.S / 5)
         {
             cl.set_zone(Zone::Yellow);
+            cl.set_LATP_parameter(YELLOW_LATP_PARAMETER);
         }
         else if (data.I >= data.S / 4)
         {
             cl.set_zone(Zone::Orange);
+            cl.set_LATP_parameter(ORANGE_LATP_PARAMETER);
         }
         else if (data.I >= data.S / 3) // red condition
         {
             cl.set_zone(Zone::Red);
+            cl.set_LATP_parameter(RED_LATP_PARAMETER);
         }
     }
 }
