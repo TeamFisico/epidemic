@@ -20,7 +20,7 @@ enum class Status
 class Person
 {
   private:
-    Status status[2];  //status[0] == current_status, status[2] == new_status
+    Status status[2];  // status[0] == current_status, status[2] == new_status
     int label;         // label of the belonging cluster(where house is located
     Location home;     // home address
     Location location; // current location
@@ -62,17 +62,18 @@ class Person
     void move_home(Random& engine);
     void update_velocity(Random& engine);
     void update_target(Random& engine);
+
   public:
     void pathfinder(Random& engine);
     void move(); // move a person if it should
 };
 // helper functions
-int determine_fill_size(const Person& person);  // determine how many indeces Paths must be filled with
-bool are_white_available(const Person& person); // return true if there are any white clusters available
-void pathfinder_white(Person& person,Random& engine);          // find paths for a person in white Zone
-void pathfinder_orange(Person& person,Random& engine);         // find paths for a person in yellow Zone
-void pathfinder_yellow(Person& person,Random& engine);         // find paths for a person in orange Zone
-void pathfinder_red(Person& person,Random& engine);            // find paths for a person in red Zone
+int determine_fill_size(const Person& person);          // determine how many indeces Paths must be filled with
+bool are_white_available(const Person& person);         // return true if there are any white clusters available
+void pathfinder_white(Person& person, Random& engine);  // find paths for a person in white Zone
+void pathfinder_orange(Person& person, Random& engine); // find paths for a person in yellow Zone
+void pathfinder_yellow(Person& person, Random& engine); // find paths for a person in orange Zone
+void pathfinder_red(Person& person, Random& engine);    // find paths for a person in red Zone
 void weights_fill(Person const& person, std::vector<int>& white_labels, std::vector<double>& weights);
 void remove_target_index(Person& person, int index_to_remove);
 void remove_target(Person& person, Location to_remove); // remove a visited target from person.Path

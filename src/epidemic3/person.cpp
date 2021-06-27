@@ -8,8 +8,8 @@ namespace smooth_simulation
 {
 Person::Person(Status status, int cluster_label, Location home, Location current_location, Location target_location,
                bool is_at_place, bool going_home, double x_speed, double y_speed, int stay_time)
-    : status{status,status}, label{cluster_label}, home{home}, location{current_location}, target{target_location},
-      at_place{is_at_place}, going_home{going_home}, stay_counter{stay_time},velocity{x_speed,y_speed}
+    : status{status, status}, label{cluster_label}, home{home}, location{current_location}, target{target_location},
+      at_place{is_at_place}, going_home{going_home}, stay_counter{stay_time}, velocity{x_speed, y_speed}
 {
 }
 const Person& default_person()
@@ -19,9 +19,10 @@ const Person& default_person()
     return def_per;
 }
 Person::Person()
-    : status{default_person().status[0],default_person().status[1]}, label{default_person().label}, home{default_person().home},
-      location{default_person().location}, target{default_person().target}, at_place{default_person().at_place},
-      stay_counter{default_person().stay_counter},velocity{STARTING_VELOCITY[0],STARTING_VELOCITY[1]}
+    : status{default_person().status[0], default_person().status[1]}, label{default_person().label},
+      home{default_person().home}, location{default_person().location}, target{default_person().target},
+      at_place{default_person().at_place}, stay_counter{default_person().stay_counter}, velocity{STARTING_VELOCITY[0],
+                                                                                                 STARTING_VELOCITY[1]}
 {
 }
 double Person::speed() const
@@ -40,8 +41,8 @@ bool Person::at_home() const
 // the x and y components from a normal distributions centerd on AVERAGE_VELOCITY
 void Person::update_velocity(Random& engine)
 {
-     velocity[0] = engine.rand_speed();
-     velocity[1] = engine.rand_speed();
+    velocity[0] = engine.rand_speed();
+    velocity[1] = engine.rand_speed();
 }
 
 /////////////////////////////////////////////////////
@@ -72,8 +73,9 @@ void Person::update_target(Random& engine)
         probabilities.push_back(curr_weight / sum);
     }
     // select a waypoint index weighted on the just calculated probabilities
-    int i = engine.discrete(probabilities); // extract an number from 1 to weights.size()-1 based on weights(probabilities)
-    int index = Paths_i[i];              // correspondin waypoint index
+    int i =
+        engine.discrete(probabilities); // extract an number from 1 to weights.size()-1 based on weights(probabilities)
+    int index = Paths_i[i];             // correspondin waypoint index
     // Still need to check if this waypoint is inside a White Cluster:things could've changed in the meanwhile
     Zone waypoint_zone = Simulation::Clusters[Simulation::Waypoints[index].get_label()].zone_type();
     if (waypoint_zone == Zone::White) // ok nothing's changed
@@ -112,7 +114,7 @@ void Person::move_home(Random& engine)
     {
         location.set_position(home.get_position()); // set new position
         at_place = true;                            // the person is now at a place
-        stay_counter = engine.rand_stay();             // how much time he/she will spend there
+        stay_counter = engine.rand_stay();          // how much time he/she will spend there
         going_home = false;
     }
 
@@ -133,7 +135,7 @@ void Person::move_toward(Random& engine)
 
     // generate an angle between velocity vector direction and the target's one so that will not point precisely to the
     // target
-    //TODO valuta se ammettere una variazione uniforme di 5 gradi in entrambi i sensi
+    // TODO valuta se ammettere una variazione uniforme di 5 gradi in entrambi i sensi
     double final_angle = 0.0;
     if (direct_angle >= direction()) { final_angle = engine.uniform(direction(), direct_angle); }
     else
@@ -153,7 +155,7 @@ void Person::move_toward(Random& engine)
     {
         location.set_position(new_position); // set new position
         at_place = true;                     // the person is now at a place
-        stay_counter = engine.rand_stay();      // how much time he/she will spend there
+        stay_counter = engine.rand_stay();   // how much time he/she will spend there
                                              // erase the current target from Paths_i
         remove_target(*this, target);        // remove target from path
         return;
@@ -166,7 +168,7 @@ void Person::move_toward(Random& engine)
 /////////////////////////////////////////////////////
 void Person::move()
 {
-    Random engine;    //seeded engine to use for this person
+    Random engine; // seeded engine to use for this person
     if (at_place)
     {
         if (is_staying()) // still has to wait
@@ -178,7 +180,7 @@ void Person::move()
         {
             if (at_home()) // is at home
             {
-                pathfinder(engine);       //refill path
+                pathfinder(engine); // refill path
                 update_target(engine);
                 move_toward(engine);
                 return;
@@ -235,16 +237,16 @@ void Person::pathfinder(Random& engine)
     switch (zone)
     {
     case Zone::White:
-        pathfinder_white(*this,engine);
+        pathfinder_white(*this, engine);
         break;
     case Zone::Yellow:
-        pathfinder_yellow(*this,engine);
+        pathfinder_yellow(*this, engine);
         break;
     case Zone::Orange:
-        pathfinder_orange(*this,engine);
+        pathfinder_orange(*this, engine);
         break;
     case Zone::Red:
-        pathfinder_red(*this,engine);
+        pathfinder_red(*this, engine);
         break;
     default:
         break;
@@ -331,7 +333,7 @@ void pathfinder_white(Person& person, Random& engine)
 /////////////////////////////////////////////////////
 ///   FIND PATHS FOR PEOPLE IN YELLOW CLUSTERS    ///
 /////////////////////////////////////////////////////
-void pathfinder_yellow(Person& person,Random& engine)
+void pathfinder_yellow(Person& person, Random& engine)
 {
     const int n_waypoints = (int)(VISITING_PERCENTAGE_YELLOW * Simulation::Clusters[person.home_cluster()].size());
 
@@ -360,7 +362,7 @@ void pathfinder_yellow(Person& person,Random& engine)
 /////////////////////////////////////////////////////
 ///   FIND PATHS FOR PEOPLE IN ORANGE CLUSTERS    ///
 /////////////////////////////////////////////////////
-void pathfinder_orange(Person& person,Random& engine)
+void pathfinder_orange(Person& person, Random& engine)
 {
     const int n_waypoints = (int)(VISITING_PERCENTAGE_ORANGE * Simulation::Clusters[person.home_cluster()].size());
 
@@ -390,7 +392,7 @@ void pathfinder_orange(Person& person,Random& engine)
 ///   FIND PATHS FOR PEOPLE IN RED CLUSTERS       ///
 /////////////////////////////////////////////////////
 // fills like path_finder_white but n_waypoints is 15% the ones in white zone
-void pathfinder_red(Person& person,Random& engine)
+void pathfinder_red(Person& person, Random& engine)
 {
     const int n_waypoints = (int)(VISITING_PERCENTAGE_RED * Simulation::Clusters[person.home_cluster()].size());
 

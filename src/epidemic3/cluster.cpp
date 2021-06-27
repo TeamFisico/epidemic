@@ -12,19 +12,15 @@ namespace smooth_simulation
 /////////////////////////////////////////////////////
 Cluster::Cluster(int size, int label, double weight, Zone zone, double alpha, double x_low, double x_up, double y_low,
                  double y_up, Data cluster_data)
-    : sz{size}, lbl{label}, w{weight}, zone{zone}, alpha{alpha}, data{cluster_data}
+    : sz{size}, lbl{label}, w{weight}, zone{zone}, alpha{alpha}, data{cluster_data},limits{x_low,x_up,y_low,y_up}
 {
-    limits[0] = x_low;
-    limits[1] = x_up;
-    limits[2] = y_low;
-    limits[3] = y_up;
 }
 /////////////////////////////////////////////////////
 ////////           DEFAULT CLUSTER            ///////
 /////////////////////////////////////////////////////
 const Cluster& default_cluster()
 {
-    static Data dd{0, 0, 0, 0, 0,0};
+    static Data dd{0, 0, 0, 0, 0, 0};
     static Cluster def_cl{0, 0, 0.0, Zone::White, WHITE_LATP_PARAMETER, 0.0, 0.0, 0.0, 0.0, dd};
     return def_cl;
 }
@@ -33,12 +29,9 @@ const Cluster& default_cluster()
 /////////////////////////////////////////////////////
 Cluster::Cluster()
     : sz{default_cluster().sz}, lbl{default_cluster().lbl}, w{default_cluster().w}, zone{default_cluster().zone},
-      data{default_cluster().data}
+      data{default_cluster().data}, limits{default_cluster().limits[0], default_cluster().limits[1],
+                                           default_cluster().limits[2], default_cluster().limits[3]}
 {
-    limits[0] = default_cluster().limits[0];
-    limits[1] = default_cluster().limits[1];
-    limits[2] = default_cluster().limits[2];
-    limits[3] = default_cluster().limits[3];
 }
 /////////////////////////////////////////////////////
 ////////      GROUP SIZES DETERMINATION       ///////
@@ -51,11 +44,11 @@ void Cluster::generate_groups(Random& engine)
 
     assert(Groups.size() == 0);
 
-    //TODO consider reserving space for cluster.Groups
+    // TODO consider reserving space for cluster.Groups
     int current;
     for (int i = 0; i < sz; ++i)
     {
-        current = engine.int_uniform(1,max_size); // pick a rand size
+        current = engine.int_uniform(1, max_size); // pick a rand size
 
         if (all_groups_size + current == sz)
         {
@@ -87,7 +80,7 @@ void Cluster::generate_groups(Random& engine)
 /////////////////////////////////////////////////////
 void Cluster::partition_in_groups(Random& engine)
 {
-    auto& cluster_ref = Simulation::Clusters[lbl];  //reference to this cluster in Clusters array
+    auto& cluster_ref = Simulation::Clusters[lbl]; // reference to this cluster in Clusters array
 
     cluster_ref.generate_groups(engine); // filling vector<Groups>
 
@@ -153,9 +146,8 @@ void Cluster::clear_dead_people()
         if (stat == Status::Dead)
         {
             std::swap(person_i, People_i.back()); // swap the last element with the one to be removed
-            People_i.pop_back();                         // erase the last element of the vector
+            People_i.pop_back();                  // erase the last element of the vector
         }
-
     }
 }
 /////////////////////////////////////////////////////
@@ -189,8 +181,9 @@ void Cluster::update_data()
 /////////////////////////////////////////////////////
 ////////        DATA CONSTRUCTOR              ///////
 /////////////////////////////////////////////////////
-    Data::Data(unsigned int susceptible, unsigned int latent, unsigned int  infected, unsigned int  recovered, unsigned int  dead,unsigned int capacity)
-    : S{susceptible}, E{latent}, I{infected}, R{recovered}, D{dead},ICU_capacity{capacity}
+Data::Data(unsigned int susceptible, unsigned int latent, unsigned int infected, unsigned int recovered,
+           unsigned int dead, unsigned int capacity)
+    : S{susceptible}, E{latent}, I{infected}, R{recovered}, D{dead}, ICU_capacity{capacity}
 {
 }
 

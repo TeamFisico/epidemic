@@ -14,7 +14,7 @@ std::array<Person, POPULATION_SIZE> Simulation::People;
 /////////////////////////////////////////////////////
 ////////          AREA PARTITIONING           ///////
 /////////////////////////////////////////////////////
-void Simulation::partition_in_clusters(Random& engine)
+void Simulation::partition_in_clusters()
 {
     int total_sizes = 0;
     double wpts_left = WAYPOINTS_SIZE;
@@ -83,7 +83,7 @@ bool check_labeled_clusters(int cl_label, Position try_position)
 /////////////////////////////////////////////////////
 ////////    1st WAYPOINT OF THE GROUP PLOT    ///////
 /////////////////////////////////////////////////////
-Location Simulation::first_group_step(int clust_lab,Random& engine) const
+Location Simulation::first_group_step(int clust_lab)
 // Plot the 1st waypoint of the group so that it's not in the transmission range
 // of any already plotted waypoint
 {
@@ -113,7 +113,7 @@ Location Simulation::first_group_step(int clust_lab,Random& engine) const
 /////////////////////////////////////////////////////
 // Plot the other waypoints of this group in such a way that their distance in never < TRANSMISSION_RANGE / 10
 // the return value is the last plotted waypoint of this group
-Location Simulation::plot_nearby_waypoints(int clust_lab, int grp_lab, Location const& starting_waypoint,Random& engine) const
+Location Simulation::plot_nearby_waypoints(int clust_lab, int grp_lab, Location const& starting_waypoint)
 {
     int num_to_plot = Clusters[clust_lab].Groups[grp_lab].size();
     Position try_position{};
@@ -147,7 +147,7 @@ Location Simulation::plot_nearby_waypoints(int clust_lab, int grp_lab, Location 
 ////////  1st WAYPOINT OF OTHER GROUPS PLOT   ///////
 /////////////////////////////////////////////////////
 // plot the first waypoint of the current group within a distance Y/4 <= d <= Y/3
-Location Simulation::other_groups_step(Location const& prev_group_waypoint, int clust_lab,Random& engine) const
+Location Simulation::other_groups_step(Location const& prev_group_waypoint, int clust_lab)
 {
     double const Y = 2 * side / CLUSTERS_SIZE;
 
@@ -173,32 +173,32 @@ Location Simulation::other_groups_step(Location const& prev_group_waypoint, int 
 /////////////////////////////////////////////////////
 ////////             FINAL PLOT              ////////
 /////////////////////////////////////////////////////
-void Simulation::plot_waypoints(Random& engine)
+void Simulation::plot_waypoints()
 {
     for (int cl_index = 0; cl_index < CLUSTERS_SIZE; ++cl_index)
     {
         // set the first waypoint associated with the first group
-        Clusters[cl_index].Groups[0].pointed_waypoint()[0] = first_group_step(cl_index,engine);
+        Clusters[cl_index].Groups[0].pointed_waypoint()[0] = first_group_step(cl_index);
         // plot all the waypoints of the group around this one and return a reference to the last one
         Location previous_group_last_waypoint =
-            plot_nearby_waypoints(cl_index, 0, Clusters[cl_index].Groups[0].pointed_waypoint()[0],engine);
+            plot_nearby_waypoints(cl_index, 0, Clusters[cl_index].Groups[0].pointed_waypoint()[0]);
 
         for (unsigned int gr_index = 1; gr_index < Clusters[cl_index].Groups.size();
              ++gr_index) // now set the other groups' wpts
         {
             // setting the first waypoint of this group
             Clusters[cl_index].Groups[gr_index].pointed_waypoint()[0] =
-                other_groups_step(previous_group_last_waypoint, cl_index,engine);
+                other_groups_step(previous_group_last_waypoint, cl_index);
             // plot the neighbourhood and set the la
             previous_group_last_waypoint =
-                plot_nearby_waypoints(cl_index, gr_index, Clusters[cl_index].Groups[gr_index].pointed_waypoint()[0],engine);
+                plot_nearby_waypoints(cl_index, gr_index, Clusters[cl_index].Groups[gr_index].pointed_waypoint()[0]);
         }
     }
 }
 /////////////////////////////////////////////////////
 ////////          CLUSTER ASSIGNMENT          ///////
 /////////////////////////////////////////////////////
-void Simulation::assign_cluster_to_people(Random& engine)
+void Simulation::assign_cluster_to_people()
 // assign a person to a cluster based on the cluster weight using piecewise-const-dist
 {
     std::array<double, CLUSTERS_SIZE> weights{}; // fill with clusters weights
@@ -211,7 +211,7 @@ void Simulation::assign_cluster_to_people(Random& engine)
 
     // fill labels array with generated labels
     engine.engine().generate<std::discrete_distribution>(std::begin(labels), std::end(labels), std::begin(weights),
-                                                      std::end(weights));
+                                                         std::end(weights));
     // iterate over the labels array assigning the corresponding label to each person
     int j = 0;
     for (auto& label : labels)
@@ -224,7 +224,7 @@ void Simulation::assign_cluster_to_people(Random& engine)
 /////////////////////////////////////////////////////
 ////////          HOME ASSIGNMENT             ///////
 /////////////////////////////////////////////////////
-void Simulation::assign_home_to_people(Random& engine)
+void Simulation::assign_home_to_people()
 // generate home address inside the relating cluster limits and assign them to
 // families
 {
@@ -283,23 +283,22 @@ void Simulation::assign_home_to_people(Random& engine)
 }
 void Simulation::world_generation()
 {
-    Random engine;    //256 bit seeded marsenne twister engine
-    partition_in_clusters(engine);
+    partition_in_clusters();
     for (auto& cluster : Clusters)
     {
         cluster.partition_in_groups(engine);
     }
 
-    plot_waypoints(engine); // plot the waypoints on the map
+    plot_waypoints(); // plot the waypoints on the map
 
     for (auto& cluster : Clusters) // set (x,y) limits for each cluster
     {
         cluster.set_limits();
     }
 
-    assign_cluster_to_people(engine);
+    assign_cluster_to_people();
 
-    assign_home_to_people(engine);
+    assign_home_to_people();
 
     set_clusters_bounds_indeces();
 
@@ -317,8 +316,10 @@ void Simulation::world_generation()
 /////////////////////////////////////////////////////
 ////////       SIMULATION CONSTRUCTOR         ///////
 /////////////////////////////////////////////////////
-Simulation::Simulation(double side, double spread_radius, Data data)
-    : side{side}, spread_radius{spread_radius}, data{data}
+Simulation::Simulation(double side, double spread_radius, double alpha, double beta, double gamma, double kappa,
+                       Data data)
+    : side{side},
+      spread_radius{spread_radius}, alpha{alpha}, beta{beta}, gamma{gamma}, kappa{kappa}, data{data}, engine{}
 {
     world_generation();
     std::cout << "World successfully constructed!" << std::endl;
@@ -328,27 +329,27 @@ Simulation::Simulation(double side, double spread_radius, Data data)
 /////////////////////////////////////////////////////
 void Simulation::close_people_fill(const Person& current_person, std::vector<int> close_people_i)
 {
-     close_people_i.clear();
-     for (auto& cl : Clusters)  //loop over clusters
-     {
-         if (cl.zone_type() == Zone::White) //current cluster is white
-         {
-             for (int& person_i : cl.People_i) //loop over people in this cluster indeces
-             {
-                 Person& person = People[person_i];  //ref to current cluster person
-                 auto const& pos = person.location.get_position();
-                 auto const& stat = person.current_status();
-                 bool const& is_home = person.at_home();
-                 //check if person is close enough(most restrictive condition),susceptible and not at home
-                 if (pos.in_radius(current_person.location.get_position(),spread_radius) && stat == Status::Exposed && !is_home)
-                 {
-                     close_people_i.push_back(person_i);  //ok, add this person index to close people vector
-                 }
-             } //end loop
-         }
-         //if not white-->ignore
-     }
-
+    close_people_i.clear();
+    for (auto& cl : Clusters) // loop over clusters
+    {
+        if (cl.zone_type() == Zone::White) // current cluster is white
+        {
+            for (int& person_i : cl.People_i) // loop over people in this cluster indeces
+            {
+                Person& person = People[person_i]; // ref to current cluster person
+                auto const& pos = person.location.get_position();
+                auto const& stat = person.current_status();
+                bool const& is_home = person.at_home();
+                // check if person is close enough(most restrictive condition),susceptible and not at home
+                if (pos.in_radius(current_person.location.get_position(), spread_radius) && stat == Status::Exposed &&
+                    !is_home)
+                {
+                    close_people_i.push_back(person_i); // ok, add this person index to close people vector
+                }
+            } // end loop
+        }
+        // if not white-->ignore
+    }
 }
 /////////////////////////////////////////////////////
 ////       CLOSE PEOPLE IN PERSON CLUSTER        ////
@@ -356,18 +357,18 @@ void Simulation::close_people_fill(const Person& current_person, std::vector<int
 void Simulation::close_cluster_people_fill(const Person& current_person, std::vector<int> close_people_i)
 {
     close_people_i.clear();
-    for (int& person_i : Clusters[current_person.label].People_i) //loop over people in this person's cluster indeces
+    for (int& person_i : Clusters[current_person.label].People_i) // loop over people in this person's cluster indeces
     {
-        Person& person = People[person_i];  //ref to current cluster person
+        Person& person = People[person_i]; // ref to current cluster person
         auto const& pos = person.location.get_position();
         auto const& stat = person.current_status();
         bool const& is_home = person.at_home();
-        //check if person is close enough(most restrictive condition),susceptible and not at home
-        if (pos.in_radius(current_person.location.get_position(),spread_radius) && stat == Status::Exposed && !is_home)
+        // check if person is close enough(most restrictive condition),susceptible and not at home
+        if (pos.in_radius(current_person.location.get_position(), spread_radius) && stat == Status::Exposed && !is_home)
         {
-            close_people_i.push_back(person_i);  //ok, add this person index to close people vector
+            close_people_i.push_back(person_i); // ok, add this person index to close people vector
         }
-    } //end loop
+    } // end loop
 }
 /////////////////////////////////////////////////////
 ////////            MOVE PEOPLE               ///////
@@ -389,10 +390,10 @@ void Simulation::update_zones()
 {
     for (auto& cl : Clusters)
     {
-        double ratio {(double)data.I / data.S};  //infected - suceptible ratio
+        double ratio{(double)data.I / data.S}; // infected - suceptible ratio
 
         if (ratio < WHITE_CLUSTER_RATIO)
-        { 
+        {
             cl.set_zone(Zone::White);
             cl.set_LATP_parameter(WHITE_LATP_PARAMETER);
         }
@@ -442,49 +443,68 @@ Data Simulation::get_simulation_data() const
         nI += cl.get_data().I;
         nR += cl.get_data().R;
         nD += cl.get_data().D;
-        ICU_cap += cl.get_data().ICU_capacity; //TODO fallo bene
+        ICU_cap += cl.get_data().ICU_capacity; // TODO fallo bene
     }
-
 }
+/////////////////////////////////////////////////////
+///////          SPREAD THE DISEASE           ///////
+/////////////////////////////////////////////////////
 void Simulation::spread()
 {
-    Random engine;  //seeded engine
-    std::vector<int> close_people_i; //contains close people indeces
+    std::vector<int> close_people_i; // contains close people indeces
 
-    for (auto& cl : Clusters) //loop over clusters
+    for (auto& cl : Clusters) // loop over clusters
     {
-        for (int& person_i : cl.People_i)  //loop over indeces of people of this cluster
+        for (int& person_i : cl.People_i) // loop over indeces of people of this cluster
         {
-            auto& person = People[person_i];   //ref to current person
+            auto& person = People[person_i]; // ref to current person
             if (person.current_status() == Status::Exposed)
             {
-                //determine if this person will be able to be infected
+                // determine if this person will be able to be infected
                 if (engine.try_event(alpha)) { person.set_new_status(Status::Infected); }
             }
             else if (person.current_status() == Status::Infected)
             {
-                if (!person.at_home()) //the person is not at home
+                if (!person.at_home()) // the person is not at home
                 {
-                    if (cl.zone_type() == Zone::White)  //the cluster is white
+                    if (cl.zone_type() == Zone::White) // the cluster is white
                     {
-                        close_people_fill(person,close_people_i); //fill with close ppl indeces
+                        close_people_fill(person, close_people_i); // fill with close ppl indeces
                     }
-                    else  //the cluster is either yellow,orange or red
+                    else // the cluster is either yellow,orange or red
                     {
-                        close_cluster_people_fill(person,close_people_i);
+                        close_cluster_people_fill(person, close_people_i);
                     }
-                    for (int& close_i : close_people_i) //loop over close people
+                    for (int& close_i : close_people_i) // loop over close people
                     {
-                        Person& close_person = People[close_i];  //ref to current close person
-                        if (engine.try_event(beta)){ close_person.set_new_status(Status::Exposed); } //the close one's are exposed
+                        Person& close_person = People[close_i]; // ref to current close person
+                        if (engine.try_event(beta))
+                        {
+                            close_person.set_new_status(Status::Exposed);
+                        } // the close one's are exposed
                     }
                 }
-                //else ignore the persone
-                if (engine.try_event(gamma)) { person.set_new_status(Status::Recovered); } //determine if the person will recover
-                if (engine.try_event(kappa)) { person.set_new_status(Status::Dead); }  //determine if the person will die
+                // else ignore the persone
+                if (engine.try_event(gamma))
+                {
+                    person.set_new_status(Status::Recovered);
+                } // determine if the person will recover
+                if (engine.try_event(kappa))
+                {
+                    person.set_new_status(Status::Dead);
+                } // determine if the person will
+                  // die
             }
         } // end loop over cluster's people
-    } //end loop over clusters
+    }     // end loop over clusters
+}
+/////////////////////////////////////////////////////
+///////               SIMULATE                ///////
+/////////////////////////////////////////////////////
+void Simulation::simulate()
+{
+    move();
+    spread();
 }
 // calculates the index range [lower,upper] (referred to Waypoints array)of the waypoints belonging to each cluster.
 void Simulation::set_clusters_bounds_indeces()
@@ -515,4 +535,3 @@ double weight_function(double distance, double LATP_parameter)
 }
 
 } // namespace smooth_simulation
-

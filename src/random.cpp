@@ -58,7 +58,7 @@ double Random::rand_speed()
 }
 bool Random::try_event(double probability)
 {
-    return uniform(0,1) <= probability;
+    return uniform(0, 1) <= probability;
 }
 
 } // namespace smooth_simulation

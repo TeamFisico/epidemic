@@ -7,18 +7,12 @@ int main()
 
     using namespace std::literals::chrono_literals;
 
-    Data starting{POPULATION_SIZE, 0, 0, 0, 0};
+    Data starting_data{POPULATION_SIZE, 0, 0, 0, 0, 0};
+
+    Simulation sim{1200, 0.02, 0.4, 0.7, 0.35, 0.2, starting_data};
     auto start = std::chrono::high_resolution_clock::now();
-
-    Simulation sim{1200, 0.5, starting};
+    sim.simulate();
     auto end = std::chrono::high_resolution_clock::now();
-
-    int i = 1;
-    for (auto& wpt : sim.Waypoints)
-    {
-        std:: cout << "[" << i << "]" << wpt.get_X() << "\t" << wpt.get_Y() << std::endl;
-        ++i;
-    }
 
     std::chrono::duration<float> duration = end - start;
     std::cout << "Time taken: " << duration.count() << " s " << std::endl;
