@@ -8,11 +8,9 @@ namespace smooth_simulation
 {
 Person::Person(Status status, int cluster_label, Location home, Location current_location, Location target_location,
                bool is_at_place, bool going_home, double x_speed, double y_speed, int stay_time)
-    : status{status}, label{cluster_label}, home{home}, location{current_location}, target{target_location},
-      at_place{is_at_place}, going_home{going_home}, stay_counter{stay_time}
+    : status{status,status}, label{cluster_label}, home{home}, location{current_location}, target{target_location},
+      at_place{is_at_place}, going_home{going_home}, stay_counter{stay_time},velocity{x_speed,y_speed}
 {
-    velocity[0] = x_speed;
-    velocity[1] = y_speed;
 }
 const Person& default_person()
 {
@@ -21,12 +19,10 @@ const Person& default_person()
     return def_per;
 }
 Person::Person()
-    : status{default_person().status}, label{default_person().label}, home{default_person().home},
+    : status{default_person().status[0],default_person().status[1]}, label{default_person().label}, home{default_person().home},
       location{default_person().location}, target{default_person().target}, at_place{default_person().at_place},
-      stay_counter{default_person().stay_counter}
+      stay_counter{default_person().stay_counter},velocity{STARTING_VELOCITY[0],STARTING_VELOCITY[1]}
 {
-    velocity[0] = STARTING_VELOCITY[0];
-    velocity[1] = STARTING_VELOCITY[1];
 }
 double Person::speed() const
 {
@@ -36,26 +32,6 @@ bool Person::at_home() const
 {
     if (location == home && target == home) return true;
     return false;
-}
-/////////////////////////////////////////////////////
-////////             STATUS UPGRADE           ///////
-/////////////////////////////////////////////////////
-void Person::upgrade_status()
-{
-    switch (status)
-    {
-    case Status::Susceptible:
-        status = Status::Latent;
-        break;
-    case Status::Latent:
-        status = Status::Infected;
-        break;
-    case Status::Infected:
-        status = Status::Recovered;
-        break;
-    default:
-        break;
-    }
 }
 /////////////////////////////////////////////////////
 ////////          VELOCITY UPDATE             ///////

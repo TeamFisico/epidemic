@@ -13,6 +13,10 @@ class Simulation
   private:
     double side;          // side of the simulation area
     double spread_radius; // radius under which 2 people can infect each other
+    double alpha;
+    double beta;
+    double gamma;
+    double kappa;   //death rate parameter
     Data data;            // Data of People status of the simulation
   public:
     static std::array<Location, WAYPOINTS_SIZE> Waypoints; // array with waypoints
@@ -27,15 +31,18 @@ class Simulation
     void assign_cluster_to_people(Random& engine); // assign each person to a Cluster
     void assign_home_to_people(Random& engine);    // assign each person a home
     void set_clusters_bounds_indeces(); // set wpts range of each cindeces referred to Waypoints array
+    void close_people_fill(Person const& current_person,std::vector<int> close_people_i); //fill an input vector with indeces to close people
+    void close_cluster_people_fill(Person const& current_person,std::vector<int> close_people_i); //fill an input vector with indeces to close people(in person cluster)
     void world_generation();
     void update_zones();             // check the numbers of the epidemic and change Zones color
+    void update_data();     //update simulation data
   public:
     Simulation(double side, double spread_radius, Data data); // constructor
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
-    void check_zones(); // verify Clusters color
-    void simulate();    // simulate
     void move();        // move all the people
     void spread();      // spread the disease
+    void simulate();    // simulate
+    Data get_simulation_data() const;//return simulation data
 };
 // helper functions
 double weight_function(double distance, double LATP_parameter);    // weight function of LATP algorithm

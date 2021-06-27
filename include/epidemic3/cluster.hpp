@@ -71,6 +71,7 @@ class Cluster
     void generate_groups(Random& engine); // determine the n. of waypoints associated to every group
     void partition_in_groups(Random& engine);
     void move(); // move people belonging to this cluster
+    void clear_dead_people(); //removes dead people indeces from People_i -->won't be considered anymore
 };
 void generate_groups(Cluster const& cluster,Random& engine); // determine the n. of waypoints associated to every group
 std::vector<int> available_white_clusters(int lbl);

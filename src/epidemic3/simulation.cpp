@@ -324,6 +324,52 @@ Simulation::Simulation(double side, double spread_radius, Data data)
     std::cout << "World successfully constructed!" << std::endl;
 }
 /////////////////////////////////////////////////////
+////       CLOSE PEOPLE ALL OVER THE AREA        ////
+/////////////////////////////////////////////////////
+void Simulation::close_people_fill(const Person& current_person, std::vector<int> close_people_i)
+{
+     close_people_i.clear();
+     for (auto& cl : Clusters)  //loop over clusters
+     {
+         if (cl.zone_type() == Zone::White) //current cluster is white
+         {
+             for (int& person_i : cl.People_i) //loop over people in this cluster indeces
+             {
+                 Person& person = People[person_i];  //ref to current cluster person
+                 auto const& pos = person.location.get_position();
+                 auto const& stat = person.current_status();
+                 bool const& is_home = person.at_home();
+                 //check if person is close enough(most restrictive condition),susceptible and not at home
+                 if (pos.in_radius(current_person.location.get_position(),spread_radius) && stat == Status::Exposed && !is_home)
+                 {
+                     close_people_i.push_back(person_i);  //ok, add this person index to close people vector
+                 }
+             } //end loop
+         }
+         //if not white-->ignore
+     }
+
+}
+/////////////////////////////////////////////////////
+////       CLOSE PEOPLE IN PERSON CLUSTER        ////
+/////////////////////////////////////////////////////
+void Simulation::close_cluster_people_fill(const Person& current_person, std::vector<int> close_people_i)
+{
+    close_people_i.clear();
+    for (int& person_i : Clusters[current_person.label].People_i) //loop over people in this person's cluster indeces
+    {
+        Person& person = People[person_i];  //ref to current cluster person
+        auto const& pos = person.location.get_position();
+        auto const& stat = person.current_status();
+        bool const& is_home = person.at_home();
+        //check if person is close enough(most restrictive condition),susceptible and not at home
+        if (pos.in_radius(current_person.location.get_position(),spread_radius) && stat == Status::Exposed && !is_home)
+        {
+            close_people_i.push_back(person_i);  //ok, add this person index to close people vector
+        }
+    } //end loop
+}
+/////////////////////////////////////////////////////
 ////////            MOVE PEOPLE               ///////
 /////////////////////////////////////////////////////
 void Simulation::move()
@@ -339,35 +385,107 @@ void Simulation::move()
 /////////////////////////////////////////////////////
 /////    UPDATE CLUSTER ZONES BASED ON DATA     /////
 /////////////////////////////////////////////////////
-//TODO determine conditions for zone upgrade based on new infections
 void Simulation::update_zones()
 {
     for (auto& cl : Clusters)
     {
-        Data const data = cl.get_data();
-        if (data.I < data.S / 5) 
+        double ratio {(double)data.I / data.S};  //infected - suceptible ratio
+
+        if (ratio < WHITE_CLUSTER_RATIO)
         { 
             cl.set_zone(Zone::White);
             cl.set_LATP_parameter(WHITE_LATP_PARAMETER);
         }
-        else if (data.I >= data.S / 5)
+        else if (ratio > WHITE_CLUSTER_RATIO && ratio <= YELLOW_CLUSTER_RATIO)
         {
             cl.set_zone(Zone::Yellow);
             cl.set_LATP_parameter(YELLOW_LATP_PARAMETER);
         }
-        else if (data.I >= data.S / 4)
+        else if (ratio > YELLOW_CLUSTER_RATIO && ratio <= ORANGE_CLUSTER_RATIO)
         {
             cl.set_zone(Zone::Orange);
             cl.set_LATP_parameter(ORANGE_LATP_PARAMETER);
         }
-        else if (data.I >= data.S / 3) // red condition
+        else if (ratio > ORANGE_CLUSTER_RATIO) // red condition
         {
             cl.set_zone(Zone::Red);
             cl.set_LATP_parameter(RED_LATP_PARAMETER);
         }
     }
 }
-//////////////// HELPER FUNCTIONS  //////////////////
+/////////////////////////////////////////////////////
+///////             UPDATE DATA               ///////
+/////////////////////////////////////////////////////
+void Simulation::update_data()
+{
+    for (auto& cl : Clusters)
+    {
+        cl.update_data();
+    }
+}
+/////////////////////////////////////////////////////
+///////               GET DATA                ///////
+/////////////////////////////////////////////////////
+Data Simulation::get_simulation_data() const
+{
+    unsigned int nS = 0;
+    unsigned int nE = 0;
+    unsigned int nI = 0;
+    unsigned int nR = 0;
+    unsigned int nD = 0;
+    unsigned int ICU_cap = 0;
+
+    for (auto& cl : Clusters)
+    {
+        nS += cl.get_data().S;
+        nE += cl.get_data().E;
+        nI += cl.get_data().I;
+        nR += cl.get_data().R;
+        nD += cl.get_data().D;
+        ICU_cap += cl.get_data().ICU_capacity; //TODO fallo bene
+    }
+
+}
+void Simulation::spread()
+{
+    Random engine;  //seeded engine
+    std::vector<int> close_people_i; //contains close people indeces
+
+    for (auto& cl : Clusters) //loop over clusters
+    {
+        for (int& person_i : cl.People_i)  //loop over indeces of people of this cluster
+        {
+            auto& person = People[person_i];   //ref to current person
+            if (person.current_status() == Status::Exposed)
+            {
+                //determine if this person will be able to be infected
+                if (engine.try_event(alpha)) { person.set_new_status(Status::Infected); }
+            }
+            else if (person.current_status() == Status::Infected)
+            {
+                if (!person.at_home()) //the person is not at home
+                {
+                    if (cl.zone_type() == Zone::White)  //the cluster is white
+                    {
+                        close_people_fill(person,close_people_i); //fill with close ppl indeces
+                    }
+                    else  //the cluster is either yellow,orange or red
+                    {
+                        close_cluster_people_fill(person,close_people_i);
+                    }
+                    for (int& close_i : close_people_i) //loop over close people
+                    {
+                        Person& close_person = People[close_i];  //ref to current close person
+                        if (engine.try_event(beta)){ close_person.set_new_status(Status::Exposed); } //the close one's are exposed
+                    }
+                }
+                //else ignore the persone
+                if (engine.try_event(gamma)) { person.set_new_status(Status::Recovered); } //determine if the person will recover
+                if (engine.try_event(kappa)) { person.set_new_status(Status::Dead); }  //determine if the person will die
+            }
+        } // end loop over cluster's people
+    } //end loop over clusters
+}
 // calculates the index range [lower,upper] (referred to Waypoints array)of the waypoints belonging to each cluster.
 void Simulation::set_clusters_bounds_indeces()
 {
@@ -390,9 +508,11 @@ void Simulation::set_clusters_bounds_indeces()
     }                                  // end for
 }
 
+//////////////// HELPER FUNCTIONS  //////////////////
 double weight_function(double distance, double LATP_parameter)
 {
     return 1 / std::pow(distance, LATP_parameter);
 }
 
 } // namespace smooth_simulation
+

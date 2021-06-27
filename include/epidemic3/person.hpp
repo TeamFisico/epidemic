@@ -11,7 +11,7 @@ namespace smooth_simulation
 enum class Status
 {
     Susceptible = 0,
-    Latent,
+    Exposed,
     Infected,
     Recovered,
     Dead
@@ -20,8 +20,8 @@ enum class Status
 class Person
 {
   private:
-    Status status;
-    int label;         // label of the belongin cluster(where house is located
+    Status status[2];  //status[0] == current_status, status[2] == new_status
+    int label;         // label of the belonging cluster(where house is located
     Location home;     // home address
     Location location; // current location
     Location target;   // next target location
@@ -38,6 +38,8 @@ class Person
            bool at_place, bool going_home, double x_speed, double y_speed, int stay_time);
     Person(); // default constructor
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    Status current_status() const { return status[0]; }
+    Status new_status() const { return status[1]; }
     int home_cluster() const { return label; }
     double speed_x() const { return velocity[0]; }
     double speed_y() const { return velocity[1]; }
@@ -48,6 +50,8 @@ class Person
     bool at_home() const; // is the person staying home
     bool empty_path() const { return Paths_i.size() == 0; }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    void set_current_status(Status st) { status[0] = st; }
+    void set_new_status(Status st) { status[1] = st; }
     void set_cluster(int n) { label = n; }
     void set_home(Location loc) { home = loc; }
     void set_target(Location loc) { target = loc; }
@@ -60,7 +64,6 @@ class Person
     void update_target(Random& engine);
   public:
     void pathfinder(Random& engine);
-    void upgrade_status();
     void move(); // move a person if it should
 };
 // helper functions

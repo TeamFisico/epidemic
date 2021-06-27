@@ -2,7 +2,7 @@
 #include "cluster.hpp"
 #include "simulation.hpp"
 #include <algorithm>
-#include <math.h>
+#include <cmath>
 #include <random>
 
 namespace smooth_simulation
@@ -24,8 +24,8 @@ Cluster::Cluster(int size, int label, double weight, Zone zone, double alpha, do
 /////////////////////////////////////////////////////
 const Cluster& default_cluster()
 {
-    static Data dd{0, 0, 0, 0, 0};
-    static Cluster def_cl{0, 0, 0.0, Zone::White, STARTING_LATP_PARAMETER, 0.0, 0.0, 0.0, 0.0, dd};
+    static Data dd{0, 0, 0, 0, 0,0};
+    static Cluster def_cl{0, 0, 0.0, Zone::White, WHITE_LATP_PARAMETER, 0.0, 0.0, 0.0, 0.0, dd};
     return def_cl;
 }
 /////////////////////////////////////////////////////
@@ -143,9 +143,53 @@ void Cluster::move()
     }
 }
 /////////////////////////////////////////////////////
+/////    REMOVE DEAD PEOPLE FROM THIS CLUSTER   /////
+/////////////////////////////////////////////////////
+void Cluster::clear_dead_people()
+{
+    for (int& person_i : People_i)
+    {
+        Status const& stat = Simulation::People[person_i].current_status();
+        if (stat == Status::Dead)
+        {
+            std::swap(person_i, People_i.back()); // swap the last element with the one to be removed
+            People_i.pop_back();                         // erase the last element of the vector
+        }
+
+    }
+}
+/////////////////////////////////////////////////////
+/////    UPDATE EPIDEMICDATA FOR THIS CLUSTER   /////
+/////////////////////////////////////////////////////
+void Cluster::update_data()
+{
+    for (auto& person_i : People_i)
+    {
+        Status const& status = Simulation::People[person_i].current_status();
+        switch (status)
+        {
+        case Status::Susceptible:
+            ++data.S;
+            break;
+        case Status::Exposed:
+            ++data.E;
+            break;
+        case Status::Infected:
+            ++data.I;
+            break;
+        case Status::Recovered:
+            ++data.R;
+            break;
+        case Status::Dead:
+            ++data.D;
+            break;
+        }
+    }
+}
+/////////////////////////////////////////////////////
 ////////        DATA CONSTRUCTOR              ///////
 /////////////////////////////////////////////////////
-    Data(unsigned int susceptible, unsigned int latent, unsigned int  infected, unsigned int  recovered, unsigned int  dead,unsigned int capacity)
+    Data::Data(unsigned int susceptible, unsigned int latent, unsigned int  infected, unsigned int  recovered, unsigned int  dead,unsigned int capacity)
     : S{susceptible}, E{latent}, I{infected}, R{recovered}, D{dead},ICU_capacity{capacity}
 {
 }
