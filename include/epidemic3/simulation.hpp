@@ -24,25 +24,24 @@ class Simulation
     static std::array<Cluster, CLUSTERS_SIZE> Clusters;    // array with Clusters in the simulation
     static std::array<Person, POPULATION_SIZE> People;     // People in the simulation
   private:
-    void partition_in_clusters();             // divide area in clusters
-    Location first_group_step(int clust_lab); //
+    void partition_in_clusters();
+    Location first_group_step(int clust_lab);
     Location other_groups_step(Location const& prev_waypoint, int clust_lab);
     Location plot_nearby_waypoints(int clust_lab, int grp_lab, Location const& starting_waypoint);
     void plot_waypoints();
-    void assign_cluster_to_people();    // assign each person to a Cluster
-    void assign_home_to_people();       // assign each person a home
-    void set_clusters_bounds_indeces(); // set wpts range of each cindeces referred to Waypoints array
-    void close_people_fill(Person const& current_person,
-                           std::vector<int> close_people_i); // fill an input vector with indeces to close people
-    void close_cluster_people_fill(
-        Person const& current_person,
-        std::vector<int> close_people_i); // fill an input vector with indeces to close people(in person cluster)
+    void assign_cluster_to_people();
+    void assign_home_to_people();
+    void set_clusters_bounds_indeces();
+    void close_people_fill(Person const& current_person,std::vector<int> close_people_i);
+    void close_cluster_people_fill(Person const& current_person,std::vector<int> close_people_i);
     void world_generation();
+    void initialise_people_status(int E,int I,int R);
     void update_zones(); // check the numbers of the epidemic and change Zones color
     void update_data();  // update simulation data
+    void update_people_status();
   public:
     Simulation(double side, double spread_radius, double alpha, double beta, double gamma, double kappa,
-               Data data); // constructor
+               Data data);
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
     void move();                      // move all the people
     void spread();                    // spread the disease

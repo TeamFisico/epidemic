@@ -239,11 +239,12 @@ void Simulation::assign_home_to_people()
 
     for (int i = 0; i < POPULATION_SIZE; i += family_size) // loop over
     {
+        Person& person = People[i];
         // set the bounds based on the belonging cluster for home generation
-        lw_x = Clusters[People[i].home_cluster()].lower_x();
-        up_x = Clusters[People[i].home_cluster()].upper_x();
-        lw_y = Clusters[People[i].home_cluster()].lower_y();
-        up_y = Clusters[People[i].home_cluster()].upper_y();
+        lw_x = Clusters[person.label].lower_x();
+        up_x = Clusters[person.label].upper_x();
+        lw_y = Clusters[person.label].lower_y();
+        up_y = Clusters[person.label].upper_y();
 
         family_size = engine.rounded_gauss(AVERAGE_FAMILY_SIZE, 1.5); // a family as a mean
         if (family_size < 1) family_size = 1;
@@ -281,6 +282,35 @@ void Simulation::assign_home_to_people()
         }
     } // end loop over People
 }
+/////////////////////////////////////////////////////
+////   DISTRIBUTE I,E,R people over the map     /////
+/////////////////////////////////////////////////////
+//TODO determine a smart way to do that
+void Simulation::initialise_people_status(int E,int I,int R)
+{
+    while(E > 0)
+    {
+        auto& person = engine.engine().pick(People); //pick functin form randutils
+        person.set_current_status(Status::Exposed);
+        --E;
+    }
+    while(I > 0)
+    {
+        auto& person = engine.engine().pick(People); //pick functin form randutils
+        person.set_current_status(Status::Infected);
+        --I;
+    }
+    while(R > 0)
+    {
+        auto& person = engine.engine().pick(People); //pick functin form randutils
+        person.set_current_status(Status::Recovered);
+        --R;
+    }
+
+}
+/////////////////////////////////////////////////////
+////////         WORLD GENERATION             ///////
+/////////////////////////////////////////////////////
 void Simulation::world_generation()
 {
     partition_in_clusters();
@@ -415,13 +445,38 @@ void Simulation::update_zones()
     }
 }
 /////////////////////////////////////////////////////
+////////       UPDATE PEOPLE STATUS           ///////
+/////////////////////////////////////////////////////
+void Simulation::update_people_status()
+{
+    for (auto& p : People)
+    {
+        p.update_status();  //the current status become the setted new one in spread()
+    }
+}
+
+/////////////////////////////////////////////////////
 ///////             UPDATE DATA               ///////
 /////////////////////////////////////////////////////
+//updates cluster data and consequently simulation summary data
 void Simulation::update_data()
 {
+    //update  cluster data
     for (auto& cl : Clusters)
     {
         cl.update_data();
+    }
+
+    //update sim data
+
+    for (auto& cl : Clusters)
+    {
+        data.S += cl.get_data().S;
+        data.E += cl.get_data().E;
+        data.I += cl.get_data().I;
+        data.R += cl.get_data().R;
+        data.D += cl.get_data().D;
+        data.ICU_capacity += cl.get_data().ICU_capacity; // TODO fallo bene
     }
 }
 /////////////////////////////////////////////////////
@@ -429,22 +484,7 @@ void Simulation::update_data()
 /////////////////////////////////////////////////////
 Data Simulation::get_simulation_data() const
 {
-    unsigned int nS = 0;
-    unsigned int nE = 0;
-    unsigned int nI = 0;
-    unsigned int nR = 0;
-    unsigned int nD = 0;
-    unsigned int ICU_cap = 0;
-
-    for (auto& cl : Clusters)
-    {
-        nS += cl.get_data().S;
-        nE += cl.get_data().E;
-        nI += cl.get_data().I;
-        nR += cl.get_data().R;
-        nD += cl.get_data().D;
-        ICU_cap += cl.get_data().ICU_capacity; // TODO fallo bene
-    }
+    return data;
 }
 /////////////////////////////////////////////////////
 ///////          SPREAD THE DISEASE           ///////
@@ -503,8 +543,24 @@ void Simulation::spread()
 /////////////////////////////////////////////////////
 void Simulation::simulate()
 {
-    move();
-    spread();
+    initialise_people_status(data.E, data.I, data.R);
+
+    for (int i = 0; i < 5; ++i) // do 5 blocks
+    {
+        for (int steps = 1; steps < UPDATE_ZONES_INTERVAL; ++steps) // do 1 block
+        {
+            move();
+            spread();
+            update_people_status();
+        }
+        update_data();
+        update_zones();
+        std::cout <<"Block "<<i+1<<std::endl;
+        std::cout <<"S == " << data.S <<"\tE == " << data.E<<std::endl;
+        std::cout <<"I == " << data.I <<"\tR == " << data.R<<std::endl;
+        std::cout <<"D == " << data.D <<"\tICU == " << data.ICU_capacity<<std::endl;
+//        get_simulation_data();
+    }
 }
 // calculates the index range [lower,upper] (referred to Waypoints array)of the waypoints belonging to each cluster.
 void Simulation::set_clusters_bounds_indeces()

@@ -57,6 +57,7 @@ class Person
     void set_target(Location loc) { target = loc; }
     void set_location(Location loc) { location = loc; }
     bool is_staying(); // determine if person can move
+    void update_status(); //pass to new condition
   private:
     void move_toward(Random& engine);
     void move_home(Random& engine);
