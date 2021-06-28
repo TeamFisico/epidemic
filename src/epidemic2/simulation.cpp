@@ -21,7 +21,7 @@ void Simulation::Close_People(Person &current_person, std::vector<Person *> &clo
         {
             for (int j = 0; j < world.Clusters().operator[](i).population().size(); ++j)
             {
-                auto pos = world.Clusters().operator[](i).population().operator[](j).Person_ref().get_pos();
+                const Position& pos = world.Clusters().operator[](i).population().operator[](j).Person_ref().get_pos();
                 if (pos.InRadius(current_person.get_pos(), spread_radius) &&
                     world.Clusters().operator[](i).population().operator[](j).Person_ref().get_condition() ==
                         State::S &&
@@ -47,7 +47,7 @@ void Simulation::Close_Cluster_People(Person &current_person, std::vector<Person
 {
     close_people.clear();
     for (auto & a: world.Clusters().operator[](current_person.get_cluster_index()).population()){
-        auto pos = a.Person_ref().get_pos();
+        const Position& pos = a.Person_ref().get_pos();
         if (pos.InRadius(current_person.get_pos(), spread_radius) && a.Person_ref().get_condition() == State::S && !a.is_at_home())
         {                                          // check if person is close_enough, Susceptible and not at_home
             close_people.push_back(&a.Person_ref()); // push a pointer to the current person back to the end of the vector
@@ -143,6 +143,7 @@ void Simulation::update_Colors()
 void Simulation::spread()
 {
     Random rng;
+    std::vector<Person *> close_people{};
     for(auto& c: world.Clusters())
     {
         for (auto& a : c.population())
@@ -158,7 +159,6 @@ void Simulation::spread()
             {                        // if current person is infected
                 if (!a.is_at_home()) // if current person is not at home, then spread the virus
                 {
-                    std::vector<Person *> close_people{};
                     if (c.get_color() == Color::Green) //if cluster is Green
                     {
                         Close_People(a.Person_ref(), close_people); // susceptible people in Green Cluster near the infected that are not at home
@@ -167,7 +167,7 @@ void Simulation::spread()
                     {
                         Close_Cluster_People(a.Person_ref(), close_people); // susceptible people in the same Cluster near the infected that are not at home
                     }
-                    for (auto b : close_people)
+                    for (auto& b : close_people)
                     {
                         if (rng.try_event(beta)) { b->get_new_condition() = State::E; }
                     }
@@ -377,7 +377,7 @@ void Simulation::clean_path(mobility_model &person)
     for(auto& a: person.path()){
         if(world.Clusters()[a->c_index()].get_color() != Color::Green){
             //delete the last element of the vector to make sure it does not move the vector
-            a = *(person.path().end() -1); //copy the last element of the vector to the current
+            a = *(person.path().end() - 1); //copy the last element of the vector to the current
             person.path().pop_back(); //delete the last element of a vector
         }
     }

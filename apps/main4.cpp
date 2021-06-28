@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
     gE->SetLineColor(kOrange);
     gI->SetLineColor(kGreen);
     gR->SetLineColor(kRed);
-    mg->SetTitle("Evolution; time (days); number of people");
+    mg->SetTitle("Evolution; steps; number of people");
 
     int t2 = 0;
     for (auto &a : result)
