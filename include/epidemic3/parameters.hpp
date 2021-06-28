@@ -5,7 +5,7 @@
 int constexpr CLUSTERS_SIZE = CLUSTERS;
 int constexpr WAYPOINTS_SIZE = WAYPOINTS;
 int constexpr POPULATION_SIZE = POPULATION;
-double constexpr TRANSMISSION_RANGE = 2.0;
+double constexpr TRANSMISSION_RANGE = 5.0;
 double constexpr MAXIMUM_GROUP_PROBABILITY = 0.5;
 double constexpr HOME_RADIUS = 0.25;
 double constexpr MAXIMUM_ANGLE_VARIATION = 0.0872664626; // 5 degrees variation
@@ -29,5 +29,4 @@ double constexpr MAX_PAUSE = 60.0; // maximum pause time(steps)
 double constexpr MIN_PAUSE = 5.0;  // miminim pause time(steps)
 double constexpr MEAN_SPEED = 2.0;
 double constexpr MAXIMUM_VELOCITY_STDDEV = 1.0;
-double constexpr OTHER_CLUSTERS_PROBABILITY =
-    0.30; // probability to choose a location in other white clusters(when available)
+double constexpr OTHER_CLUSTERS_PROBABILITY = 0.30; // prob to choose a location in other white clusters(when available)

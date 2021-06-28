@@ -10,7 +10,7 @@ namespace smooth_simulation
 /////////////////////////////////////////////////////
 Position::Position(double X, double Y) : x{X}, y{Y}
 {
-    assert(x >= 0 && y >= 0);
+//    assert(x >= -100.0 && y >= -100.0);
 }
 Position::Position() : x{0.0}, y{0.0}
 {

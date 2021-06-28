@@ -1,4 +1,5 @@
 #include "simulation.hpp"
+#include <fstream>
 #include <iostream>
 
 namespace smooth_simulation
@@ -287,26 +288,73 @@ void Simulation::assign_home_to_people()
 /////////////////////////////////////////////////////
 ////   DISTRIBUTE I,E,R people over the map     /////
 /////////////////////////////////////////////////////
-// TODO determine a smart way to do that
+//each person is default constructed to be Susceptible, so this function distributes uniformly E,I,R people over clusters
 void Simulation::initialise_people_status(int E, int I, int R)
 {
+    std::vector<int> chosen_people_i; //vector to take trace of already setted people indeces
+    chosen_people_i.reserve(E+I+R);
+    //setting exposed individuals
+    int cl_index = 0;
     while (E > 0)
     {
-        auto& person = engine.engine().pick(People); // pick functin form randutils
-        person.set_current_status(Status::Exposed);
+        if (cl_index == CLUSTERS_SIZE){ cl_index = 0; } //occurs when E > CLUSTERS_SIZE
+        auto& cl = Clusters[cl_index];
+        int try_person_i = engine.int_uniform(cl.lower_index(),cl.upper_index()); // pick a random index
+        for (unsigned long j = 0; j < chosen_people_i.size() ;++j) //check if already taken
+        {
+            if (chosen_people_i[j] == try_person_i) //the index has been already taken
+            {
+                try_person_i = engine.int_uniform(cl.lower_index(),cl.upper_index()); // pick a random index
+                j = 0;
+                continue; //restart the loop
+            }
+        }
+        People[try_person_i].set_current_status(Status::Exposed);
+        chosen_people_i.push_back(try_person_i);
         --E;
+        ++cl_index;
     }
+    //setting infected individuals
+    cl_index = 0;
     while (I > 0)
     {
-        auto& person = engine.engine().pick(People); // pick functin form randutils
-        person.set_current_status(Status::Infected);
+        if (cl_index == CLUSTERS_SIZE){ cl_index = 0; } //occurs when E > CLUSTERS_SIZE
+        auto& cl = Clusters[cl_index];
+        int try_person_i = engine.int_uniform(cl.lower_index(),cl.upper_index()); // pick a random index
+        for (unsigned long j = 0; j < chosen_people_i.size() ;++j) //check if already taken
+        {
+            if (chosen_people_i[j] == try_person_i) //the index has been already taken
+            {
+                try_person_i = engine.int_uniform(cl.lower_index(),cl.upper_index()); // pick a random index
+                j = 0;
+                continue; //restart the loop
+            }
+        }
+        People[try_person_i].set_current_status(Status::Infected);
+        chosen_people_i.push_back(try_person_i);
         --I;
+        ++cl_index;
     }
+    //setting recovered individuals
+    cl_index = 0;
     while (R > 0)
     {
-        auto& person = engine.engine().pick(People); // pick functin form randutils
-        person.set_current_status(Status::Recovered);
+        if (cl_index == CLUSTERS_SIZE){ cl_index = 0; } //occurs when E > CLUSTERS_SIZE
+        auto& cl = Clusters[cl_index];
+        int try_person_i = engine.int_uniform(cl.lower_index(),cl.upper_index()); // pick a random index
+        for (unsigned long j = 0; j < chosen_people_i.size() ;++j) //check if already taken
+        {
+            if (chosen_people_i[j] == try_person_i) //the index has been already taken
+            {
+                try_person_i = engine.int_uniform(cl.lower_index(),cl.upper_index()); // pick a random index
+                j = 0;
+                continue; //restart the loop
+            }
+        }
+        People[try_person_i].set_current_status(Status::Recovered);
+        chosen_people_i.push_back(try_person_i);
         --R;
+        ++cl_index;
     }
 }
 /////////////////////////////////////////////////////
@@ -448,7 +496,11 @@ void Simulation::update_people_status()
 {
     for (auto& p : People)
     {
-        p.update_status(); // the current status become the setted new one in spread()
+        if (p.changed_status)
+        {
+            p.update_status();
+            p.set_changed_status(false);
+        }
     }
 }
 
@@ -458,22 +510,19 @@ void Simulation::update_people_status()
 // updates cluster data and consequently simulation summary data
 void Simulation::update_data()
 {
-    // update  cluster data
+    data.S=0;
+    data.E=0;
+    data.I=0;
+    data.R=0;
+    data.D =0;
     for (auto& cl : Clusters)
     {
         cl.update_data();
-    }
-
-    // update sim data
-
-    for (auto& cl : Clusters)
-    {
-        data.S += cl.get_data().S;
-        data.E += cl.get_data().E;
-        data.I += cl.get_data().I;
-        data.R += cl.get_data().R;
-        data.D += cl.get_data().D;
-        data.ICU_capacity += cl.get_data().ICU_capacity; // TODO fallo bene
+        data.S += cl.data.S;
+        data.E += cl.data.E;
+        data.I += cl.data.I;
+        data.R += cl.data.R;
+        data.D += cl.data.D;
     }
 }
 /////////////////////////////////////////////////////
@@ -498,7 +547,11 @@ void Simulation::spread()
             if (person.current_status() == Status::Exposed)
             {
                 // determine if this person will be able to be infected
-                if (engine.try_event(alpha)) { person.set_new_status(Status::Infected); }
+                if (engine.try_event(alpha))
+                {
+                    person.set_new_status(Status::Infected);
+                    person.set_changed_status(true);
+                }
             }
             else if (person.current_status() == Status::Infected)
             {
@@ -518,6 +571,7 @@ void Simulation::spread()
                         if (engine.try_event(beta))
                         {
                             close_person.set_new_status(Status::Exposed);
+                            close_person.set_changed_status(true);
                         } // the close one's are exposed
                     }
                 }
@@ -525,10 +579,13 @@ void Simulation::spread()
                 if (engine.try_event(gamma))
                 {
                     person.set_new_status(Status::Recovered);
+                    person.set_changed_status(true);
+                    continue;
                 } // determine if the person will recover
                 if (engine.try_event(kappa))
                 {
                     person.set_new_status(Status::Dead);
+                    person.set_changed_status(true);
                 } // determine if the person will
                   // die
             }
@@ -540,28 +597,32 @@ void Simulation::spread()
 /////////////////////////////////////////////////////
 void Simulation::simulate()
 {
+    using namespace std::literals::chrono_literals;
+    std::ofstream out{"out.txt"};
     initialise_people_status(data.E, data.I, data.R);
     std::cout << "initialised status\n";
-
-    for (int i = 0; i < 1; ++i) // do 5 blocks
+    for (int i = 0; i < 100; ++i)
     {
+        auto start = std::chrono::high_resolution_clock::now();
         for (int steps = 1; steps < UPDATE_ZONES_INTERVAL; ++steps) // do 1 block
         {
-            std::cout << "Started step " << steps<<std::endl;
             move();
-            std::cout << "Made movement"<<steps<<std::endl;
             spread();
-            std::cout << "Made spread"<<steps<<std::endl;
             update_people_status();
+
         }
         update_data();
         update_zones();
-        std::cout << "Block " << i + 1 << std::endl;
-        std::cout << "S == " << data.S << "\tE == " << data.E << std::endl;
-        std::cout << "I == " << data.I << "\tR == " << data.R << std::endl;
-        std::cout << "D == " << data.D << "\tICU == " << data.ICU_capacity << std::endl;
-        //        get_simulation_data();
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<float> duration = end - start;
+        std::cout << "block " <<i<<"-->"<< duration.count() << " s " << std::endl;
+        out << "Block " << i<<std::endl;
+        out << "S == " << data.S << "\tE == "<< data.E<<std::endl;
+        out << "I == " << data.I << "\tR == "<< data.R<<std::endl;
+        out << "D == " << data.D<<std::endl;
     }
+        //        get_simulation_data();
+
 }
 // calculates the index range [lower,upper] (referred to Waypoints array)of the waypoints belonging to each cluster.
 void Simulation::set_clusters_bounds_indeces()

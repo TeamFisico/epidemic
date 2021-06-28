@@ -10,24 +10,24 @@ namespace smooth_simulation
 ////////        PERSON CONSTRUCTOR            ///////
 /////////////////////////////////////////////////////
 Person::Person(Status status, int cluster_label, Location home, Position current_position, int target_index,
-               bool is_at_place, bool going_home, double x_speed, double y_speed, int stay_time)
+               bool is_at_place, bool going_home,bool changed_status,double x_speed, double y_speed, int stay_time)
     : status{status, status}, label{cluster_label}, home{home}, position{current_position}, target_i{target_index},
-      at_place{is_at_place}, going_home{going_home}, velocity{x_speed, y_speed}, stay_counter{stay_time}
+      at_place{is_at_place}, going_home{going_home},changed_status{changed_status},velocity{x_speed, y_speed}, stay_counter{stay_time}
 {
 }
 
-const Person& default_person()
+const Person& def_person()
 {
     static Location def_loc{};
     static Position def_pos{};
-    static Person def_per{Status::Susceptible, 0, def_loc, def_pos, 0, true, false, 0.0, 0.0, 0};
-    return def_per;
+    static Person def_p{Status::Susceptible, 0, def_loc, def_pos, 0, true, false,false, 0.0, 0.0, 0};
+    return def_p;
 }
 Person::Person()
-    : status{default_person().status[0], default_person().status[1]}, label{default_person().label},
-      home{default_person().home}, position{default_person().position}, target_i{default_person().target_i},
-      at_place{default_person().at_place}, velocity{default_person().velocity[0], default_person().velocity[1]},
-      stay_counter{default_person().stay_counter}
+    : status{def_person().status[0], def_person().status[1]}, label{def_person().label},
+      home{def_person().home}, position{def_person().position}, target_i{def_person().target_i},
+      at_place{def_person().at_place},going_home{def_person().going_home},changed_status{def_person().changed_status}, velocity{def_person().velocity[0], def_person().velocity[1]},
+      stay_counter{def_person().stay_counter}
 {
 }
 double Person::speed() const

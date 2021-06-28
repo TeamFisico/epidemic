@@ -156,10 +156,15 @@ void Cluster::clear_dead_people()
     }
 }
 /////////////////////////////////////////////////////
-/////    UPDATE EPIDEMICDATA FOR THIS CLUSTER   /////
+/////    UPDATE EPIDEMI CDATA FOR THIS CLUSTER  /////
 /////////////////////////////////////////////////////
 void Cluster::update_data()
 {
+    data.S = 0;
+    data.E = 0;
+    data.I = 0;
+    data.R = 0;
+    data.D = 0;
     for (auto& person_i : People_i)
     {
         Status const& status = Simulation::People[person_i].current_status();
@@ -186,9 +191,9 @@ void Cluster::update_data()
 /////////////////////////////////////////////////////
 ////////        DATA CONSTRUCTOR              ///////
 /////////////////////////////////////////////////////
-Data::Data(unsigned int susceptible, unsigned int latent, unsigned int infected, unsigned int recovered,
+Data::Data(unsigned int susceptible, unsigned int exposed, unsigned int infected, unsigned int recovered,
            unsigned int dead, unsigned int capacity)
-    : S{susceptible}, E{latent}, I{infected}, R{recovered}, D{dead}, ICU_capacity{capacity}
+    : S{susceptible}, E{exposed}, I{infected}, R{recovered}, D{dead}, ICU_capacity{capacity}
 {
 }
 

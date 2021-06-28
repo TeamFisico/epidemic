@@ -27,13 +27,14 @@ class Person
     int target_i;      // next target location(index
     bool at_place;     // is the person staying at a place
     bool going_home;
+    bool changed_status;
     double velocity[2];       // [0] == x_speed , [1] == y_speed
     int stay_counter;         // time a person will spend to a place
     std::vector<int> Paths_i; // indeces to waypoints to visit in Waypoints array
   public:
     friend class Simulation;
     Person(Status status, int cluster_label, Location home, Position current_position, int target_index,
-           bool is_at_place, bool going_home, double x_speed, double y_speed, int stay_time);
+           bool is_at_place, bool going_home,bool changed_status,double x_speed, double y_speed, int stay_time);
     Person(); // default constructor
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     Status current_status() const { return status[0]; }
@@ -54,6 +55,7 @@ class Person
     void set_home(Location loc) { home = loc; }
     void set_target_i(int target_index) { target_i = target_index; }
     void set_position(Position const& pos) { position = pos; }
+    void set_changed_status(bool has_changed){ changed_status = has_changed; }
     void set_at_home() { position = home.get_position(); }
     void add_to_path(int const& wpt_index) { Paths_i.push_back(wpt_index); }
     bool is_staying();    // determine if person can move

@@ -15,7 +15,7 @@ struct Data
     unsigned int R;
     unsigned int D;
     unsigned int ICU_capacity;
-    Data(unsigned int susceptible, unsigned int latent, unsigned int infected, unsigned int recovered,
+    Data(unsigned int susceptible, unsigned int exposed, unsigned int infected, unsigned int recovered,
          unsigned int dead, unsigned int capacity);
     ;
 };
