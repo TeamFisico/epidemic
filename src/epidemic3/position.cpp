@@ -10,7 +10,7 @@ namespace smooth_simulation
 /////////////////////////////////////////////////////
 Position::Position(double X, double Y) : x{X}, y{Y}
 {
-    assert(x >= 0.0 && y >= 0.0);
+    assert(x >= 0 && y >= 0);
 }
 Position::Position() : x{0.0}, y{0.0}
 {
@@ -43,6 +43,8 @@ Position generate_close_position(Position const& center, double max_distance)
     double x = center.get_X() + v_x;
     double y = center.get_Y() + v_y;
 
+    if (x < 0) { x = 0;}
+    if (y < 0) { y = 0;}
     Position gen_pos{x, y};
     return gen_pos;
 }

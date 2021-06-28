@@ -6,23 +6,28 @@
 
 namespace smooth_simulation
 {
-Person::Person(Status status, int cluster_label, Location home, Location current_location, Location target_location,
+/////////////////////////////////////////////////////
+////////        PERSON CONSTRUCTOR            ///////
+/////////////////////////////////////////////////////
+Person::Person(Status status, int cluster_label, Location home, Position current_position, int target_index,
                bool is_at_place, bool going_home, double x_speed, double y_speed, int stay_time)
-    : status{status, status}, label{cluster_label}, home{home}, location{current_location}, target{target_location},
-      at_place{is_at_place}, going_home{going_home}, stay_counter{stay_time}, velocity{x_speed, y_speed}
+    : status{status, status}, label{cluster_label}, home{home}, position{current_position}, target_i{target_index},
+      at_place{is_at_place}, going_home{going_home}, velocity{x_speed, y_speed}, stay_counter{stay_time}
 {
 }
+
 const Person& default_person()
 {
     static Location def_loc{};
-    static Person def_per{Status::Susceptible, 0, def_loc, def_loc, def_loc, false, false, 0.0, 0.0, 0};
+    static Position def_pos{};
+    static Person def_per{Status::Susceptible, 0, def_loc, def_pos, 0, true, false, 0.0, 0.0, 0};
     return def_per;
 }
 Person::Person()
     : status{default_person().status[0], default_person().status[1]}, label{default_person().label},
-      home{default_person().home}, location{default_person().location}, target{default_person().target},
-      at_place{default_person().at_place}, stay_counter{default_person().stay_counter}, velocity{STARTING_VELOCITY[0],
-                                                                                                 STARTING_VELOCITY[1]}
+      home{default_person().home}, position{default_person().position}, target_i{default_person().target_i},
+      at_place{default_person().at_place}, velocity{default_person().velocity[0], default_person().velocity[1]},
+      stay_counter{default_person().stay_counter}
 {
 }
 double Person::speed() const
@@ -31,8 +36,11 @@ double Person::speed() const
 }
 bool Person::at_home() const
 {
-    if (location == home && target == home) return true;
-    return false;
+    if (position == home.get_position()) { return true; }
+    else
+    {
+        return false;
+    }
 }
 /////////////////////////////////////////////////////
 ////////          VELOCITY UPDATE             ///////
@@ -62,7 +70,7 @@ void Person::update_target(Random& engine)
     for (int& index : Paths_i) // compute distances and calculate weight
     {
         Location waypoint = Simulation::Waypoints[index];
-        current_weight = weight_function(location.get_position().distance_to(waypoint.get_position()), LATP_parameter);
+        current_weight = weight_function(position.distance_to(waypoint.get_position()), LATP_parameter);
         distances.push_back(current_weight);
     }
 
@@ -73,22 +81,32 @@ void Person::update_target(Random& engine)
         probabilities.push_back(curr_weight / sum);
     }
     // select a waypoint index weighted on the just calculated probabilities
-    int i =
-        engine.discrete(probabilities); // extract an number from 1 to weights.size()-1 based on weights(probabilities)
-    int index = Paths_i[i];             // correspondin waypoint index
-    // Still need to check if this waypoint is inside a White Cluster:things could've changed in the meanwhile
-    Zone waypoint_zone = Simulation::Clusters[Simulation::Waypoints[index].get_label()].zone_type();
+    int i = engine.discrete(probabilities); // extract an number from 1 to weights.size()-1 based on probabilities
+    int& chosen_target_index = Paths_i[i];  // correspondin waypoint index
+
+    // is the waypoint still in a white cluster?
+    Zone waypoint_zone = Simulation::Clusters[Simulation::Waypoints[chosen_target_index].get_label()].zone_type();
     if (waypoint_zone == Zone::White) // ok nothing's changed
     {
-        set_target(Simulation::Waypoints[index]);
+        set_target_i(chosen_target_index);
         return;
     }
     else // now the zone is not White anymore
     {
-        remove_target_index(*this, index);
-        update_target(engine); // apply again LATP algo and look for a new one
+        std::cout << " The wpt is not in a white cluster anymore" << std::endl;
+        remove_index(Paths_i, chosen_target_index); // remove the bad target from Paths
+        update_target(engine);                      // apply again LATP algo and look for a new one
     }
-    // TODO TESTING
+}
+/////////////////////////////////////////////////////
+///   REMOVE VISITED LOCATION INDEX FROM PATH     ///
+/////////////////////////////////////////////////////
+// remove the target_index by value: find it in Paths_i vector and then remove it
+void Person::remove_target_i(int target_i)
+{
+    // return an iterator to the element corresponding to target in Paths_i
+    auto it = std::find(std::begin(Paths_i), std::end(Paths_i), target_i);
+    remove_index(Paths_i, *it);
 }
 /////////////////////////////////////////////////////
 ////////     CASE OF DIRECT HOME FLIGHT       ///////
@@ -98,8 +116,8 @@ void Person::update_target(Random& engine)
 void Person::move_home(Random& engine)
 {
     // compute data for shortest possible path
-    double delta_x = std::abs(location.get_X() - target.get_X());
-    double delta_y = std::abs(location.get_Y() - target.get_Y());
+    double delta_x = std::abs(position.get_X() - home.get_X());
+    double delta_y = std::abs(position.get_Y() - home.get_Y());
     double direct_angle = atan(delta_y / delta_x); // angle connecting the target through a straight line
 
     update_velocity(engine); // assign this person a new velocity vector
@@ -107,18 +125,22 @@ void Person::move_home(Random& engine)
     double x_displacement = (speed() * cos(direct_angle)) * TIME_STEP; // moving of delta_x on the x axis
     double y_displacement = (speed() * sin(direct_angle)) * TIME_STEP; // moving of delta_y on the y axis
 
-    Position new_position{location.get_X() + x_displacement, location.get_Y() + y_displacement};
+    double x = position.get_X() + x_displacement;
+    double y = position.get_Y() + y_displacement;
+    if (x < 0) { x = 0.0;}
+    if (y < 0) { y = 0.0;}
+    Position new_position{x,y};
 
-    // check if the person will enter the target location radius
-    if (new_position.in_radius(home.get_position(), HOME_RADIUS)) // the person has arrived home
+    // has the person arrived(gotten into target radius?)
+    if (new_position.in_radius(home.get_position(), HOME_RADIUS))
     {
-        location.set_position(home.get_position()); // set new position
-        at_place = true;                            // the person is now at a place
-        stay_counter = engine.rand_stay();          // how much time he/she will spend there
+        set_at_home(); // set new position
+        at_place = true;                   // the person is now at a place
+        stay_counter = engine.rand_stay(); // how much time he/she will spend there
         going_home = false;
     }
 
-    location.set_position(new_position); // set new position
+    set_position(new_position); // set new position
 }
 /////////////////////////////////////////////////////
 /// CASE OF PERSON MOVING TO A NON-HOME LOCATION ////
@@ -126,49 +148,42 @@ void Person::move_home(Random& engine)
 void Person::move_toward(Random& engine)
 // move a person by an amount determined by the current speed slightly varying the angle
 {
+    Location& target = Simulation::Waypoints[target_i]; // reference to current target
     // compute data for shortest possible path
-    double delta_x = std::abs(location.get_X() - target.get_X());
-    double delta_y = std::abs(location.get_Y() - target.get_Y());
-    double direct_angle = atan(delta_y / delta_x); // angle connecting the target through a straight line
+    double delta_x = std::abs(position.get_X() - target.get_X());
+    double delta_y = std::abs(position.get_Y() - target.get_Y());
+    double theta = atan(delta_y / delta_x); // angle connecting the target through a straight line
 
     update_velocity(engine); // assign this person a new velocity vector
 
-    // generate an angle between velocity vector direction and the target's one so that will not point precisely to the
-    // target
-    // TODO valuta se ammettere una variazione uniforme di 5 gradi in entrambi i sensi
-    double final_angle = 0.0;
-    if (direct_angle >= direction()) { final_angle = engine.uniform(direction(), direct_angle); }
-    else
+    // vary uniformly the angole in a range defined by MAXIMUM_ANGLE_VARIATION
+    double delta_theta = engine.uniform(-1.0 * MAXIMUM_ANGLE_VARIATION, MAXIMUM_GROUP_PROBABILITY);
+
+    delta_x = speed() * cos(theta + delta_theta) * TIME_STEP; // person's x_displacement: v_x*delta_t
+    delta_y = speed() * sin(theta + delta_theta) * TIME_STEP; // person's x_displacement: v_y*delta_t
+
+    double x = position.get_X() + delta_x;
+    double y = position.get_Y() + delta_y;
+    if (x < 0) { x = 0; }
+    if (y < 0) { y = 0; }
+    Position new_pos = {x,y};
+
+    if (new_pos.in_radius(target.get_position(), target.get_radius())) // the person has arrived to the target
     {
-        final_angle = engine.uniform(direct_angle, direction());
-    }
-
-    // calculate new displacement replacing the previous velocity vector with a new one with the same magnitude but
-    // different direction so recalculating the new v_x and v_y to determine x_displacement and y_displacement
-    double x_displacement = speed() * cos(final_angle) * TIME_STEP;
-    double y_displacement = speed() * sin(final_angle) * TIME_STEP;
-
-    Position new_position{location.get_X() + x_displacement, location.get_Y() + y_displacement};
-
-    // check if the person will enter the target location radius
-    if (new_position.in_radius(target.get_position(), target.get_radius())) // the person has arrived to the target
-    {
-        location.set_position(new_position); // set new position
-        at_place = true;                     // the person is now at a place
-        stay_counter = engine.rand_stay();   // how much time he/she will spend there
-                                             // erase the current target from Paths_i
-        remove_target(*this, target);        // remove target from path
+        set_position(new_pos);             // set new position
+        at_place = true;                   // the person is now at a place
+        stay_counter = engine.rand_stay(); // how much time he/she will spend there
+        remove_target_i(target_i);         // remove target from path
         return;
     }
 
-    location.set_position(new_position); // set new position
+    set_position(new_pos); // set new position
 }
 /////////////////////////////////////////////////////
 ////////            MOVE A PERSON             ///////
 /////////////////////////////////////////////////////
-void Person::move()
+void Person::move(Random& engine)
 {
-    Random engine; // seeded engine to use for this person
     if (at_place)
     {
         if (is_staying()) // still has to wait
@@ -180,6 +195,7 @@ void Person::move()
         {
             if (at_home()) // is at home
             {
+                std::cout << "pathfinder\n";
                 pathfinder(engine); // refill path
                 update_target(engine);
                 move_toward(engine);
@@ -222,20 +238,20 @@ void Person::move()
 // return true if the person's time to spend to the current place is up
 bool Person::is_staying()
 {
-    if (stay_counter == 0) return true;
+    if (stay_counter == 0) { return true; }
     else
+    {
         return false;
+    }
 }
 /////////////////////////////////////////////////////
 ////////              UPDATE STATUS           ///////
 /////////////////////////////////////////////////////
-//updates person status: the new one become current one
+// updates person status: the new one become current one
 void Person::update_status()
 {
     status[0] = status[1];
 }
-//*************************************************** HELPER FUNCTIONS
-//*************************************************************//
 /////////////////////////////////////////////////////
 ////////            PATHFINDER                ///////
 /////////////////////////////////////////////////////
@@ -259,19 +275,6 @@ void Person::pathfinder(Random& engine)
     default:
         break;
     }
-}
-
-/////////////////////////////////////////////////////
-////////      DETERMINE HOW TO FILL PATH      ///////
-/////////////////////////////////////////////////////
-// return true if there are any white clusters available
-bool are_white_available(const Person& person)
-{
-    for (auto& cluster : Simulation::Clusters)
-    {
-        if (cluster.zone_type() == Zone::White && cluster.label() != person.home_cluster()) { return true; }
-    }
-    return false;
 }
 /////////////////////////////////////////////////////
 ///   FIND PATHS FOR PEOPLE IN WHITE CLUSTERS     ///
@@ -306,7 +309,7 @@ void pathfinder_white(Person& person, Random& engine)
                     continue; // restart the loop
                 }
             }
-            person.Paths_i.push_back(waypoint_index); // add it to path
+            person.add_to_path(waypoint_index);
             already_chosen.push_back(waypoint_index); // take track of it
         }
     }
@@ -333,7 +336,7 @@ void pathfinder_white(Person& person, Random& engine)
                     continue; // restart the loop
                 }
             }
-            person.Paths_i.push_back(waypoint_index); // add it to path
+            person.add_to_path(waypoint_index);
             already_chosen.push_back(waypoint_index); // take track of it
         }
     }
@@ -363,7 +366,7 @@ void pathfinder_yellow(Person& person, Random& engine)
                 continue; // restart the loop
             }
         }
-        person.Paths_i.push_back(waypoint_index); // add it to path
+        person.add_to_path(waypoint_index);
         already_chosen.push_back(waypoint_index); // take track of it
     }
 }
@@ -392,7 +395,7 @@ void pathfinder_orange(Person& person, Random& engine)
                 continue; // restart the loop
             }
         }
-        person.Paths_i.push_back(waypoint_index); // add it to path
+        person.add_to_path(waypoint_index);
         already_chosen.push_back(waypoint_index); // take track of it
     }
 }
@@ -422,38 +425,9 @@ void pathfinder_red(Person& person, Random& engine)
                 continue; // restart the loop
             }
         }
-        person.Paths_i.push_back(waypoint_index); // add it to path
+        person.add_to_path(waypoint_index);
         already_chosen.push_back(waypoint_index); // take track of it
     }
-}
-/////////////////////////////////////////////////////
-///      REMOVE VISITED LOCATION FROM PATH        ///
-/////////////////////////////////////////////////////
-// remove a visited target from person.Path: since we don't care about the targets order, move the one to remove to
-// the end and remove it preventing moving all items after it
-void remove_target(Person& person, Location to_remove)
-{
-    for (int& targ_index : person.Paths_i)
-    {
-        if (Simulation::Waypoints[targ_index] == to_remove)
-        {
-            std::swap(targ_index, person.Paths_i.back()); // swap the last element with the one to be removed
-            person.Paths_i.pop_back();                    // erase the last element of the vector
-            return;
-        }
-    }
-    // if we get here there's a problem
-    std::cerr << "The target is not in person.Paths_i!.Aborting.";
-}
-/////////////////////////////////////////////////////
-///   REMOVE VISITED LOCATION INDEX FROM PATH     ///
-/////////////////////////////////////////////////////
-// remove a visited target index from person.Path: since we don't care about the targets order, move the one to remove
-// to the end and remove it preventing moving all items after it
-void remove_target_index(Person& person, int index_to_remove)
-{
-    std::swap(index_to_remove, person.Paths_i.back()); // swap the last element with the one to be removed
-    person.Paths_i.pop_back();                         // erase the last element of the vector
 }
 /////////////////////////////////////////////////////
 ///   WEIGHTS COMPUTATION FOR PATHFINDER_WHITE    ///
@@ -481,5 +455,13 @@ void weights_fill(Person const& person, std::vector<int>& white_labels, std::vec
     white_labels.push_back(person.home_cluster());
     weights.push_back(person_cluster_weight); // last weight corresponds to the person's cluster's one
 }
-
+/////////////////////////////////////////////////////
+///          REMOVE INDEX FROM A VECTOR           ///
+/////////////////////////////////////////////////////
+// remove an index by reference(do not need to find it in indeces_v)
+void remove_index(std::vector<int>& indeces_v, int& to_remove)
+{
+    std::swap(to_remove, indeces_v.back()); // swap last element value with the found one
+    indeces_v.pop_back();                   // erase the last element(with value to_remove)
+}
 } // namespace smooth_simulation

@@ -12,7 +12,7 @@ namespace smooth_simulation
 /////////////////////////////////////////////////////
 Cluster::Cluster(int size, int label, double weight, Zone zone, double alpha, double x_low, double x_up, double y_low,
                  double y_up, Data cluster_data)
-    : sz{size}, lbl{label}, w{weight}, zone{zone}, alpha{alpha}, data{cluster_data},limits{x_low,x_up,y_low,y_up}
+    : sz{size}, lbl{label}, w{weight}, zone{zone}, alpha{alpha}, limits{x_low, x_up, y_low, y_up}, data{cluster_data}
 {
 }
 /////////////////////////////////////////////////////
@@ -29,8 +29,9 @@ const Cluster& default_cluster()
 /////////////////////////////////////////////////////
 Cluster::Cluster()
     : sz{default_cluster().sz}, lbl{default_cluster().lbl}, w{default_cluster().w}, zone{default_cluster().zone},
-      data{default_cluster().data}, limits{default_cluster().limits[0], default_cluster().limits[1],
-                                           default_cluster().limits[2], default_cluster().limits[3]}
+      limits{default_cluster().limits[0], default_cluster().limits[1], default_cluster().limits[2],
+             default_cluster().limits[3]},
+      data{default_cluster().data}
 {
 }
 /////////////////////////////////////////////////////
@@ -127,13 +128,17 @@ void Cluster::set_limits()
 /////////////////////////////////////////////////////
 ////////      MOVE PEOPLE IN THIS CLUSTER     ///////
 /////////////////////////////////////////////////////
-void Cluster::move()
+void Cluster::move(Random& engine)
 {
     for (auto& i : People_i)
     {
         Person& p = Simulation::People[i]; // current person
-        p.move();
+        p.move(engine);
     }
+}
+void Cluster::remove_person_i(int person_i)
+{
+    remove_index(People_i, person_i);
 }
 /////////////////////////////////////////////////////
 /////    REMOVE DEAD PEOPLE FROM THIS CLUSTER   /////

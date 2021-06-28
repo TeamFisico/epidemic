@@ -39,8 +39,9 @@ class Cluster
     std::array<int, 2> wpts_range; // starting and ending index of this groups waypoints inside Waypoints array
     Data data;                     // edpidemic data relative to the people in this cluster
     int ICU_sz;                    // number of people that can be hospitalized in ICU
+    std::vector<int> People_i;     // ref to People array for people in this clust(assign_to_clust() initialized)
   public:
-    std::vector<int> People_i; // ref to People array for people in this clust(assign_to_clust() initialized)
+    friend class Simulation;
     std::vector<Group> Groups; // groups of waypoints in cluster
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
     Cluster(int size, int label, double weight, Zone zone, double alpha, double x_low, double x_up, double y_low,
@@ -58,6 +59,7 @@ class Cluster
     double upper_y() const { return limits[3]; }
     int lower_index() const { return wpts_range[0]; }
     int upper_index() const { return wpts_range[1]; }
+    unsigned int population_size() const { return People_i.size(); }
     Data get_data() const { return data; }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
     void set_limits();
@@ -68,11 +70,13 @@ class Cluster
     void set_zone(Zone newZone) { zone = newZone; }
     void set_lower_index(int n) { wpts_range[0] = n; }
     void set_upper_index(int n) { wpts_range[1] = n; }
+    void add_person_i(int person_i) { People_i.push_back(person_i); }
+    void remove_person_i(int person_i);
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
     void update_data();
     void generate_groups(Random& engine); // determine the n. of waypoints associated to every group
     void partition_in_groups(Random& engine);
-    void move();              // move people belonging to this cluster
+    void move(Random& engine);              // move people belonging to this cluster
     void clear_dead_people(); // removes dead people indeces from People_i -->won't be considered anymore
 };
 void generate_groups(Cluster const& cluster, Random& engine); // determine the n. of waypoints associated to every group

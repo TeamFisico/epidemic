@@ -32,16 +32,16 @@ class Simulation
     void assign_cluster_to_people();
     void assign_home_to_people();
     void set_clusters_bounds_indeces();
-    void close_people_fill(Person const& current_person,std::vector<int> close_people_i);
-    void close_cluster_people_fill(Person const& current_person,std::vector<int> close_people_i);
+    void close_people_fill(Person const& current_person, std::vector<int> close_people_i);
+    void close_cluster_people_fill(Person const& current_person, std::vector<int> close_people_i);
     void world_generation();
-    void initialise_people_status(int E,int I,int R);
+    void initialise_people_status(int E, int I, int R);
     void update_zones(); // check the numbers of the epidemic and change Zones color
     void update_data();  // update simulation data
     void update_people_status();
+
   public:
-    Simulation(double side, double spread_radius, double alpha, double beta, double gamma, double kappa,
-               Data data);
+    Simulation(double side, double spread_radius, double alpha, double beta, double gamma, double kappa, Data data);
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
     void move();                      // move all the people
     void spread();                    // spread the disease

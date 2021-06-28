@@ -201,24 +201,21 @@ void Simulation::plot_waypoints()
 void Simulation::assign_cluster_to_people()
 // assign a person to a cluster based on the cluster weight using piecewise-const-dist
 {
-    std::array<double, CLUSTERS_SIZE> weights{}; // fill with clusters weights
-    std::array<int, POPULATION_SIZE> labels{};   // fill with generated labels according to weights
+    std::vector<double> weights; // fill with clusters weights
 
-    for (int i = 0; i < CLUSTERS_SIZE; ++i) // fill with clusters weight
+    weights.reserve(CLUSTERS_SIZE);
+    for (int i = 0; i < CLUSTERS_SIZE; ++i)
     {
-        weights[i] = Clusters[i].weight();
+        weights.push_back(Clusters[i].weight()); // fill with i-th weight
     }
 
-    // fill labels array with generated labels
-    engine.engine().generate<std::discrete_distribution>(std::begin(labels), std::end(labels), std::begin(weights),
-                                                         std::end(weights));
-    // iterate over the labels array assigning the corresponding label to each person
-    int j = 0;
-    for (auto& label : labels)
+    int p_index = 0;
+    for (auto& person : People)
     {
-        People[j].set_cluster(label);          // label the person with its home cluster
-        Clusters[label].People_i.push_back(j); // add person's index into People array to the cluster
-        ++j;
+        int label = engine.discrete(weights); // extract a number n 0<=n<= CLUSTERS_SIZE -1 -->label
+        person.set_cluster_label(label);
+        Clusters[label].add_person_i(p_index);
+        ++p_index;
     }
 }
 /////////////////////////////////////////////////////
@@ -248,7 +245,12 @@ void Simulation::assign_home_to_people()
 
         family_size = engine.rounded_gauss(AVERAGE_FAMILY_SIZE, 1.5); // a family as a mean
         if (family_size < 1) family_size = 1;
-        Position try_pos{engine.uniform(lw_x, up_x), engine.uniform(lw_y, up_y)};
+
+        //TODO solo per capire dove fallisce l'assertion
+        double x = engine.uniform(lw_x, up_x);
+        double y = engine.uniform(lw_y, up_y);
+        assert(x > 0.0 && y > 0.0);
+        Position try_pos{x,y};
 
         // if necessary generate a new position until its a one not already taken by another family
         for (unsigned int i = 0; i < generated_homes.size(); ++i)
@@ -285,28 +287,27 @@ void Simulation::assign_home_to_people()
 /////////////////////////////////////////////////////
 ////   DISTRIBUTE I,E,R people over the map     /////
 /////////////////////////////////////////////////////
-//TODO determine a smart way to do that
-void Simulation::initialise_people_status(int E,int I,int R)
+// TODO determine a smart way to do that
+void Simulation::initialise_people_status(int E, int I, int R)
 {
-    while(E > 0)
+    while (E > 0)
     {
-        auto& person = engine.engine().pick(People); //pick functin form randutils
+        auto& person = engine.engine().pick(People); // pick functin form randutils
         person.set_current_status(Status::Exposed);
         --E;
     }
-    while(I > 0)
+    while (I > 0)
     {
-        auto& person = engine.engine().pick(People); //pick functin form randutils
+        auto& person = engine.engine().pick(People); // pick functin form randutils
         person.set_current_status(Status::Infected);
         --I;
     }
-    while(R > 0)
+    while (R > 0)
     {
-        auto& person = engine.engine().pick(People); //pick functin form randutils
+        auto& person = engine.engine().pick(People); // pick functin form randutils
         person.set_current_status(Status::Recovered);
         --R;
     }
-
 }
 /////////////////////////////////////////////////////
 ////////         WORLD GENERATION             ///////
@@ -334,7 +335,7 @@ void Simulation::world_generation()
 
     for (auto& p : People)
     {
-        p.location = p.home;
+        p.set_at_home();
     }
     std::cout << "People initial location setted being home\n";
 }
@@ -367,12 +368,11 @@ void Simulation::close_people_fill(const Person& current_person, std::vector<int
             for (int& person_i : cl.People_i) // loop over people in this cluster indeces
             {
                 Person& person = People[person_i]; // ref to current cluster person
-                auto const& pos = person.location.get_position();
+                auto const& pos = person.position;
                 auto const& stat = person.current_status();
                 bool const& is_home = person.at_home();
                 // check if person is close enough(most restrictive condition),susceptible and not at home
-                if (pos.in_radius(current_person.location.get_position(), spread_radius) && stat == Status::Exposed &&
-                    !is_home)
+                if (pos.in_radius(current_person.position, spread_radius) && stat == Status::Exposed && !is_home)
                 {
                     close_people_i.push_back(person_i); // ok, add this person index to close people vector
                 }
@@ -390,11 +390,11 @@ void Simulation::close_cluster_people_fill(const Person& current_person, std::ve
     for (int& person_i : Clusters[current_person.label].People_i) // loop over people in this person's cluster indeces
     {
         Person& person = People[person_i]; // ref to current cluster person
-        auto const& pos = person.location.get_position();
+        auto const& pos = person.position;
         auto const& stat = person.current_status();
         bool const& is_home = person.at_home();
         // check if person is close enough(most restrictive condition),susceptible and not at home
-        if (pos.in_radius(current_person.location.get_position(), spread_radius) && stat == Status::Exposed && !is_home)
+        if (pos.in_radius(current_person.position, spread_radius) && stat == Status::Exposed && !is_home)
         {
             close_people_i.push_back(person_i); // ok, add this person index to close people vector
         }
@@ -405,12 +405,9 @@ void Simulation::close_cluster_people_fill(const Person& current_person, std::ve
 /////////////////////////////////////////////////////
 void Simulation::move()
 {
-    for (int i = 0; i < 50; ++i)
+    for (auto& c : Clusters)
     {
-        for (auto& c : Clusters)
-        {
-            c.move();
-        }
+        c.move(engine);
     }
 }
 /////////////////////////////////////////////////////
@@ -451,23 +448,23 @@ void Simulation::update_people_status()
 {
     for (auto& p : People)
     {
-        p.update_status();  //the current status become the setted new one in spread()
+        p.update_status(); // the current status become the setted new one in spread()
     }
 }
 
 /////////////////////////////////////////////////////
 ///////             UPDATE DATA               ///////
 /////////////////////////////////////////////////////
-//updates cluster data and consequently simulation summary data
+// updates cluster data and consequently simulation summary data
 void Simulation::update_data()
 {
-    //update  cluster data
+    // update  cluster data
     for (auto& cl : Clusters)
     {
         cl.update_data();
     }
 
-    //update sim data
+    // update sim data
 
     for (auto& cl : Clusters)
     {
@@ -544,22 +541,26 @@ void Simulation::spread()
 void Simulation::simulate()
 {
     initialise_people_status(data.E, data.I, data.R);
+    std::cout << "initialised status\n";
 
-    for (int i = 0; i < 5; ++i) // do 5 blocks
+    for (int i = 0; i < 1; ++i) // do 5 blocks
     {
         for (int steps = 1; steps < UPDATE_ZONES_INTERVAL; ++steps) // do 1 block
         {
+            std::cout << "Started step " << steps<<std::endl;
             move();
+            std::cout << "Made movement"<<steps<<std::endl;
             spread();
+            std::cout << "Made spread"<<steps<<std::endl;
             update_people_status();
         }
         update_data();
         update_zones();
-        std::cout <<"Block "<<i+1<<std::endl;
-        std::cout <<"S == " << data.S <<"\tE == " << data.E<<std::endl;
-        std::cout <<"I == " << data.I <<"\tR == " << data.R<<std::endl;
-        std::cout <<"D == " << data.D <<"\tICU == " << data.ICU_capacity<<std::endl;
-//        get_simulation_data();
+        std::cout << "Block " << i + 1 << std::endl;
+        std::cout << "S == " << data.S << "\tE == " << data.E << std::endl;
+        std::cout << "I == " << data.I << "\tR == " << data.R << std::endl;
+        std::cout << "D == " << data.D << "\tICU == " << data.ICU_capacity << std::endl;
+        //        get_simulation_data();
     }
 }
 // calculates the index range [lower,upper] (referred to Waypoints array)of the waypoints belonging to each cluster.
