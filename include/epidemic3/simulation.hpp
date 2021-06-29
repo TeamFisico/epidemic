@@ -2,8 +2,6 @@
 #define SIMULATION_HPP
 
 #include "cluster.hpp"
-#include <array>
-#include <vector>
 
 namespace smooth_simulation
 {

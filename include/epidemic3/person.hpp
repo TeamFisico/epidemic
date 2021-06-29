@@ -1,7 +1,6 @@
 #ifndef PERSON_HPP
 #define PERSON_HPP
 
-#include "../random.hpp"
 #include "location.hpp"
 #include <vector>
 
@@ -34,13 +33,12 @@ class Person
   public:
     friend class Simulation;
     Person(Status status, int cluster_label, Location home, Position current_position, int target_index,
-           bool is_at_place, bool going_home, bool changed_status, double x_speed, double y_speed, int stay_time);
+           bool is_at_place, bool going_home, bool changed_status, double speed,int stay_time);
     Person(); // default constructor
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     Status current_status() const { return status[0]; }
     Status new_status() const { return status[1]; }
     int home_cluster() const { return label; }
-    double direction() const { return atan(velocity[1] / velocity[0]); }
     Position get_position() const { return position; };
     Location get_home() const { return home; };
     bool at_home() const; // is the person staying home
@@ -53,7 +51,7 @@ class Person
     void set_cluster_label(int n) { label = n; }
     void set_home(Location loc) { home = loc; }
     void set_target_i(int target_index) { target_i = target_index; }
-    void set_position(Position const& pos) { position = pos; }
+    void set_position(Position pos) { position = pos; }
     void set_changed_status(bool has_changed) { changed_status = has_changed; }
     void set_at_home();
     void add_to_path(int const& wpt_index) { Paths_i.push_back(wpt_index); }
@@ -71,16 +69,17 @@ class Person
     void move(Random& engine); // move a person if it should
 };
 
-bool are_white_available(const Person& person);                 // return true if there are any white clusters available
-void pathfinder_white(Person& person, Random& engine);          // find paths for a person in white Zone
-void pathfinder_orange(Person& person, Random& engine);         // find paths for a person in yellow Zone
-void pathfinder_yellow(Person& person, Random& engine);         // find paths for a person in orange Zone
-void pathfinder_red(Person& person, Random& engine);            // find paths for a person in red Zone
-void remove_index(std::vector<int>& indeces_v, int& to_remove); // remove an integer(index from a vector<int>
+bool are_white_available(const Person& person);
+void pathfinder_white(Person& person, Random& engine);
+void pathfinder_orange(Person& person, Random& engine);
+void pathfinder_yellow(Person& person, Random& engine);
+void pathfinder_red(Person& person, Random& engine);
 void weights_fill(Person const& person, std::vector<int>& white_labels, std::vector<double>& weights);
-std::vector<int> get_close_people_in_cluster(
-    Person const& person); // returns indeces of in-spread-radius people inside person's cluster
-std::vector<int> get_close_people(Person const& person); // returns indeces of in-spread-radius people
+std::vector<int> get_close_people_in_cluster(Person const& person);
+std::vector<int> get_close_people(Person const& person);
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template<class T> void remove_by_ref(std::vector<T>& vec, T& to_remove); // remove an integer(index from a vector<int>
+template<class T> void remove_by_value(std::vector<T>& vec, T to_remove); // remove an integer(index from a vector<int>
 
 } // namespace smooth_simulation
 

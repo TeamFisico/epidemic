@@ -3,6 +3,7 @@
 
 #define PI 3.14159265358979323846 // pi
 
+#include "../random.hpp"
 namespace smooth_simulation
 {
 class Position
@@ -26,7 +27,7 @@ class Position
 };
 
 bool operator==(const Position& p1, const Position& p2);
-Position generate_close_position(Position const& center, double max_distance);
+Position generate_close_position(Position const& center, double max_distance,Random& engine);
 
 } // namespace smooth_simulation
 

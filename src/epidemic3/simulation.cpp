@@ -124,14 +124,14 @@ Location Simulation::plot_nearby_waypoints(int clust_lab, int grp_lab, Location 
     for (int i = 0; i < num_to_plot; ++i)
     {
         current_center = engine.engine().pick(already_setted_wpts); // randomly pick a center position
-        try_position = generate_close_position(current_center, TRANSMISSION_RANGE / 10.0);
+        try_position = generate_close_position(current_center, TRANSMISSION_RANGE / 10.0,engine);
 
         for (unsigned int j = 0; j < already_setted_wpts.size(); ++j) // check already setted waypoints
         {
             if (try_position.distance_to(already_setted_wpts[j]) >
                 TRANSMISSION_RANGE / 10.0) // if it doesn't respect the condition
             {
-                try_position = generate_close_position(current_center, TRANSMISSION_RANGE / 10.0);
+                try_position = generate_close_position(current_center, TRANSMISSION_RANGE / 10.0,engine);
                 j = 0; // generate a new position and restart the loop
                 continue;
             }
@@ -605,7 +605,7 @@ void Simulation::simulate()
     std::ofstream out{"out.txt"};
     initialise_people_status(data.E, data.I, data.R);
     std::cout << "initialised status\n";
-    for (int i = 0; i < 100; ++i)
+    for (int i = 0; i < 3; ++i)
     {
         auto start = std::chrono::high_resolution_clock::now();
         for (int steps = 1; steps < UPDATE_ZONES_INTERVAL; ++steps) // do 1 block

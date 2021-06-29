@@ -1,5 +1,6 @@
 #include "position.hpp"
 #include "../random.hpp"
+#include "parameters.hpp"
 #include <cassert>
 #include <cmath>
 namespace smooth_simulation
@@ -9,9 +10,10 @@ namespace smooth_simulation
 ////////        POSITION CONSTRUCTOR          ///////
 /////////////////////////////////////////////////////
 Position::Position(double X, double Y)
-       : x{X}, y{Y}
+       : x{X},
+         y{Y}
 {
-        assert(x >= -100.0 && y >= -100.0);
+    check_bounds_and_resize(SIMULATION_SIDE);
 }
 Position::Position() : x{0.0}, y{0.0}
 {
@@ -45,18 +47,15 @@ bool operator==(const Position& p1, const Position& p2)
 ////////      CLOSE LOCATION GENERATION       ///////
 /////////////////////////////////////////////////////
 // generate a location within a maximum distance from a center position
-Position generate_close_position(Position const& center, double max_distance)
+Position generate_close_position(Position const& center, double max_distance,Random& engine)
 {
-    Random rng{}; // seeded engine
-    double angle = rng.uniform(0, 2 * PI);
-    double distance = rng.uniform(0, max_distance);
+    double angle = engine.uniform(0, 2 * PI);
+    double distance = engine.uniform(0, max_distance);
     double v_x = distance * cos(angle); // x coordinate of the traslation vector
     double v_y = distance * sin(angle); // y coordinate of the traslation vector
     double x = center.get_X() + v_x;
     double y = center.get_Y() + v_y;
 
-    if (x < 0) { x = 0; }
-    if (y < 0) { y = 0; }
     Position gen_pos{x, y};
     return gen_pos;
 }

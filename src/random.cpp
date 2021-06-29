@@ -54,7 +54,9 @@ int Random::rand_stay()
 }
 double Random::rand_speed()
 {
-    return uniform(0.0,2.0);
+    double sp = gauss(MEAN_SPEED,SPEED_STDDEV);
+    if (sp < 0.0) { return 0.1; }
+    else { return sp; }
 }
 bool Random::try_event(double probability)
 {

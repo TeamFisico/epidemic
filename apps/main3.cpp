@@ -12,29 +12,30 @@ int main()
 
     Simulation sim{1000, 0.5, 0.1, 0.5, 0.02, 0.1, starting_data};
 
+    sim.simulate();
     auto start = std::chrono::high_resolution_clock::now();
 
-    //    sim.simulate();
-    Random rng;
-    std::ofstream out{"out.txt"};
-    int p_index = rng.int_uniform(0, POPULATION_SIZE - 1); // track 1 person movements
-    Person& person = sim.People[p_index];
-    std::cout << person.get_position().get_X() << "\t" << person.get_position().get_Y() << std::endl;
-    std::cout << "Is home?-->";
-    if(person.at_home()) {std::cout <<"yes"<< std::endl;}
-    else std::cout<<"no"<<std::endl;
-          for (int i = 0; i < 5*UPDATE_ZONES_INTERVAL;++i)
-          {
-              Location& target = sim.Waypoints[person.get_target_i()];
-              sim.move();
-              out << "Step " << i<<std::endl;
-              out << person.get_position().get_X() << "\t" << person.get_position().get_Y()<<std::endl;
-              out << "Is home?-->";
-              if(person.at_home()) {out <<"yes"<< std::endl;}
-              else out<<"no"<<std::endl;
-              out <<"target positio == " <<target.get_position().get_X() << "\t"<< target.get_Y()<<std::endl;
-              out << "Path size == " << person.path_size()<<std::endl;
-          }
+//    //    sim.simulate();
+//    Random rng;
+//    std::ofstream out{"out.txt"};
+//    int p_index = rng.int_uniform(0, POPULATION_SIZE - 1); // track 1 person movements
+//    Person& person = sim.People[p_index];
+//    std::cout << person.get_position().get_X() << "\t" << person.get_position().get_Y() << std::endl;
+//    std::cout << "Is home?-->";
+//    if(person.at_home()) {std::cout <<"yes"<< std::endl;}
+//    else std::cout<<"no"<<std::endl;
+//          for (int i = 0; i < 5*UPDATE_ZONES_INTERVAL;++i)
+//          {
+//              Location& target = sim.Waypoints[person.get_target_i()];
+//              sim.move();
+//              out << "Step " << i<<std::endl;
+//              out << person.get_position().get_X() << "\t" << person.get_position().get_Y()<<std::endl;
+//              out << "Is home?-->";
+//              if(person.at_home()) {out <<"yes"<< std::endl;}
+//              else out<<"no"<<std::endl;
+//              out <<"target positio == " <<target.get_position().get_X() << "\t"<< target.get_Y()<<std::endl;
+//              out << "Path size == " << person.path_size()<<std::endl;
+//          }
 
 //    for (auto& p  : sim.People)
 //    {

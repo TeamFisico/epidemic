@@ -4,7 +4,6 @@
 #include "location.hpp"
 #include "parameters.hpp"
 #include <array>
-#include <cassert>
 
 namespace smooth_simulation
 {

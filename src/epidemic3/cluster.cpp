@@ -147,7 +147,7 @@ void Cluster::move(Random& engine)
 }
 void Cluster::remove_person_i(int person_i)
 {
-    remove_index(People_i, person_i);
+    remove_by_value<int>(People_i,person_i);
 }
 /////////////////////////////////////////////////////
 /////    REMOVE DEAD PEOPLE FROM THIS CLUSTER   /////
@@ -159,8 +159,7 @@ void Cluster::clear_dead_people()
         Status const& stat = Simulation::People[person_i].current_status();
         if (stat == Status::Dead)
         {
-            std::swap(person_i, People_i.back()); // swap the last element with the one to be removed
-            People_i.pop_back();                  // erase the last element of the vector
+            remove_by_ref(People_i,person_i);
         }
     }
 }
