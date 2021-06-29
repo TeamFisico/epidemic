@@ -5,15 +5,16 @@
 using namespace sim;
 
 int main(){
-    Simulation prova{25000 ,3, 200, 4, 5, 1000, 800,0.1,0.02,0.1,0.5,20,10};
+    Simulation prova{25000 ,3, 200, 4, 5, 1000, 800,0.1,0.02,0.1,1,20,10};
     sf::RenderWindow window(sf::VideoMode(800, 800), "My window");
     window.display();
-    for(auto& a: prova.get_world().Clusters())
+    /*for(auto& a: prova.get_world().Clusters())
     {
         std::cout << "nth cluster: "
                   << " base: " << a.base() << " height: " << a.height() << " X: " << a.area().get_blh_corner().get_x()
                   << " Y: " << a.area().get_trh_corner().get_y() << std::endl;
-    }
+    }*/
+    int counter{};
     while(window.isOpen()){
         sf::Event event;
         while (window.pollEvent(event))
@@ -23,10 +24,17 @@ int main(){
                 window.close();
         }
         window.clear(sf::Color::Black);
-
+        prova.move();
+        prova.spread();
+        prova.update_Condition();
+        if(counter % 10 == 0){
+            prova.update_Colors();
+            std::cout << counter/10 << "nth cycle" << std::endl;
+        }
+        ++counter;
         for(auto& a: prova.get_world().Clusters()){ //Draw the clusters(as rectangles
             sf::RectangleShape cluster(sf::Vector2f(a.base(), a.height()));
-            cluster.setPosition(a.area().get_blh_corner().get_x(), a.area().get_trh_corner().get_y());
+            cluster.setPosition(a.area().get_blh_corner().get_x(), a.area().get_blh_corner().get_y());
             /*switch(a.get_color()){
                 case Color::Green: cluster.setFillColor(sf::Color::Green);
                 case Color::Yellow: cluster.setFillColor(sf::Color::Yellow);
@@ -41,6 +49,8 @@ int main(){
             else{
                 cluster.setFillColor(sf::Color::Red);
             }
+            cluster.setOutlineThickness(1);
+            cluster.setOutlineColor(sf::Color::Black);
         window.draw(cluster);
         }
 
