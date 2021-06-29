@@ -43,6 +43,13 @@ double Location::minimum_distance_to(Location const& other_loc) const
 {
     return (position.distance_to(other_loc.position) - other_loc.radius);
 }
+/////////////////////////////////////////////////////
+//// IS THE INPUT POSITION INSIDE THE LOCATION?  ////
+/////////////////////////////////////////////////////
+bool Location::in_radius(Position pos)
+{
+    return pos.in_radius(position,radius);
+}
 // equality operator
 bool operator==(const Location& l1, const Location& l2)
 {

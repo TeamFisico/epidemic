@@ -26,7 +26,7 @@ class Location
     double minimum_distance_to(Location const& other_loc) const;
     void set_position(Position pos) { position = pos; }
     void set_label(int cluster_index) { label = cluster_index; }
-    // void set_radius(double rad) { radius = rad; }
+    bool in_radius(Position pos);
 };
 bool operator==(const Location& l1, const Location& l2); // equality operator
 double generate_radius();

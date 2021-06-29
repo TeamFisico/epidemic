@@ -24,7 +24,7 @@ double Position::distance_to(Position const& other_pos) const
 }
 bool Position::in_radius(const Position& other_pos, double r) const
 {
-    return (this->distance_to(other_pos) <= r);
+    return (distance_to(other_pos) <= r);
 }
 
 /////////////////////////////////////////////////////
@@ -36,6 +36,25 @@ void Position::check_bounds_and_resize(double area_side)
     if (x > area_side ){ x = area_side; }
     if (y < 0) { y = 0; }
     if (y > area_side ){ y = area_side; }
+}
+/////////////////////////////////////////////////////
+///       MOVE A POSITION TOWARD ANOTHER          ///
+/////////////////////////////////////////////////////
+void Position::move_toward(Position target, double speed, Random& engine)
+{
+    double dx = target.x - x;
+    double dy = target.y - y;
+    double angle = std::atan2(dy,dx);
+    double delta_angle = engine.uniform(-1.0*MAXIMUM_ANGLE_VARIATION,MAXIMUM_ANGLE_VARIATION);
+
+    while(distance_to(target) < speed) //the speed is too high
+    {
+        speed = engine.rand_speed();
+    }
+    double v_x = speed * std::cos(angle + delta_angle) * TIME_STEP; // v_x * delta_t
+    double v_y = speed * std::sin(angle + delta_angle) * TIME_STEP; // v_y * delta_t
+    x += v_x;
+    y += v_y;
 }
 
 bool operator==(const Position& p1, const Position& p2)

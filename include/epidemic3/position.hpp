@@ -24,6 +24,7 @@ class Position
     double distance_to(Position const& other_pos) const;
     bool in_radius(Position const& other_pos, double r) const;
     void check_bounds_and_resize(double area_side);
+    void move_toward(Position target, double speed, Random& engine);
 };
 
 bool operator==(const Position& p1, const Position& p2);

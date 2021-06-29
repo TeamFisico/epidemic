@@ -222,9 +222,9 @@ void Simulation::assign_cluster_to_people()
 /////////////////////////////////////////////////////
 ////////          HOME ASSIGNMENT             ///////
 /////////////////////////////////////////////////////
+// generate home address inside the relating cluster limits and assign them to families; set that as initial person's position
 void Simulation::assign_home_to_people()
-// generate home address inside the relating cluster limits and assign them to
-// families
+
 {
     double lw_x = 0.0;
     double up_x = 0.0;
@@ -268,6 +268,7 @@ void Simulation::assign_home_to_people()
             for (int j = i; j < POPULATION_SIZE; ++j)
             {
                 People[j].set_home(gen_home);
+                People[j].set_at_home();
             }
         }
         else
@@ -276,6 +277,7 @@ void Simulation::assign_home_to_people()
             for (int j = i; k < family_size; ++j)
             {
                 People[j].set_home(gen_home);
+                People[j].set_at_home();
                 ++k;
             }
             people_left -= family_size;         // decrease left people
@@ -380,11 +382,6 @@ void Simulation::world_generation()
 
     set_clusters_bounds_indeces();
 
-    for (auto& p : People)
-    {
-         p.set_at_home();
-    }
-    std::cout << "People initial location setted being home\n";
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -423,7 +420,7 @@ void Simulation::close_people_fill(const Person& current_person, std::vector<int
                 Person& person = People[person_i]; // ref to current cluster person
                 auto const& pos = person.position;
                 auto const& stat = person.current_status();
-                bool const& is_home = person.at_home();
+                bool const& is_home = person.at_home;
                 // check if person is close enough(most restrictive condition),susceptible and not at home
                 if (pos.in_radius(current_person.position, spread_radius) && stat == Status::Exposed && !is_home)
                 {
@@ -445,7 +442,7 @@ void Simulation::close_cluster_people_fill(const Person& current_person, std::ve
         Person& person = People[person_i]; // ref to current cluster person
         auto const& pos = person.position;
         auto const& stat = person.current_status();
-        bool const& is_home = person.at_home();
+        bool const& is_home = person.at_home;
         // check if person is close enough(most restrictive condition),susceptible and not at home
         if (pos.in_radius(current_person.position, spread_radius) && stat == Status::Exposed && !is_home)
         {
@@ -560,7 +557,7 @@ void Simulation::spread()
             }
             else if (person.current_status() == Status::Infected)
             {
-                if (!person.at_home()) // the person is not at home
+                if (!person.at_home) // the person is not at home
                 {
                     if (cl.zone_type() == Zone::White) // the cluster is white
                     {

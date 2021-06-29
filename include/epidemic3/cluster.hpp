@@ -73,6 +73,10 @@ class Cluster
     void add_person_i(int person_i) { People_i.push_back(person_i); }
     void remove_person_i(int person_i);
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    void move_white(Random& engine);
+    void move_yellow(Random& engine);
+    void move_orange(Random& engine);
+    void move_red(Random& engine);
     void update_data();
     void generate_groups(Random& engine); // determine the n. of waypoints associated to every group
     void partition_in_groups(Random& engine);

@@ -22,12 +22,12 @@ bool Position::InRadius(Position other, double r)
 void Position::move_toward(Position target, double speed)
 {
     double angle = (x - target.x) / (y - target.y);
-    double delta_angle =
-        rand_gauss(angle / 10, angle / 100); // random variation to the angle that follow the standard deviation
+    double delta_angle = rand_gauss(angle / 10, angle / 100); // random variation to the angle that follow the standard deviation
     double v_x = speed * std::cos(angle + delta_angle); // x component of velocity vector
     double v_y = speed * std::sin(angle + delta_angle); // y component of velocity vector
-    x = target.x + v_x;
-    y = target.y + v_y;
+    Position new_pos {target.x + v_x,target.y + v_y};
+    x = new_pos.x;
+    y = new_pos.y;
 }
 
 double Position::distance_to(const Position &a)
