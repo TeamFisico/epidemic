@@ -23,7 +23,9 @@ Location::Location(const Position& loc_position, double radius) : position{loc_p
 /////////////////////////////////////////////////////
 // used when setting label(waypoints plot)
 Location::Location(const Position& loc_position, int label)
-    : position{loc_position}, radius{generate_radius()}, label{label}
+       : position{loc_position},
+         radius{generate_radius()},
+         label{label}
 {
 }
 /////////////////////////////////////////////////////

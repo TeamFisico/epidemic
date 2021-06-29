@@ -12,7 +12,13 @@ namespace smooth_simulation
 /////////////////////////////////////////////////////
 Cluster::Cluster(int size, int label, double weight, Zone zone, double alpha, double x_low, double x_up, double y_low,
                  double y_up, Data cluster_data)
-    : sz{size}, lbl{label}, w{weight}, zone{zone}, alpha{alpha}, limits{x_low, x_up, y_low, y_up}, data{cluster_data}
+       : sz{size},
+         lbl{label},
+         w{weight},
+         zone{zone},
+         alpha{alpha},
+         limits{x_low, x_up, y_low, y_up},
+         data{cluster_data}
 {
 }
 /////////////////////////////////////////////////////
@@ -28,10 +34,13 @@ const Cluster& default_cluster()
 ////////    DEFAULT CLUSTER CONSTRUCTOR       ///////
 /////////////////////////////////////////////////////
 Cluster::Cluster()
-    : sz{default_cluster().sz}, lbl{default_cluster().lbl}, w{default_cluster().w}, zone{default_cluster().zone},
-      limits{default_cluster().limits[0], default_cluster().limits[1], default_cluster().limits[2],
-             default_cluster().limits[3]},
-      data{default_cluster().data}
+       : sz{default_cluster().sz},
+         lbl{default_cluster().lbl},
+         w{default_cluster().w},
+         zone{default_cluster().zone},
+         limits{default_cluster().limits[0], default_cluster().limits[1], default_cluster().limits[2],
+                default_cluster().limits[3]},
+         data{default_cluster().data}
 {
 }
 /////////////////////////////////////////////////////
@@ -193,7 +202,12 @@ void Cluster::update_data()
 /////////////////////////////////////////////////////
 Data::Data(unsigned int susceptible, unsigned int exposed, unsigned int infected, unsigned int recovered,
            unsigned int dead, unsigned int capacity)
-    : S{susceptible}, E{exposed}, I{infected}, R{recovered}, D{dead}, ICU_capacity{capacity}
+       : S{susceptible},
+         E{exposed},
+         I{infected},
+         R{recovered},
+         D{dead},
+         ICU_capacity{capacity}
 {
 }
 

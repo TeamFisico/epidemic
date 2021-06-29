@@ -8,9 +8,10 @@ namespace smooth_simulation
 /////////////////////////////////////////////////////
 ////////        POSITION CONSTRUCTOR          ///////
 /////////////////////////////////////////////////////
-Position::Position(double X, double Y) : x{X}, y{Y}
+Position::Position(double X, double Y)
+       : x{X}, y{Y}
 {
-//    assert(x >= -100.0 && y >= -100.0);
+        assert(x >= -100.0 && y >= -100.0);
 }
 Position::Position() : x{0.0}, y{0.0}
 {
@@ -24,9 +25,20 @@ bool Position::in_radius(const Position& other_pos, double r) const
     return (this->distance_to(other_pos) <= r);
 }
 
+/////////////////////////////////////////////////////
+/// CHECK IF A POSITION IS OUT OF BOUNDS-->RESIZE ///
+/////////////////////////////////////////////////////
+void Position::check_bounds_and_resize(double area_side)
+{
+    if (x < 0) { x = 0; }
+    if (x > area_side ){ x = area_side; }
+    if (y < 0) { y = 0; }
+    if (y > area_side ){ y = area_side; }
+}
+
 bool operator==(const Position& p1, const Position& p2)
 {
-    return (p1.get_X() == p2.get_Y() && p1.get_Y() == p2.get_Y());
+    return (p1.get_X() == p2.get_X() && p1.get_Y() == p2.get_Y());
 }
 
 /////////////////////////////////////////////////////
@@ -43,8 +55,8 @@ Position generate_close_position(Position const& center, double max_distance)
     double x = center.get_X() + v_x;
     double y = center.get_Y() + v_y;
 
-    if (x < 0) { x = 0;}
-    if (y < 0) { y = 0;}
+    if (x < 0) { x = 0; }
+    if (y < 0) { y = 0; }
     Position gen_pos{x, y};
     return gen_pos;
 }

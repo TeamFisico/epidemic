@@ -28,26 +28,25 @@ class Person
     bool at_place;     // is the person staying at a place
     bool going_home;
     bool changed_status;
-    double velocity[2];       // [0] == x_speed , [1] == y_speed
+    double speed;       // [0] == x_speed , [1] == y_speed
     int stay_counter;         // time a person will spend to a place
     std::vector<int> Paths_i; // indeces to waypoints to visit in Waypoints array
   public:
     friend class Simulation;
     Person(Status status, int cluster_label, Location home, Position current_position, int target_index,
-           bool is_at_place, bool going_home,bool changed_status,double x_speed, double y_speed, int stay_time);
+           bool is_at_place, bool going_home, bool changed_status, double x_speed, double y_speed, int stay_time);
     Person(); // default constructor
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     Status current_status() const { return status[0]; }
     Status new_status() const { return status[1]; }
     int home_cluster() const { return label; }
-    double speed_x() const { return velocity[0]; }
-    double speed_y() const { return velocity[1]; }
-    double speed() const;
     double direction() const { return atan(velocity[1] / velocity[0]); }
     Position get_position() const { return position; };
     Location get_home() const { return home; };
     bool at_home() const; // is the person staying home
     bool empty_path() const { return Paths_i.size() == 0; }
+    int path_size() const { return Paths_i.size(); }
+    int get_target_i(){ return target_i; }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void set_current_status(Status st) { status[0] = st; }
     void set_new_status(Status st) { status[1] = st; }
@@ -55,15 +54,15 @@ class Person
     void set_home(Location loc) { home = loc; }
     void set_target_i(int target_index) { target_i = target_index; }
     void set_position(Position const& pos) { position = pos; }
-    void set_changed_status(bool has_changed){ changed_status = has_changed; }
-    void set_at_home() { position = home.get_position(); }
+    void set_changed_status(bool has_changed) { changed_status = has_changed; }
+    void set_at_home();
     void add_to_path(int const& wpt_index) { Paths_i.push_back(wpt_index); }
     bool is_staying();    // determine if person can move
     void update_status(); // pass to new condition
   private:
     void move_toward(Random& engine);
     void move_home(Random& engine);
-    void update_velocity(Random& engine);
+    void update_speed(Random& engine);
     void update_target(Random& engine);
     void remove_target_i(int target_i);
 

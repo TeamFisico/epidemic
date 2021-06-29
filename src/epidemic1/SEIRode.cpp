@@ -14,7 +14,12 @@ void error(std::string s)
 //                     CONSTRUCTOR                           //
 ///////////////////////////////////////////////////////////////
 ode::ode(int population, int time, State initial_state, double beta, double alpha, double gamma)
-    : N{population}, t{time}, S_0{initial_state}, beta{beta}, alpha{alpha}, gamma{gamma}
+       : N{population},
+         t{time},
+         S_0{initial_state},
+         beta{beta},
+         alpha{alpha},
+         gamma{gamma}
 {
     is_valid(*this);
 }
@@ -32,9 +37,13 @@ const ode &default_ode()
 //                   DEFAULT CONSTRUCTOR                     //
 ///////////////////////////////////////////////////////////////
 ode::ode()
-    // default constructor:CHECK IF IT MAKES SENSE
-    : N{default_ode().N}, t{default_ode().t}, S_0{default_ode().S_0}, beta{default_ode().beta},
-      alpha{default_ode().alpha}, gamma{default_ode().gamma}
+       // default constructor:CHECK IF IT MAKES SENSE
+       : N{default_ode().N},
+         t{default_ode().t},
+         S_0{default_ode().S_0},
+         beta{default_ode().beta},
+         alpha{default_ode().alpha},
+         gamma{default_ode().gamma}
 {
 }
 

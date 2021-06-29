@@ -8,8 +8,12 @@ using namespace sim;
 // Constructor
 mobility_model::mobility_model(Person *person, Location *target_location, double speed, int stay,
                                double home_probability, bool at_home)
-    : person{person}, target_location{target_location}, speed{speed}, stay{stay},
-      home_probability{home_probability}, at_home{at_home}
+       : person{person},
+         target_location{target_location},
+         speed{speed},
+         stay{stay},
+         home_probability{home_probability},
+         at_home{at_home}
 {
 }
 

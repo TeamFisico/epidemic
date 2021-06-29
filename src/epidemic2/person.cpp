@@ -3,7 +3,10 @@
 using namespace sim;
 // Constructor
 Person::Person(State condition, Position pos, State new_condition, Location home)
-    : condition{condition}, pos{pos}, new_condition{new_condition}, home{home}
+       : condition{condition},
+         pos{pos},
+         new_condition{new_condition},
+         home{home}
 {
 }
 // Default constructor

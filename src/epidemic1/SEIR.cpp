@@ -2,7 +2,10 @@
 
 // Constructor
 sim::sim(const State &initial_state, double alpha, double beta, double gamma)
-    : state0{initial_state}, alpha{alpha}, beta{beta}, gamma{gamma}
+       : state0{initial_state},
+         alpha{alpha},
+         beta{beta},
+         gamma{gamma}
 {
 }
 
@@ -16,7 +19,10 @@ const sim &default_sim()
 
 // default constructor
 sim::sim()
-    : state0{default_sim().state0}, alpha{default_sim().alpha}, beta{default_sim().beta}, gamma{default_sim().gamma}
+       : state0{default_sim().state0},
+         alpha{default_sim().alpha},
+         beta{default_sim().beta},
+         gamma{default_sim().gamma}
 {
 }
 

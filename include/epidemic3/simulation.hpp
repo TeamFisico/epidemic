@@ -40,6 +40,7 @@ class Simulation
     void update_people_status();
 
   public:
+    friend class Person;
     Simulation(double side, double spread_radius, double alpha, double beta, double gamma, double kappa, Data data);
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
     void move();                      // move all the people
@@ -47,6 +48,7 @@ class Simulation
     void simulate();                  // simulate
     Data get_simulation_data() const; // return simulation data
     void initialise_people_status(int E, int I, int R);
+    double get_side() const { return side; }
 };
 // helper functions
 double weight_function(double distance, double LATP_parameter);    // weight function of LATP algorithm

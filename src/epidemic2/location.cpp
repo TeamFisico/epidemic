@@ -7,7 +7,8 @@
 using namespace sim;
 // Constructor
 Location::Location(Position &location_pos, double location_Radius)
-    : location_pos{location_pos}, location_Radius{location_Radius}
+       : location_pos{location_pos},
+         location_Radius{location_Radius}
 {
 }
 // Default Constructor WIP

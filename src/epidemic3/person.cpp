@@ -10,9 +10,17 @@ namespace smooth_simulation
 ////////        PERSON CONSTRUCTOR            ///////
 /////////////////////////////////////////////////////
 Person::Person(Status status, int cluster_label, Location home, Position current_position, int target_index,
-               bool is_at_place, bool going_home,bool changed_status,double x_speed, double y_speed, int stay_time)
-    : status{status, status}, label{cluster_label}, home{home}, position{current_position}, target_i{target_index},
-      at_place{is_at_place}, going_home{going_home},changed_status{changed_status},velocity{x_speed, y_speed}, stay_counter{stay_time}
+               bool is_at_place, bool going_home, bool changed_status,double speed,int stay_time)
+       : status{status, status},
+         label{cluster_label},
+         home{home},
+         position{current_position},
+         target_i{target_index},
+         at_place{is_at_place},
+         going_home{going_home},
+         changed_status{changed_status},
+         speed{speed},
+         stay_counter{stay_time}
 {
 }
 
@@ -20,19 +28,21 @@ const Person& def_person()
 {
     static Location def_loc{};
     static Position def_pos{};
-    static Person def_p{Status::Susceptible, 0, def_loc, def_pos, 0, true, false,false, 0.0, 0.0, 0};
+    static Person def_p{Status::Susceptible, 0, def_loc, def_pos, 0, true, false, false, 0.0, 0.0, 0};
     return def_p;
 }
 Person::Person()
-    : status{def_person().status[0], def_person().status[1]}, label{def_person().label},
-      home{def_person().home}, position{def_person().position}, target_i{def_person().target_i},
-      at_place{def_person().at_place},going_home{def_person().going_home},changed_status{def_person().changed_status}, velocity{def_person().velocity[0], def_person().velocity[1]},
-      stay_counter{def_person().stay_counter}
+       : status{def_person().status[0], def_person().status[1]},
+         label{def_person().label},
+         home{def_person().home},
+         position{def_person().position},
+         target_i{def_person().target_i},
+         at_place{def_person().at_place},
+         going_home{def_person().going_home},
+         changed_status{def_person().changed_status},
+         speed{speed},
+         stay_counter{def_person().stay_counter}
 {
-}
-double Person::speed() const
-{
-    return sqrt(velocity[0] * velocity[0] + velocity[1] * velocity[1]);
 }
 bool Person::at_home() const
 {
@@ -42,15 +52,21 @@ bool Person::at_home() const
         return false;
     }
 }
+void Person::set_at_home()
+{
+    position = home.get_position();
+}
 /////////////////////////////////////////////////////
 ////////          VELOCITY UPDATE             ///////
 /////////////////////////////////////////////////////
-// uniformly generate a new velocity stddev in the range [0,MAXIMUM_VELOCITY_STDDEV) and then extract
-// the x and y components from a normal distributions centerd on AVERAGE_VELOCITY
-void Person::update_velocity(Random& engine)
+// the velocity is updated when moving toward a target(home or other).
+void Person::update_speed(Random& engine)
 {
-    velocity[0] = engine.rand_speed();
-    velocity[1] = engine.rand_speed();
+    while(position.distance_to(Simulation::Waypoints[target_i].get_position()) < speed())
+    {
+        velocity[0] = engine.rand_speed();
+        velocity[1] = engine.rand_speed();
+    }
 }
 
 /////////////////////////////////////////////////////
@@ -116,25 +132,25 @@ void Person::remove_target_i(int target_i)
 void Person::move_home(Random& engine)
 {
     // compute data for shortest possible path
-    double delta_x = std::abs(position.get_X() - home.get_X());
-    double delta_y = std::abs(position.get_Y() - home.get_Y());
-    double direct_angle = atan(delta_y / delta_x); // angle connecting the target through a straight line
+    double dx = position.get_X() - home.get_X();
+    double dy = position.get_Y() - home.get_Y();
+    double direct_angle = atan2(dy,dx); // angle connecting the target through a straight line
 
     update_velocity(engine); // assign this person a new velocity vector
     // now determine the displacement on each axis based on the current person speed
-    double x_displacement = (speed() * cos(direct_angle)) * TIME_STEP; // moving of delta_x on the x axis
-    double y_displacement = (speed() * sin(direct_angle)) * TIME_STEP; // moving of delta_y on the y axis
+    double x_displacement = (speed * cos(direct_angle)) * TIME_STEP; // moving of delta_x on the x axis
+    double y_displacement = (speed * sin(direct_angle)) * TIME_STEP; // moving of delta_y on the y axis
 
     double x = position.get_X() + x_displacement;
     double y = position.get_Y() + y_displacement;
-    if (x < 0) { x = 0.0;}
-    if (y < 0) { y = 0.0;}
-    Position new_position{x,y};
+    if (x < 0) { x = 0.0; }
+    if (y < 0) { y = 0.0; }
+    Position new_position{x, y};
 
     // has the person arrived(gotten into target radius?)
     if (new_position.in_radius(home.get_position(), HOME_RADIUS))
     {
-        set_at_home(); // set new position
+        set_at_home();                     // set new position
         at_place = true;                   // the person is now at a place
         stay_counter = engine.rand_stay(); // how much time he/she will spend there
         going_home = false;
@@ -148,25 +164,29 @@ void Person::move_home(Random& engine)
 void Person::move_toward(Random& engine)
 // move a person by an amount determined by the current speed slightly varying the angle
 {
+
     Location& target = Simulation::Waypoints[target_i]; // reference to current target
     // compute data for shortest possible path
-    double delta_x = std::abs(position.get_X() - target.get_X());
-    double delta_y = std::abs(position.get_Y() - target.get_Y());
-    double theta = atan(delta_y / delta_x); // angle connecting the target through a straight line
-
-    update_velocity(engine); // assign this person a new velocity vector
-
+    double dx = position.get_X() - target.get_X();
+    double dy = position.get_Y() - target.get_Y();
+    double theta = atan2(dy , dx); // angle connecting the target through a straight line
     // vary uniformly the angole in a range defined by MAXIMUM_ANGLE_VARIATION
     double delta_theta = engine.uniform(-1.0 * MAXIMUM_ANGLE_VARIATION, MAXIMUM_GROUP_PROBABILITY);
 
-    delta_x = speed() * cos(theta + delta_theta) * TIME_STEP; // person's x_displacement: v_x*delta_t
-    delta_y = speed() * sin(theta + delta_theta) * TIME_STEP; // person's x_displacement: v_y*delta_t
+    while(position.distance_to(target.get_position()) < speed)
+    {
+        speed = engine.uniform(0,2);
+    }
 
-    double x = position.get_X() + delta_x;
-    double y = position.get_Y() + delta_y;
-    if (x < 0) { x = 0; }
-    if (y < 0) { y = 0; }
-    Position new_pos = {x,y};
+    //coordinate of the translation vector
+    double v_x = speed * cos(theta + delta_theta) * TIME_STEP; // person's x_displacement: v_x*delta_t
+    double v_y = speed * sin(theta + delta_theta) * TIME_STEP; // person's x_displacement: v_y*delta_t
+
+    double x = position.get_X() + v_x;
+    double y = position.get_Y() + v_y;
+
+
+    Position new_pos = {x, y};
 
     if (new_pos.in_radius(target.get_position(), target.get_radius())) // the person has arrived to the target
     {
@@ -195,7 +215,7 @@ void Person::move(Random& engine)
         {
             if (at_home()) // is at home
             {
-                std::cout << "pathfinder\n";
+//                std::cout << "pathfinder\n";
                 pathfinder(engine); // refill path
                 update_target(engine);
                 move_toward(engine);

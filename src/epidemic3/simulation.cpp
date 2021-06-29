@@ -247,11 +247,9 @@ void Simulation::assign_home_to_people()
         family_size = engine.rounded_gauss(AVERAGE_FAMILY_SIZE, 1.5); // a family as a mean
         if (family_size < 1) family_size = 1;
 
-        //TODO solo per capire dove fallisce l'assertion
         double x = engine.uniform(lw_x, up_x);
         double y = engine.uniform(lw_y, up_y);
-        assert(x > 0.0 && y > 0.0);
-        Position try_pos{x,y};
+        Position try_pos{x, y};
 
         // if necessary generate a new position until its a one not already taken by another family
         for (unsigned int i = 0; i < generated_homes.size(); ++i)
@@ -288,25 +286,26 @@ void Simulation::assign_home_to_people()
 /////////////////////////////////////////////////////
 ////   DISTRIBUTE I,E,R people over the map     /////
 /////////////////////////////////////////////////////
-//each person is default constructed to be Susceptible, so this function distributes uniformly E,I,R people over clusters
+// each person is default constructed to be Susceptible, so this function distributes uniformly E,I,R people over
+// clusters
 void Simulation::initialise_people_status(int E, int I, int R)
 {
-    std::vector<int> chosen_people_i; //vector to take trace of already setted people indeces
-    chosen_people_i.reserve(E+I+R);
-    //setting exposed individuals
+    std::vector<int> chosen_people_i; // vector to take trace of already setted people indeces
+    chosen_people_i.reserve(E + I + R);
+    // setting exposed individuals
     int cl_index = 0;
     while (E > 0)
     {
-        if (cl_index == CLUSTERS_SIZE){ cl_index = 0; } //occurs when E > CLUSTERS_SIZE
+        if (cl_index == CLUSTERS_SIZE) { cl_index = 0; } // occurs when E > CLUSTERS_SIZE
         auto& cl = Clusters[cl_index];
-        int try_person_i = engine.int_uniform(cl.lower_index(),cl.upper_index()); // pick a random index
-        for (unsigned long j = 0; j < chosen_people_i.size() ;++j) //check if already taken
+        int try_person_i = engine.int_uniform(cl.lower_index(), cl.upper_index()); // pick a random index
+        for (unsigned long j = 0; j < chosen_people_i.size(); ++j)                 // check if already taken
         {
-            if (chosen_people_i[j] == try_person_i) //the index has been already taken
+            if (chosen_people_i[j] == try_person_i) // the index has been already taken
             {
-                try_person_i = engine.int_uniform(cl.lower_index(),cl.upper_index()); // pick a random index
+                try_person_i = engine.int_uniform(cl.lower_index(), cl.upper_index()); // pick a random index
                 j = 0;
-                continue; //restart the loop
+                continue; // restart the loop
             }
         }
         People[try_person_i].set_current_status(Status::Exposed);
@@ -314,20 +313,20 @@ void Simulation::initialise_people_status(int E, int I, int R)
         --E;
         ++cl_index;
     }
-    //setting infected individuals
+    // setting infected individuals
     cl_index = 0;
     while (I > 0)
     {
-        if (cl_index == CLUSTERS_SIZE){ cl_index = 0; } //occurs when E > CLUSTERS_SIZE
+        if (cl_index == CLUSTERS_SIZE) { cl_index = 0; } // occurs when E > CLUSTERS_SIZE
         auto& cl = Clusters[cl_index];
-        int try_person_i = engine.int_uniform(cl.lower_index(),cl.upper_index()); // pick a random index
-        for (unsigned long j = 0; j < chosen_people_i.size() ;++j) //check if already taken
+        int try_person_i = engine.int_uniform(cl.lower_index(), cl.upper_index()); // pick a random index
+        for (unsigned long j = 0; j < chosen_people_i.size(); ++j)                 // check if already taken
         {
-            if (chosen_people_i[j] == try_person_i) //the index has been already taken
+            if (chosen_people_i[j] == try_person_i) // the index has been already taken
             {
-                try_person_i = engine.int_uniform(cl.lower_index(),cl.upper_index()); // pick a random index
+                try_person_i = engine.int_uniform(cl.lower_index(), cl.upper_index()); // pick a random index
                 j = 0;
-                continue; //restart the loop
+                continue; // restart the loop
             }
         }
         People[try_person_i].set_current_status(Status::Infected);
@@ -335,20 +334,20 @@ void Simulation::initialise_people_status(int E, int I, int R)
         --I;
         ++cl_index;
     }
-    //setting recovered individuals
+    // setting recovered individuals
     cl_index = 0;
     while (R > 0)
     {
-        if (cl_index == CLUSTERS_SIZE){ cl_index = 0; } //occurs when E > CLUSTERS_SIZE
+        if (cl_index == CLUSTERS_SIZE) { cl_index = 0; } // occurs when E > CLUSTERS_SIZE
         auto& cl = Clusters[cl_index];
-        int try_person_i = engine.int_uniform(cl.lower_index(),cl.upper_index()); // pick a random index
-        for (unsigned long j = 0; j < chosen_people_i.size() ;++j) //check if already taken
+        int try_person_i = engine.int_uniform(cl.lower_index(), cl.upper_index()); // pick a random index
+        for (unsigned long j = 0; j < chosen_people_i.size(); ++j)                 // check if already taken
         {
-            if (chosen_people_i[j] == try_person_i) //the index has been already taken
+            if (chosen_people_i[j] == try_person_i) // the index has been already taken
             {
-                try_person_i = engine.int_uniform(cl.lower_index(),cl.upper_index()); // pick a random index
+                try_person_i = engine.int_uniform(cl.lower_index(), cl.upper_index()); // pick a random index
                 j = 0;
-                continue; //restart the loop
+                continue; // restart the loop
             }
         }
         People[try_person_i].set_current_status(Status::Recovered);
@@ -383,7 +382,7 @@ void Simulation::world_generation()
 
     for (auto& p : People)
     {
-        p.set_at_home();
+         p.set_at_home();
     }
     std::cout << "People initial location setted being home\n";
 }
@@ -397,8 +396,14 @@ void Simulation::world_generation()
 /////////////////////////////////////////////////////
 Simulation::Simulation(double side, double spread_radius, double alpha, double beta, double gamma, double kappa,
                        Data data)
-    : side{side},
-      spread_radius{spread_radius}, alpha{alpha}, beta{beta}, gamma{gamma}, kappa{kappa}, data{data}, engine{}
+       : side{side},
+         spread_radius{spread_radius},
+         alpha{alpha},
+         beta{beta},
+         gamma{gamma},
+         kappa{kappa},
+         data{data},
+         engine{}
 {
     world_generation();
     std::cout << "World successfully constructed!" << std::endl;
@@ -465,7 +470,7 @@ void Simulation::update_zones()
 {
     for (auto& cl : Clusters)
     {
-        double ratio{(double)data.I / data.S}; // infected - suceptible ratio
+        double ratio{(double)cl.data.I / cl.data.S}; // infected - suceptible ratio
 
         if (ratio < WHITE_CLUSTER_RATIO)
         {
@@ -510,11 +515,11 @@ void Simulation::update_people_status()
 // updates cluster data and consequently simulation summary data
 void Simulation::update_data()
 {
-    data.S=0;
-    data.E=0;
-    data.I=0;
-    data.R=0;
-    data.D =0;
+    data.S = 0;
+    data.E = 0;
+    data.I = 0;
+    data.R = 0;
+    data.D = 0;
     for (auto& cl : Clusters)
     {
         cl.update_data();
@@ -582,15 +587,14 @@ void Simulation::spread()
                     person.set_changed_status(true);
                     continue;
                 } // determine if the person will recover
-                if (engine.try_event(kappa))
+                else if (engine.try_event(kappa))
                 {
                     person.set_new_status(Status::Dead);
                     person.set_changed_status(true);
                 } // determine if the person will
-                  // die
-            }
-        } // end loop over cluster's people
-    }     // end loop over clusters
+            }     // end Infected case
+        }         // end loop over cluster's people
+    }             // end loop over clusters
 }
 /////////////////////////////////////////////////////
 ///////               SIMULATE                ///////
@@ -609,20 +613,18 @@ void Simulation::simulate()
             move();
             spread();
             update_people_status();
-
         }
         update_data();
         update_zones();
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<float> duration = end - start;
-        std::cout << "block " <<i<<"-->"<< duration.count() << " s " << std::endl;
-        out << "Block " << i<<std::endl;
-        out << "S == " << data.S << "\tE == "<< data.E<<std::endl;
-        out << "I == " << data.I << "\tR == "<< data.R<<std::endl;
-        out << "D == " << data.D<<std::endl;
+        std::cout << "block " << i << "-->" << duration.count() << " s " << std::endl;
+        out << "Block " << i << std::endl;
+        out << "S == " << data.S << "\tE == " << data.E << std::endl;
+        out << "I == " << data.I << "\tR == " << data.R << std::endl;
+        out << "D == " << data.D << std::endl;
     }
-        //        get_simulation_data();
-
+    //        get_simulation_data();
 }
 // calculates the index range [lower,upper] (referred to Waypoints array)of the waypoints belonging to each cluster.
 void Simulation::set_clusters_bounds_indeces()
