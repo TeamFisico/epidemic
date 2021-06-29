@@ -37,13 +37,13 @@ std::vector<Rectangle> Rectangle::Split()
     double max{};
     if (selected_side == 0)
     { // select the parameter to generate the coordinate for the new rectangles
-        min = (5*blh_corner.get_x() + trh_corner.get_x()) / 6;
-        max = (5*trh_corner.get_x() + blh_corner.get_x()) / 6;
+        min = (3*blh_corner.get_x() + trh_corner.get_x()) / 4;
+        max = (3*trh_corner.get_x() + blh_corner.get_x()) / 4;
     }
     if (selected_side == 1)
     {
-        min = (5*blh_corner.get_y() + trh_corner.get_y()) / 6;
-        max = (5*trh_corner.get_y() + blh_corner.get_y()) / 6;
+        min = (3*blh_corner.get_y() + trh_corner.get_y()) / 4;
+        max = (3*trh_corner.get_y() + blh_corner.get_y()) / 4;
     }
     double rnum = rng.uniform(min, max);
     if (selected_side == 0)
