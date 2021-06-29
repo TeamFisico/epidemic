@@ -25,11 +25,11 @@ std::vector<Rectangle> Rectangle::Split()
     Random rng;
     int selected_side = rng.int_uniform(0,1);            //Select the random side to divide, if 0 select the x-axis side, if 1 select the y-axis side
     // make sure that rectangle that have a side at least three times the other have the longest_side as the selected
-    if ((trh_corner.get_x() - blh_corner.get_x()) <= 3 * (trh_corner.get_y() - blh_corner.get_y()))
+    if ((trh_corner.get_x() - blh_corner.get_x()) <= 2 * (trh_corner.get_y() - blh_corner.get_y()))
     {
         selected_side = 1;
     }
-    if (3 * (trh_corner.get_x() - blh_corner.get_x()) >= (trh_corner.get_y() - blh_corner.get_y()))
+    if (2 * (trh_corner.get_x() - blh_corner.get_x()) >= (trh_corner.get_y() - blh_corner.get_y()))
     {
         selected_side = 0;
     }
@@ -82,20 +82,14 @@ std::vector<Rectangle> Rectangle::Divide(int n)
     for (int i = 1; i < n; ++i)
     { // Divide the rectangle in n random part
         // select a random member of the result vector
-        std::vector<double> Area; // vector that store the areas of the rectangle at the same index in result
-        Area.clear();
+        std::vector<double> Area2; // vector that store the areas of the rectangle at the same index in result
+        Area2.clear();
         for (auto a : result)
         { // fill the Area vector
-            Area.push_back(a.get_area());
+            Area2.push_back(a.get_area()*a.get_area());
         }
-        double total_area = std::accumulate(Area.begin(), Area.end(), 0);
-        std::vector<double> probabilities;
-        probabilities.clear();
-        for (auto a : Area) // fill the probability vector
-        {
-            probabilities.push_back(a / total_area); // the probability to be chosen is proportional to the area
-        }
-        int index = rng.discrete(probabilities);
+        double total_area = std::accumulate(Area2.begin(), Area2.end(), 0.);
+        int index = rng.discrete(Area2);
         auto it = result.begin();
         it += index;
         // Split the selected Rectangle in 2 rectangle
