@@ -64,3 +64,14 @@ target_include_directories(app4 PUBLIC "${PROJECT_BINARY_DIR}"
         ../include/epidemic2)
 target_clangformat_setup(app4) ##allow for code formatting
 
+add_executable(app4-sfml main4-sfml.cpp)
+
+target_compile_features(app4-sfml PRIVATE cxx_std_17)
+target_compile_options(app4-sfml PRIVATE -Wall -Wextra -fsanitize=address)
+target_link_options(app4-sfml PRIVATE -fsanitize=address)
+target_link_libraries(app4-sfml PRIVATE simulation2 world rectangle cluster2 mobility_model2 group2 location2 person2 position random)
+target_link_libraries(app4-sfml PRIVATE sfml-graphics)
+target_include_directories(app4-sfml PUBLIC "${PROJECT_BINARY_DIR}"
+        ../include/epidemic2)
+target_clangformat_setup(app4-sfml) ##allow for code formatting
+

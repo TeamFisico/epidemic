@@ -29,6 +29,7 @@ class Simulation
   public:
     Simulation(int S, int E, int I, int R,int number_of_clusters, int number_of_Locations, double Side, double alpha, double gamma,
                double beta, double spread_radius, int time_in_days, int step_in_minutes);
+    World& get_world(){ return world; }
     void Close_People(Person &current_person, std::vector<Person *> &close_people); // function that put in a vector pointers to all
                                                                 // other inRadius Susceptible People in green clusters
     void Close_Cluster_People(Person &current_person, std::vector<Person *> &close_people); // function that put in a vector pointers to all other inRadius susceptible people in the same cluster

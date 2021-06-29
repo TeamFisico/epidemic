@@ -20,6 +20,9 @@ class Cluster{
   public:
     Cluster(int S, int E, int I, int R, int number_of_location, Rectangle Area, Color color, int cluster_index);
     Cluster();
+    Rectangle& area() {return Area;}
+    double base() { return Area.get_trh_corner().get_x() - Area.get_blh_corner().get_x(); }
+    double height() { return Area.get_trh_corner().get_y() - Area.get_blh_corner().get_y(); }
     std::vector<Location*> Location_list();//get a vector of pointer to all locations in the cluster
     std::vector<Person*> Person_list();//get a vector of pointer to all People in the cluster
     std::vector<Group> &Groups(){ return groups; }

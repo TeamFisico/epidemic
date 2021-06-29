@@ -15,7 +15,7 @@ Rectangle::Rectangle()
 
 double Rectangle::get_area()
 {
-    return (trh_corner.get_x() - blh_corner.get_x()) * (trh_corner.get_y() - trh_corner.get_y());
+    return (trh_corner.get_x() - blh_corner.get_x()) * (trh_corner.get_y() - blh_corner.get_y());
 }
 
 std::vector<Rectangle> Rectangle::Split()
@@ -33,17 +33,17 @@ std::vector<Rectangle> Rectangle::Split()
     {
         selected_side = 0;
     }
-    int min{};
-    int max{};
+    double min{};
+    double max{};
     if (selected_side == 0)
     { // select the parameter to generate the coordinate for the new rectangles
-        min = blh_corner.get_x() + blh_corner.get_x() / 6;
-        max = trh_corner.get_x() - trh_corner.get_x() / 6;
+        min = (5*blh_corner.get_x() + trh_corner.get_x()) / 6;
+        max = (5*trh_corner.get_x() + blh_corner.get_x()) / 6;
     }
     if (selected_side == 1)
     {
-        min = blh_corner.get_y() + blh_corner.get_y() / 6;
-        max = trh_corner.get_y() - trh_corner.get_y() / 6;
+        min = (5*blh_corner.get_y() + trh_corner.get_y()) / 6;
+        max = (5*trh_corner.get_y() + blh_corner.get_y()) / 6;
     }
     double rnum = rng.uniform(min, max);
     if (selected_side == 0)

@@ -42,6 +42,7 @@ find_package(SFML 2.5 COMPONENTS system window graphics network audio)
 
 if(SFML_FOUND)
     message(STATUS "SFML package found")
+    include_directories(${SFML_INCLUDE_DIR})
 endif()
 
 find_package(ROOT 6.16 CONFIG REQUIRED)
