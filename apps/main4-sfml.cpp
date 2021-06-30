@@ -13,6 +13,46 @@ int main(){
     Simulation prova{25000 ,3, 200, 4, 5, 1000, 800,0.1,0.02,0.1,1,20,10};
     sf::RenderWindow window(sf::VideoMode(800, 800), "My window");
     window.display();
+    sf::VertexArray locations(sf::Triangles, 24*prova.get_world().number_of_locations());
+    int count = 0;
+    //double x_0, y_0, x_1, y_1, x_2, y_2, x_3, y_3, x_4, y_4, x_5, y_5, x_6, y_6, x_7, y_7, x_8, y_8; //points to construct the various octagons
+    int r = 0;
+    std::array<double, 9> x{};
+    std::array<double, 9> y{};
+    for (auto &cl: prova.get_world().Clusters()){
+        for(auto &gr: cl.Groups()){
+            for(auto &l: gr.Locations()){
+                r = l.get_radius();
+                //Fill the points
+                x[0] = l.get_pos().get_x();
+                y[0] = l.get_pos().get_y();
+                for(int i = 1; i < 9; ++i){
+                    x[i] = x[0] + r*std::cos(i*PI/4);
+                    y[i] = y[0] + r*std::sin(i*PI/4);
+                }
+                //Assign points so that you make octagons(with 8 triangles)
+                for(int i = 0; i < 7; ++i){ //The first 7 triangles
+                    //Set the vertices of the triangles
+                    locations[24*count + 3*i].position = sf::Vector2f(x[0],y[0]);
+                    locations[24*count + 3*i + 1].position = sf::Vector2f(x[i + 1],y[i + 1]);
+                    locations[24*count + 3*i + 2].position = sf::Vector2f(x[i + 2],y[i + 2]);
+                    //set the color
+                    locations[24*count + 3*i].color = sf::Color::Blue;
+                    locations[24*count + 3*i + 1].color = sf::Color::Blue;
+                    locations[24*count + 3*i + 2].color = sf::Color::Blue;
+                }
+                //Set the vertices of the eight triangle
+                locations[24*count + 21].position = sf::Vector2f(x[0],y[0]);
+                locations[24*count + 22].position = sf::Vector2f(x[8],y[8]);
+                locations[24*count + 23].position = sf::Vector2f(x[1],y[1]);
+                //set the color
+                locations[24*count + 21].color = sf::Color::Blue;
+                locations[24*count + 22].color = sf::Color::Blue;
+                locations[24*count + 23].color = sf::Color::Blue;
+                ++count;
+            }
+        }
+    }
     /*for(auto& a: prova.get_world().Clusters())
     {
         std::cout << "nth cluster: "
@@ -72,52 +112,12 @@ int main(){
                 }
             }
         }*/
-        start = std::chrono::high_resolution_clock::now();
-        //Use 8 triangles for every location in a vertexarray.
-        sf::VertexArray locations(sf::Triangles, 24*prova.get_world().number_of_locations());
-        int count = 0;
-        //double x_0, y_0, x_1, y_1, x_2, y_2, x_3, y_3, x_4, y_4, x_5, y_5, x_6, y_6, x_7, y_7, x_8, y_8; //points to construct the various octagons
-        int r = 0;
-        std::array<double, 9> x{};
-        std::array<double, 9> y{};
-        for (auto &cl: prova.get_world().Clusters()){
-            for(auto &gr: cl.Groups()){
-                for(auto &l: gr.Locations()){
-                    r = l.get_radius();
-                    //Fill the points
-                    x[0] = l.get_pos().get_x();
-                    y[0] = l.get_pos().get_y();
-                    for(int i = 1; i < 9; ++i){
-                        x[i] = x[0] + r*std::cos(i*PI/4);
-                        y[i] = y[0] + r*std::sin(i*PI/4);
-                    }
-                    //Assign points so that you make octagons(with 8 triangles)
-                    for(int i = 0; i < 7; ++i){ //The first 7 triangles
-                        //Set the vertices of the triangles
-                        locations[24*count + 3*i].position = sf::Vector2f(x[0],y[0]);
-                        locations[24*count + 3*i + 1].position = sf::Vector2f(x[i + 1],y[i + 1]);
-                        locations[24*count + 3*i + 2].position = sf::Vector2f(x[i + 2],y[i + 2]);
-                        //set the color
-                        locations[24*count + 3*i].color = sf::Color::Blue;
-                        locations[24*count + 3*i + 1].color = sf::Color::Blue;
-                        locations[24*count + 3*i + 2].color = sf::Color::Blue;
-                    }
-                    //Set the vertices of the eight triangle
-                    locations[24*count + 21].position = sf::Vector2f(x[0],y[0]);
-                    locations[24*count + 22].position = sf::Vector2f(x[8],y[8]);
-                    locations[24*count + 23].position = sf::Vector2f(x[1],y[1]);
-                    //set the color
-                    locations[24*count + 21].color = sf::Color::Blue;
-                    locations[24*count + 22].color = sf::Color::Blue;
-                    locations[24*count + 23].color = sf::Color::Blue;
-                    ++count;
-                }
-            }
-        }
+        //start = std::chrono::high_resolution_clock::now();
+
         window.draw(locations);
-        end = std::chrono::high_resolution_clock::now();
+        /*end = std::chrono::high_resolution_clock::now();
         duration = end - start;
-        std::cout << "Time: " << duration.count() << std::endl;
+        std::cout << "Time: " << duration.count() << std::endl;*/
 
         //With sf::RectangleShape; it is to slow
         /*sf::RectangleShape person(sf::Vector2f(2,2));
