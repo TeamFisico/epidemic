@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    Simulation prova{10000 ,3, 200, 4, 5, 1000, 800,0.1,0.02,0.1,1,20,10};
+    Simulation prova{25000 ,3, 200, 4, 5, 1000, 800,0.1,0.02,0.1,1,20,10};
     for(int k = 0; k < 10; ++k){
         prova.move();
     }

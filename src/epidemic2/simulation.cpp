@@ -374,10 +374,16 @@ void Simulation::update_Condition()
 
 void Simulation::clean_path(mobility_model &person)
 {
-    for(auto& a: person.path()){
+    /*for(auto& a: person.path()){
         if(world.Clusters()[a->c_index()].get_color() != Color::Green){
             //delete the last element of the vector to make sure it does not move the vector
             a = *(person.path().end() - 1); //copy the last element of the vector to the current
+            person.path().pop_back(); //delete the last element of a vector
+        }
+    }*/
+    for (int i = 0; i < person.path().size(); ++i){
+        if(world.Clusters()[person.path()[person.path().size() - 1 - i]->c_index()].get_color() != Color::Green){ //access the vector from opposite size, so you check all the elements correctly
+            person.path()[person.path().size() - 1 - i] = person.path()[person.path().size() - 1]; //copy the last element of the vector to the current
             person.path().pop_back(); //delete the last element of a vector
         }
     }
