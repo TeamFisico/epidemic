@@ -461,6 +461,58 @@ void Simulation::move()
     }
 }
 /////////////////////////////////////////////////////
+/////    SPREAD STEP FOR EXPOSED PEOPLE         /////
+/////////////////////////////////////////////////////
+void Simulation::spread_exposed(Person& person)
+{
+    std::cout << "spread_exposed"<<std::endl;
+    // determine if this person will be able to be infected
+    if (engine.try_event(alpha))
+    {
+        std::cout <<"Infected person"<<std::endl;
+        person.set_new_status(Status::Infected);
+        person.set_changed_status(true);
+    }
+}
+/////////////////////////////////////////////////////
+/////    SPREAD STEP FOR INFECTED PEOPLE         /////
+/////////////////////////////////////////////////////
+void Simulation::spread_infected(Person& person,std::vector<int>& close_people_indeces_v)
+{
+    std::cout << "spread_infected"<<std::endl;
+
+    if (!person.at_home) // the person is not at home
+    {
+        if (Clusters[person.label].zone_type() == Zone::White) // the cluster is white
+        {
+            close_people_fill(person, close_people_indeces_v); // fill with close ppl indeces
+        }
+        else // the cluster is either yellow,orange or red
+        {
+            close_cluster_people_fill(person, close_people_indeces_v);
+        }
+        for (int& close_i : close_people_indeces_v) // loop over close people
+        {
+            Person& close_person = People[close_i]; // ref to current close person
+            if (engine.try_event(beta))
+            {
+                close_person.set_new_status(Status::Exposed);
+                close_person.set_changed_status(true);
+            } // the close one's are exposed
+        }
+    }
+    if (engine.try_event(gamma))
+    {
+        person.set_new_status(Status::Recovered);
+        person.set_changed_status(true);
+    } // determine if the person will recover
+    else if (engine.try_event(kappa))
+    {
+        person.set_new_status(Status::Dead);
+        person.set_changed_status(true);
+    } // determine if the person will
+}
+/////////////////////////////////////////////////////
 /////    UPDATE CLUSTER ZONES BASED ON DATA     /////
 /////////////////////////////////////////////////////
 void Simulation::update_zones()
@@ -546,52 +598,22 @@ void Simulation::spread()
         for (int& person_i : cl.People_i) // loop over indeces of people of this cluster
         {
             auto& person = People[person_i]; // ref to current person
-            if (person.current_status() == Status::Exposed)
+
+            switch (person.current_status())
             {
-                // determine if this person will be able to be infected
-                if (engine.try_event(alpha))
-                {
-                    person.set_new_status(Status::Infected);
-                    person.set_changed_status(true);
-                }
+            case Status::Exposed:
+                spread_exposed(person);
+                break;
+            case Status::Infected:
+                spread_infected(person,close_people_i);
+                break;
+            default:
+                break;
             }
-            else if (person.current_status() == Status::Infected)
-            {
-                if (!person.at_home) // the person is not at home
-                {
-                    if (cl.zone_type() == Zone::White) // the cluster is white
-                    {
-                        close_people_fill(person, close_people_i); // fill with close ppl indeces
-                    }
-                    else // the cluster is either yellow,orange or red
-                    {
-                        close_cluster_people_fill(person, close_people_i);
-                    }
-                    for (int& close_i : close_people_i) // loop over close people
-                    {
-                        Person& close_person = People[close_i]; // ref to current close person
-                        if (engine.try_event(beta))
-                        {
-                            close_person.set_new_status(Status::Exposed);
-                            close_person.set_changed_status(true);
-                        } // the close one's are exposed
-                    }
-                }
-                // else ignore the persone
-                if (engine.try_event(gamma))
-                {
-                    person.set_new_status(Status::Recovered);
-                    person.set_changed_status(true);
-                    continue;
-                } // determine if the person will recover
-                else if (engine.try_event(kappa))
-                {
-                    person.set_new_status(Status::Dead);
-                    person.set_changed_status(true);
-                } // determine if the person will
-            }     // end Infected case
-        }         // end loop over cluster's people
-    }             // end loop over clusters
+        }  // end loop over cluster's people
+    }  // end loop over clusters
+    //now updating people status for the ones who changed
+    update_people_status();
 }
 /////////////////////////////////////////////////////
 ///////               SIMULATE                ///////
@@ -609,7 +631,6 @@ void Simulation::simulate()
         {
             move();
             spread();
-            update_people_status();
         }
         update_data();
         update_zones();
