@@ -14,11 +14,10 @@ struct Data
     unsigned int I;
     unsigned int R;
     unsigned int D;
-    unsigned int ICU_capacity;
-    Data(unsigned int susceptible, unsigned int exposed, unsigned int infected, unsigned int recovered,
-         unsigned int dead, unsigned int capacity);
-    ;
 };
+
+void print_data(Data data,std::ostream& out);
+
 enum class Zone
 {
     White = 0,
@@ -38,7 +37,6 @@ class Cluster
     std::array<double, 4> limits;  // [0]= lower_x, [1] = upper_x, [2] = lower_y, [3] = upper_y
     std::array<int, 2> wpts_range; // starting and ending index of this groups waypoints inside Waypoints array
     Data data;                     // edpidemic data relative to the people in this cluster
-    int ICU_sz;                    // number of people that can be hospitalized in ICU
     std::vector<int> People_i;     // ref to People array for people in this clust(assign_to_clust() initialized)
   public:
     friend class Simulation;

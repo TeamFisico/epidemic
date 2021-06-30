@@ -278,13 +278,15 @@ void weights_fill(Person const& person, std::vector<int>& white_labels, std::vec
 /////////////////////////////////////////////////////
 void Person::clean_path()
 {
-    for (auto& wpt_i : Paths_i)
+    for (int j = 0; j < Paths_i.size() ;++j)
     {
+        int wpt_i = Paths_i[j];
         //zone where the i-th wpt in person.Paths_i is located
         Zone const& wpt_zone = Simulation::Clusters[Simulation::Waypoints[wpt_i].get_label()].zone_type();
         if (wpt_zone != Zone::White)
         {
             remove_by_ref<int>(Paths_i,wpt_i); //remove from path
+            --j;
         }
     }
 }
@@ -297,7 +299,7 @@ void Person::next_location(Random& engine)
     {
         at_home = true;
         going_home = false;
-        stay_counter = engine.rand_stay(); //TODO set random stay from 2 to 5, to change into the power rule
+        stay_counter = engine.rand_stay();
     }
     if (Paths_i.empty()) // if Path vector empty select home
     {
@@ -364,7 +366,6 @@ void remove_by_value(std::vector<T>& vec, T to_remove)
     auto it = std::find(std::begin(vec),std::end(vec),to_remove);
     std::swap(*it, vec.back());
     vec.pop_back();
-
 }
 } // namespace smooth_simulation
 

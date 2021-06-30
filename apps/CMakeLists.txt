@@ -60,5 +60,6 @@ target_link_libraries(app3 PRIVATE   position3
                                      random)
 target_include_directories(app3 PUBLIC "${PROJECT_BINARY_DIR}" ../include/epidemic3
                                                                ../include)
+target_link_libraries(app3 PUBLIC ${ROOT_LIBRARIES} ${ROOT_EXE_LINKER_FLAGS})
 target_clangformat_setup(app3) ##allow for code formatting
 

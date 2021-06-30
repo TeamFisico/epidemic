@@ -61,8 +61,9 @@ bool operator==(const Location& l1, const Location& l2)
 /////////////////////////////////////////////////////
 double generate_radius()
 {
-    // TODO come up with a good generation -->must depend on Area,number of waypoints ecc
-    return 0.5;
+    //TODO radius
+//    engine.gauss(LOCATION_RADIUS_MEAN,LOCATION_RADIUS_MEAN);
+    return 4.0;
 }
 
 } // namespace smooth_simulation

@@ -30,10 +30,9 @@ class Simulation
     void assign_cluster_to_people();
     void assign_home_to_people();
     void set_clusters_bounds_indeces();
-    void close_people_fill(Person const& current_person, std::vector<int> close_people_i);
-    void close_cluster_people_fill(Person const& current_person, std::vector<int> close_people_i);
+    void close_people_fill(Person const& current_person, std::vector<int>& close_people_i);
+    void close_cluster_people_fill(Person const& current_person, std::vector<int>& close_people_i);
     void world_generation();
-
     void update_people_status();
     void spread_exposed(Person& person);
     void spread_infected(Person& person,std::vector<int>& close_people_indeces_v);
@@ -49,6 +48,7 @@ class Simulation
     double get_side() const { return side; }
     void update_zones(); // check the numbers of the epidemic and change Zones color
     void update_data();  // update simulation data
+    void clear_dead_people();
 };
 // helper functions
 double weight_function(double distance, double LATP_parameter);    // weight function of LATP algorithm

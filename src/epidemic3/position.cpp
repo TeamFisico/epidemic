@@ -53,6 +53,7 @@ void Position::move_toward(Position target, double speed, Random& engine)
     }
     double v_x = speed * std::cos(angle + delta_angle) * TIME_STEP; // v_x * delta_t
     double v_y = speed * std::sin(angle + delta_angle) * TIME_STEP; // v_y * delta_t
+    //TODO check bounds
     x += v_x;
     y += v_y;
 }

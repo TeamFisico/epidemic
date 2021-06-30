@@ -1,8 +1,6 @@
-
 #include "cluster.hpp"
 #include "simulation.hpp"
 #include <algorithm>
-#include <cmath>
 #include <random>
 
 namespace smooth_simulation
@@ -26,7 +24,7 @@ Cluster::Cluster(int size, int label, double weight, Zone zone, double alpha, do
 /////////////////////////////////////////////////////
 const Cluster& default_cluster()
 {
-    static Data dd{0, 0, 0, 0, 0, 0};
+    static Data dd{0, 0, 0, 0, 0};
     static Cluster def_cl{0, 0, 0.0, Zone::White, WHITE_LATP_PARAMETER, 0.0, 0.0, 0.0, 0.0, dd};
     return def_cl;
 }
@@ -345,12 +343,14 @@ void Cluster::remove_person_i(int person_i)
 /////////////////////////////////////////////////////
 void Cluster::clear_dead_people()
 {
-    for (int& person_i : People_i)
+    for (int j = 0; j < People_i.size();++j)
     {
+        int& person_i = People_i[j]; // ref to current person
         Status const& stat = Simulation::People[person_i].current_status();
         if (stat == Status::Dead)
         {
             remove_by_ref(People_i,person_i);
+            --j;
         }
     }
 }
@@ -387,20 +387,6 @@ void Cluster::update_data()
         }
     }
 }
-/////////////////////////////////////////////////////
-////////        DATA CONSTRUCTOR              ///////
-/////////////////////////////////////////////////////
-Data::Data(unsigned int susceptible, unsigned int exposed, unsigned int infected, unsigned int recovered,
-           unsigned int dead, unsigned int capacity)
-       : S{susceptible},
-         E{exposed},
-         I{infected},
-         R{recovered},
-         D{dead},
-         ICU_capacity{capacity}
-{
-}
-
 // returns a vector with white clusters labels except the one taken as argument
 std::vector<int> available_white_clusters(int lbl)
 {
@@ -411,5 +397,14 @@ std::vector<int> available_white_clusters(int lbl)
     }
     return labels;
 }
+
+void print_data(Data data,std::ostream& out)
+{
+    out << "Susceptible == " << data.S<< "\tExposed == " << data.E << std::endl;
+    out << "Infected == " << data.I <<"\tRecovered == " << data.R << std::endl;
+    out << "Dead == " << data.D << std::endl;
+}
+
+
 
 } // namespace smooth_simulation

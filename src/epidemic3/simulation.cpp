@@ -315,6 +315,7 @@ void Simulation::initialise_people_status(int E, int I, int R)
             }
         }
         People[try_person_i].set_current_status(Status::Exposed);
+        People[try_person_i].set_new_status(Status::Exposed);
         chosen_people_i.push_back(try_person_i);
         --nE;
     }
@@ -335,6 +336,7 @@ void Simulation::initialise_people_status(int E, int I, int R)
             }
         }
         People[try_person_i].set_current_status(Status::Infected);
+        People[try_person_i].set_new_status(Status::Infected);
         chosen_people_i.push_back(try_person_i);
         --nI;
     }
@@ -355,6 +357,7 @@ void Simulation::initialise_people_status(int E, int I, int R)
             }
         }
         People[try_person_i].set_current_status(Status::Recovered);
+        People[try_person_i].set_new_status(Status::Recovered);
         chosen_people_i.push_back(try_person_i);
         --nR;
     }
@@ -414,7 +417,7 @@ Simulation::Simulation(double side, double spread_radius, double alpha, double b
 /////////////////////////////////////////////////////
 ////       CLOSE PEOPLE ALL OVER THE AREA        ////
 /////////////////////////////////////////////////////
-void Simulation::close_people_fill(const Person& current_person, std::vector<int> close_people_i)
+void Simulation::close_people_fill(const Person& current_person, std::vector<int>& close_people_i)
 {
     close_people_i.clear();
     for (auto& cl : Clusters) // loop over clusters
@@ -428,7 +431,7 @@ void Simulation::close_people_fill(const Person& current_person, std::vector<int
                 auto const& stat = person.current_status();
                 bool const& is_home = person.at_home;
                 // check if person is close enough(most restrictive condition),susceptible and not at home
-                if (pos.in_radius(current_person.position, spread_radius) && stat == Status::Exposed && !is_home)
+                if (pos.in_radius(current_person.position, spread_radius) && stat == Status::Susceptible && !is_home)
                 {
                     close_people_i.push_back(person_i); // ok, add this person index to close people vector
                 }
@@ -440,7 +443,7 @@ void Simulation::close_people_fill(const Person& current_person, std::vector<int
 /////////////////////////////////////////////////////
 ////       CLOSE PEOPLE IN PERSON CLUSTER        ////
 /////////////////////////////////////////////////////
-void Simulation::close_cluster_people_fill(const Person& current_person, std::vector<int> close_people_i)
+void Simulation::close_cluster_people_fill(const Person& current_person, std::vector<int>& close_people_i)
 {
     close_people_i.clear();
     for (int& person_i : Clusters[current_person.label].People_i) // loop over people in this person's cluster indeces
@@ -450,7 +453,7 @@ void Simulation::close_cluster_people_fill(const Person& current_person, std::ve
         auto const& stat = person.current_status();
         bool const& is_home = person.at_home;
         // check if person is close enough(most restrictive condition),susceptible and not at home
-        if (pos.in_radius(current_person.position, spread_radius) && stat == Status::Exposed && !is_home)
+        if (pos.in_radius(current_person.position, spread_radius) && stat == Status::Susceptible && !is_home)
         {
             close_people_i.push_back(person_i); // ok, add this person index to close people vector
         }
@@ -563,28 +566,6 @@ void Simulation::update_data()
     data.I = 0;
     data.R = 0;
     data.D = 0;
-//    for (auto& p : People)
-//    {
-//        Status const& status = p.current_status();
-//        switch (status)
-//        {
-//        case Status::Susceptible:
-//            ++data.S;
-//            break;
-//        case Status::Exposed:
-//            ++data.E;
-//            break;
-//        case Status::Infected:
-//            ++data.I;
-//            break;
-//        case Status::Recovered:
-//            ++data.R;
-//            break;
-//        case Status::Dead:
-//            ++data.D;
-//            break;
-//        }
-//    }
     for (auto& cl : Clusters)
     {
         cl.update_data();
@@ -593,6 +574,13 @@ void Simulation::update_data()
         data.I += cl.data.I;
         data.R += cl.data.R;
         data.D += cl.data.D;
+    }
+}
+void Simulation::clear_dead_people()
+{
+    for (auto& cl : Clusters)
+    {
+        cl.clear_dead_people();
     }
 }
 /////////////////////////////////////////////////////
@@ -639,7 +627,7 @@ void Simulation::simulate()
     using namespace std::literals::chrono_literals;
     std::vector<Data> simulation_d;
     std::ofstream out{"out.txt"};
-    for (int i = 0; i < 50; ++i)
+    for (int i = 0; i < 10; ++i)
     {
         auto start = std::chrono::high_resolution_clock::now();
         for (int steps = 1; steps < UPDATE_ZONES_INTERVAL; ++steps) // do 1 block
@@ -650,6 +638,7 @@ void Simulation::simulate()
         auto end = std::chrono::high_resolution_clock::now();
         update_data();
         update_zones();
+//        clear_dead_people();
         simulation_d.push_back(data);
         std::chrono::duration<float> duration = end - start;
         std::cout << "Block"<<i<<"---->"<<duration.count()<<std::endl;
