@@ -34,6 +34,12 @@ int Random::discrete(std::vector<double> weights)
 {
     return eng.variate<int, std::discrete_distribution>(std::begin(weights), std::end(weights));
 }
+template <class T>
+T Random::pick(std::vector<T> const& container)
+{
+    return eng.pick(std::begin(container),std::end(container)); //returns a uniformly picked element
+}
+
 int Random::rand_stay()
 {
     double term1 = 0.0;

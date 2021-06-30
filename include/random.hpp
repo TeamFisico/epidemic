@@ -31,6 +31,7 @@ class Random
     int rand_stay();                           // generate a stay according to TPL(see //TODO)
     double rand_speed();
     bool try_event(double probability);
+    template <class T> T pick(std::vector<T> const& container);
 };
 
 } // namespace smooth_simulation

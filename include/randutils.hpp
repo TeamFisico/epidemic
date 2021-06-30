@@ -761,7 +761,7 @@ class random_generator {
         return first;
     }
 
-    template <typename Range>
+     template <typename Range>
     auto choose(Range&& range) -> decltype(std::begin(range))
     {
         return choose(std::begin(range), std::end(range));
