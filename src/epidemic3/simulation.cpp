@@ -292,8 +292,10 @@ void Simulation::assign_home_to_people()
 // clusters. It does that by setting blocks of people_block people randomly over the clusters
 void Simulation::initialize_people_status(int E, int I, int R)
 {
-    int constexpr people_block = 10;   //number of people assigned together to a cluster(if possible)
+    int  people_block = 10;   //number of people assigned together to a cluster(if possible)
     int chosen_label = 0;
+    //TODO if E,I,R are high(altough very unlikely to be allowed) choose a small people_block
+    if (E+I+R >= 1000){ people_block = 4; }
 
     std::array<int,CLUSTERS_SIZE> E_people{};
     int E_people_left = E;
