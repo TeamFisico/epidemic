@@ -301,7 +301,7 @@ void Simulation::initialize_people_status(int E, int I, int R)
     {
         chosen_label = engine.int_uniform(0, CLUSTERS_SIZE - 1);
         //make sure the corresponding cluster has enough People available to set
-        while(Clusters[chosen_label].population_size() < (E_people[chosen_label] + people_block + 1) )
+        while(Clusters[chosen_label].population_size() < (E_people[chosen_label] + people_block) )
         {
             chosen_label = engine.int_uniform(0, CLUSTERS_SIZE - 1);
         }
@@ -407,9 +407,12 @@ void Simulation::world_generation()
 
     plot_waypoints(); // plot the waypoints on the map
 
+    int i = 1;
     for (auto& cluster : Clusters) // set (x,y) limits for each cluster
     {
         cluster.set_limits();
+        std::cout << "Cluster "<<i<<" size == "<<cluster.size()<<std::endl;
+        ++i;
     }
 
     assign_cluster_to_people();
@@ -441,7 +444,7 @@ Simulation::Simulation(double side, double spread_radius, double alpha, double b
     world_generation();
     std::cout << "World successfully constructed!" << std::endl;
 
-    initialise_people_status(data.E,data.I,data.R);
+    initialize_people_status(data.E,data.I,data.R);
     std::cout <<"initialised EIR"<<std::endl;
 
 }

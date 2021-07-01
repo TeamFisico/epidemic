@@ -33,7 +33,7 @@ int main(int argc,char* argv[])
     using namespace std::literals::chrono_literals;
 
     unsigned int nE = 134;
-    unsigned int nI = 500;
+    unsigned int nI = 3000;
     unsigned int nR = 2;
     unsigned int nS = POPULATION_SIZE - nE - nI - nR;
 
