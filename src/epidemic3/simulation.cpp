@@ -289,79 +289,110 @@ void Simulation::assign_home_to_people()
 ////   DISTRIBUTE I,E,R people over the map     /////
 /////////////////////////////////////////////////////
 // each person is default constructed to be Susceptible, so this function distributes uniformly E,I,R people over
-// clusters
-void Simulation::initialise_people_status(int E, int I, int R)
+// clusters. It does that by setting blocks of people_block people randomly over the clusters
+void Simulation::initialize_people_status(int E, int I, int R)
 {
-    int nE = E;
-    int nI = I;
-    int nR = R;
-    std::vector<int> chosen_people_i; // vector to take trace of already setted people indeces
-    chosen_people_i.reserve(E + I + R);
-    // setting exposed individuals
-    int chosen_cluster_index = 0;
-    while (nE > 0)
+    int constexpr people_block = 10;   //number of people assigned together to a cluster(if possible)
+    int chosen_label = 0;
+
+    std::array<int,CLUSTERS_SIZE> E_people{};
+    int E_people_left = E;
+    while(E_people_left > people_block)
     {
-        chosen_cluster_index = engine.int_uniform(0,CLUSTERS_SIZE-1);
-        auto& cl = Clusters[chosen_cluster_index];
-        int try_person_i = engine.int_uniform(cl.lower_index(),cl.upper_index());
-
-        for (unsigned long j = 0; j < chosen_people_i.size(); ++j)             // check if already taken
+        chosen_label = engine.int_uniform(0, CLUSTERS_SIZE - 1);
+        //make sure the corresponding cluster has enough People available to set
+        while(Clusters[chosen_label].population_size() < (E_people[chosen_label] + people_block + 1) )
         {
-            if (chosen_people_i[j] == try_person_i) // the index has been already taken
-            {
-                try_person_i = engine.int_uniform(cl.lower_index(),cl.upper_index());
-                j = 0;
-                continue; // restart the loop
-            }
+            chosen_label = engine.int_uniform(0, CLUSTERS_SIZE - 1);
         }
-        People[try_person_i].set_current_status(Status::Exposed);
-        People[try_person_i].set_new_status(Status::Exposed);
-        chosen_people_i.push_back(try_person_i);
-        --nE;
+        E_people[chosen_label] += people_block;
+        E_people_left -= people_block;
     }
-    // setting infected individuals
-    while (nI > 0)
+    chosen_label = engine.int_uniform(0, CLUSTERS_SIZE - 1);
+    //make sure the corresponding cluster has enough People available to set
+    while(Clusters[chosen_label].population_size() < (E_people[chosen_label] + E_people_left))
     {
-        chosen_cluster_index = engine.int_uniform(0,CLUSTERS_SIZE-1);
-        auto& cl = Clusters[chosen_cluster_index];
-        int try_person_i = engine.int_uniform(cl.lower_index(),cl.upper_index());
-
-        for (unsigned long j = 0; j < chosen_people_i.size(); ++j)                 // check if already taken
-        {
-            if (chosen_people_i[j] == try_person_i) // the index has been already taken
-            {
-                try_person_i = engine.int_uniform(cl.lower_index(),cl.upper_index());
-                j = 0;
-                continue; // restart the loop
-            }
-        }
-        People[try_person_i].set_current_status(Status::Infected);
-        People[try_person_i].set_new_status(Status::Infected);
-        chosen_people_i.push_back(try_person_i);
-        --nI;
+        chosen_label = engine.int_uniform(0, CLUSTERS_SIZE - 1);
     }
-    // setting recovered individuals
-    while (nR > 0)
+    E_people[chosen_label]+= E_people_left;
+
+    //I individuals
+    std::array<int,CLUSTERS_SIZE> I_people{};
+    int I_people_left = I;
+    while(I_people_left > people_block)
     {
-        chosen_cluster_index = engine.int_uniform(0,CLUSTERS_SIZE-1);
-        auto& cl = Clusters[chosen_cluster_index];
-        int try_person_i = engine.int_uniform(cl.lower_index(),cl.upper_index());
-
-        for (unsigned long j = 0; j < chosen_people_i.size(); ++j)                 // check if already taken
+        chosen_label = engine.int_uniform(0, CLUSTERS_SIZE - 1);
+        //make sure the corresponding cluster has enough People available to set
+        while(Clusters[chosen_label].population_size() < (E_people[chosen_label] + I_people[chosen_label] + people_block))
         {
-            if (chosen_people_i[j] == try_person_i) // the index has been already taken
-            {
-                try_person_i = engine.int_uniform(cl.lower_index(),cl.upper_index());
-                j = 0;
-                continue; // restart the loop
-            }
+            std::cout << "retrying\n";
+            chosen_label = engine.int_uniform(0, CLUSTERS_SIZE - 1);
         }
-        People[try_person_i].set_current_status(Status::Recovered);
-        People[try_person_i].set_new_status(Status::Recovered);
-        chosen_people_i.push_back(try_person_i);
-        --nR;
-    }
 
+        I_people[chosen_label] += people_block;
+        I_people_left -= people_block;
+    }
+    //set the remainder
+    chosen_label = engine.int_uniform(0, CLUSTERS_SIZE - 1);
+    //make sure the corresponding cluster has enough People available to set
+    while(Clusters[chosen_label].population_size() < (E_people[chosen_label] + I_people[chosen_label] + I_people_left ))
+    {
+        chosen_label = engine.int_uniform(0, CLUSTERS_SIZE - 1);
+    }
+    I_people[chosen_label] += I_people_left;
+
+    //R Individuals
+    std::array<int,CLUSTERS_SIZE> R_people{};
+    int R_people_left = R;
+    while(R_people_left > people_block)
+    {
+        chosen_label = engine.int_uniform(0, CLUSTERS_SIZE - 1);
+        //make sure the corresponding cluster has enough People available to set
+        while(Clusters[chosen_label].population_size() < (E_people[chosen_label] + I_people[chosen_label] + R_people[chosen_label] + people_block))
+        {
+            chosen_label = engine.int_uniform(0, CLUSTERS_SIZE - 1);
+        }
+        R_people[chosen_label] += people_block;
+        R_people_left -= people_block;
+    }
+    //set the remainder
+    chosen_label = engine.int_uniform(0, CLUSTERS_SIZE - 1);
+    //make sure the corresponding cluster has enough People available to set
+    while(Clusters[chosen_label].population_size() < (E_people[chosen_label] + I_people[chosen_label] + R_people[chosen_label] + R_people_left))
+    {
+        chosen_label = engine.int_uniform(0, CLUSTERS_SIZE - 1);
+    }
+    R_people[chosen_label] += R_people_left;
+
+    //now setting E,I,R status to the selected people through cluster.People_i
+    for (int cl_index = 0; cl_index < CLUSTERS_SIZE;++cl_index)
+    {
+        Cluster& curr_cluster = Clusters[cl_index];
+        int E_people_to_set = E_people[cl_index];
+        int I_people_to_set = I_people[cl_index];
+        int R_people_to_set = R_people[cl_index];
+        int starting_index = 0;
+
+        for (int i = 0; i < E_people_to_set; ++i)
+        {
+            People[curr_cluster.People_i[i]].set_current_status(Status::Exposed);
+            People[curr_cluster.People_i[i]].set_new_status(Status::Exposed);
+        }
+        //starting_index people have already been setted in this cluster People_i, so start from starting_index + 1
+        starting_index = E_people_to_set;
+        for (int i = starting_index; i < I_people_to_set + starting_index; ++i)
+        {
+            People[curr_cluster.People_i[i]].set_current_status(Status::Infected);
+            People[curr_cluster.People_i[i]].set_new_status(Status::Infected);
+        }
+        //starting_index people have already been setted in this cluster People_i, so start from starting_index + 1
+        starting_index = E_people_to_set + I_people_to_set;
+        for (int i = starting_index; i < R_people_to_set + starting_index; ++i)
+        {
+            People[curr_cluster.People_i[i]].set_current_status(Status::Recovered);
+            People[curr_cluster.People_i[i]].set_new_status(Status::Recovered);
+        }
+    }
 }
 /////////////////////////////////////////////////////
 ////////         WORLD GENERATION             ///////

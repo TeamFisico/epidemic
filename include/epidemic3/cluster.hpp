@@ -57,7 +57,7 @@ class Cluster
     double upper_y() const { return limits[3]; }
     int lower_index() const { return wpts_range[0]; }
     int upper_index() const { return wpts_range[1]; }
-    unsigned int population_size() const { return People_i.size(); }
+    int population_size() const { return People_i.size(); }
     Data get_data() const { return data; }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
     void set_limits();

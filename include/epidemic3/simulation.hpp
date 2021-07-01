@@ -44,7 +44,7 @@ class Simulation
     void spread();                    // spread the disease
     void simulate();                  // simulate
     Data get_simulation_data() const; // return simulation data
-    void initialise_people_status(int E, int I, int R);
+    void initialize_people_status(int E, int I, int R);
     double get_side() const { return side; }
     void update_zones(); // check the numbers of the epidemic and change Zones color
     void update_data();  // update simulation data
