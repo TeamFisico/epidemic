@@ -25,7 +25,7 @@ void mobility_model::next_location(Random& rng)
     if(going_home){ //called when person is at home with target location home
         at_home = true;
         going_home = false;
-        stay = rng.rand_stay(); //TODO set random stay from 2 to 5, to change into the power rule
+        stay = rng.rand_stay();
     }
     if (Path.empty())
     { // if Path vector empty select home

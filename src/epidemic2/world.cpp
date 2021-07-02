@@ -72,7 +72,7 @@ World::World(double Side_length, int number_of_clusters, int number_of_location,
     //R Individuals
     std::vector<int> R_pop_num(number_of_clusters,0);
     int R_pop_left = R;
-    while(E_pop_left > 10){
+    while(R_pop_left > 10){
         R_pop_num.operator[](rng.int_uniform(0, number_of_clusters - 1)) += 10;
         R_pop_left -= 10;
     }

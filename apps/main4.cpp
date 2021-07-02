@@ -64,23 +64,43 @@ int main(int argc, char *argv[])
     std::chrono::duration<float> duration = end - start;
     std::cout << "Generation and first movement : " << duration.count() << " s " << std::endl;
 
+    auto start1 = std::chrono::high_resolution_clock::now();
+    auto start2= std::chrono::high_resolution_clock::now();
+
+    auto end1= std::chrono::high_resolution_clock::now();
+    auto end2= std::chrono::high_resolution_clock::now();
+
+    double move_count;
+    double spread_count;
+
     std::vector<Data> result{};
     std::vector<Position> positions{};
     std::vector<bool> at_home{};
     for(int i = 0; i < 50; ++i){
+        move_count = 0;
+        spread_count = 0;
         start = std::chrono::high_resolution_clock::now();
         for(int j = 0; j < 10; ++j){
+            start1 = std::chrono::high_resolution_clock::now();
             prova.move();
+            end1 = std::chrono::high_resolution_clock::now();
+            start2 = std::chrono::high_resolution_clock::now();
             prova.spread();
+            end2 = std::chrono::high_resolution_clock::now();
             prova.update_Condition();
             result.push_back(prova.get_data());
             positions.push_back(prova.person_pos(0,0));
             at_home.push_back(prova.at_home(0,0));
+
+            std::chrono::duration<float> duration1 = end1 - start1;
+            std::chrono::duration<float> duration2 = end2 - start2;
+            move_count += duration1.count();
+            spread_count += duration2.count();
         }
         prova.update_Colors();
         end = std::chrono::high_resolution_clock::now();
         duration = end - start;
-        std::cout << i+1 <<"-nth Cycle : " << duration.count() << " s " << std::endl;
+        std::cout << i+1 <<"-nth Cycle : " << duration.count() << " s " << "   Move: " << move_count << " s " << "   Spread: " << spread_count << " s " << std::endl;
     }
 
     std::ofstream out{"output.txt"};
