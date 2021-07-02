@@ -10,8 +10,8 @@ int main(){
     auto start = std::chrono::high_resolution_clock::now();
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> duration{};
-    Simulation prova{25000 ,3, 200, 4, 5, 1000, 800,0.1,0.02,0.1,1,20,10};
-    sf::RenderWindow window(sf::VideoMode(800, 800), "My window");
+    Simulation prova{19000 ,3, 200, 4, 5, 1500, 1200,0.1,0.02,0.1,1,20,10};
+    sf::RenderWindow window(sf::VideoMode(1200, 1200), "My window");
     window.display();
     sf::VertexArray locations(sf::Triangles, 24*prova.get_world().number_of_locations());
     int count = 0;
