@@ -1,35 +1,28 @@
 ############################# 1ST PART   ################################
 
-set(HEADER_LIST1 "${epidemic_SOURCE_DIR}/include/epidemic1/SEIR.hpp"
-                 "${epidemic_SOURCE_DIR}/include/epidemic1/SEIRode.hpp")
+set(HEADER_LIST_SEIR   "${epidemic_SOURCE_DIR}/include/epidemic1/seir.hpp"
+                       "${epidemic_SOURCE_DIR}/include/epidemic1/seir_rks.hpp")
 
-add_subdirectory(epidemic1)
-
-############################# 2ND PART   ################################
-
-set(HEADER_LIST2  "${epidemic_SOURCE_DIR}/include/epidemic2/position.hpp"
-                  "${epidemic_SOURCE_DIR}/include/epidemic2/person.hpp"
-                  "${epidemic_SOURCE_DIR}/include/epidemic2/simulation.hpp")
-
-add_subdirectory(epidemic2)
+add_subdirectory(seir)
 
 
-set(HEADER_LIST3  "${epidemic_SOURCE_DIR}/include/epidemic3/location.hpp"
-                  "${epidemic_SOURCE_DIR}/include/epidemic3/group.hpp"
-                  "${epidemic_SOURCE_DIR}/include/epidemic3/cluster.hpp"
-                  "${epidemic_SOURCE_DIR}/include/epidemic3/person.hpp"
-                  "${epidemic_SOURCE_DIR}/include/epidemic3/mobility_model.hpp")
+set(HEADER_LIST_SIM    "${epidemic_SOURCE_DIR}/include/simulation/random.hpp"
+                       "${epidemic_SOURCE_DIR}/include/simulation/randutils.hpp"
+                       "${epidemic_SOURCE_DIR}/include/simulation/parameters.hpp"
+                       "${epidemic_SOURCE_DIR}/include/simulation/position.hpp"
+                       "${epidemic_SOURCE_DIR}/include/simulation/location.hpp"
+                       "${epidemic_SOURCE_DIR}/include/simulation/rectangle.hpp"
+                       "${epidemic_SOURCE_DIR}/include/simulation/group.hpp"
+                       "${epidemic_SOURCE_DIR}/include/simulation/cluster.hpp"
+                       "${epidemic_SOURCE_DIR}/include/simulation/world.hpp"
+                       "${epidemic_SOURCE_DIR}/include/simulation/person.hpp"
+                       "${epidemic_SOURCE_DIR}/include/simulation/mobility_model.hpp"
+                       "${epidemic_SOURCE_DIR}/include/simulation/simulation.hpp")
 
-add_subdirectory(epidemic3)
-# IDE will put headers in a nice way
+add_subdirectory(simulation)
 
-########## COMMON RANDOM LIBRARY  #############
-add_library(random random.cpp "${epidemic_SOURCE_DIR}/include/random.hpp")
-target_include_directories(random PUBLIC ../../include)
-target_compile_features(random PUBLIC cxx_std_17)
-target_compile_options(random PRIVATE -Wall -Wextra -fsanitize=address)
-target_link_options(random PRIVATE -fsanitize=address)
-target_clangformat_setup(random) ##allow for code formatting
+
+
 
 
 

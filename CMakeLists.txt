@@ -57,9 +57,6 @@ else()
     include("${ROOT_DIR}/RootMacros.cmake")
 endif()
 
-
-add_subdirectory(include/epidemic3)
-
 # The compiled library code is here
 add_subdirectory(src)
 
