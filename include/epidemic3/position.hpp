@@ -4,6 +4,7 @@
 #define PI 3.14159265358979323846 // pi
 
 #include "../random.hpp"
+
 namespace smooth_simulation
 {
 class Position
@@ -18,8 +19,6 @@ class Position
 
     double get_X() const { return x; }
     double get_Y() const { return y; }
-    void set_x(double X) { x = X; }
-    void set_y(double Y) { y = Y; }
 
     double distance_to(Position const& other_pos) const;
     bool in_radius(Position const& other_pos, double r) const;
@@ -31,5 +30,9 @@ bool operator==(const Position& p1, const Position& p2);
 Position generate_close_position(Position const& center, double max_distance,Random& engine);
 
 } // namespace smooth_simulation
+
+
+
+
 
 #endif // POSITION_HPP

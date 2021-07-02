@@ -69,16 +69,15 @@ class Cluster
     void set_lower_index(int n) { wpts_range[0] = n; }
     void set_upper_index(int n) { wpts_range[1] = n; }
     void add_person_i(int person_i) { People_i.push_back(person_i); }
-    void remove_person_i(int person_i);
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
-    void move_white(Random& engine);
+    void move_white(bool is_first_step,Random& engine);
     void move_yellow(Random& engine);
     void move_orange(Random& engine);
     void move_red(Random& engine);
     void update_data();
     void generate_groups(Random& engine); // determine the n. of waypoints associated to every group
     void partition_in_groups(Random& engine);
-    void move(Random& engine); // move people belonging to this cluster
+    void move(bool first_step,Random& engine); // move people belonging to this cluster
     void clear_dead_people();  // removes dead people indeces from People_i -->won't be considered anymore
 };
 void generate_groups(Cluster const& cluster, Random& engine); // determine the n. of waypoints associated to every group

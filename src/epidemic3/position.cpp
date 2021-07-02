@@ -80,4 +80,18 @@ Position generate_close_position(Position const& center, double max_distance,Ran
     return gen_pos;
 }
 
+
 } // namespace smooth_simulation
+
+
+
+
+
+
+
+
+
+
+
+
+

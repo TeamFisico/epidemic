@@ -8,6 +8,14 @@ target_compile_options(cluster3 PRIVATE -Wall -Wextra -fsanitize=address)
 target_link_options(cluster3 PRIVATE -fsanitize=address)
 target_clangformat_setup(cluster3) ##allow for code formatting
 
+########## RECTANGLE  #############
+add_library(rectangle3 rectangle.cpp ${HEADER_LIST3})
+target_include_directories(rectangle3 PUBLIC ../../include/epidemic3)
+target_compile_features(rectangle3 PUBLIC cxx_std_17)
+target_compile_options(rectangle3 PRIVATE -Wall -Wextra -fsanitize=address)
+target_link_options(rectangle3 PRIVATE -fsanitize=address)
+target_clangformat_setup(rectangle3) ##allow for code formatting
+
 ########## GROUP  #############
 add_library(group3 group.cpp ${HEADER_LIST3})
 target_include_directories(group3 PUBLIC ../../include/epidemic3)

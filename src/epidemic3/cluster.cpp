@@ -47,12 +47,12 @@ Cluster::Cluster()
 /////////////////////////////////////////////////////
 void Cluster::generate_groups(Random& engine)
 {
-    int const max_size = MAXIMUM_GROUP_PROBABILITY * sz;
+    int max_size = static_cast<int>(MAXIMUM_GROUP_PROBABILITY * sz);
     int all_groups_size = 0;
     int group_index = 0;
 
     assert(Groups.size() == 0);
-
+    if (max_size == 0) max_size = 1;
     // TODO consider reserving space for cluster.Groups
     int current;
     for (int i = 0; i < sz; ++i)
@@ -136,12 +136,12 @@ void Cluster::set_limits()
 /////////////////////////////////////////////////////
 ////////     MOVE PEOPLE IN THIS CLUSTER      ///////
 /////////////////////////////////////////////////////
-void Cluster::move(Random& engine)
+void Cluster::move(bool is_first_step,Random& engine)
 {
     switch (zone)
     {
     case Zone::White:
-        move_white(engine);
+        move_white(is_first_step,engine);
         break;
     case Zone::Yellow:
         move_yellow(engine);
@@ -157,19 +157,19 @@ void Cluster::move(Random& engine)
 /////////////////////////////////////////////////////
 ////////     MOVE PEOPLE IN WHITE CLUSTER     ///////
 /////////////////////////////////////////////////////
-void Cluster::move_white(Random& engine)
+void Cluster::move_white(bool is_first_step,Random& engine)
 {
     for (auto& p_i : People_i)
     {
         Person& curr_person = Simulation::People[p_i];  //ref to current person
-        if (curr_person.is_at_home()) //the person is at homw
+        if (curr_person.is_at_home()) //the person is at home
         {
             if (!curr_person.is_staying()) //the person can move
             {
                 if (!engine.try_event(WHITE_HOME_PROBABILITY))
                 {
                     curr_person.set_is_at_home(false);
-                    curr_person.pathfinder_white(engine);
+                    curr_person.pathfinder_white(engine.rounded_gauss(4,1)+1,engine);
                 }
                 else //has to stay home(based on probability)
                 {
@@ -195,6 +195,8 @@ void Cluster::move_white(Random& engine)
         }
         else  //the person is not at a place
         {
+            //al secondo step ci vuole next location
+            if (is_first_step){ curr_person.next_location(engine); }
             curr_person.move(engine);
         }
     }
@@ -214,7 +216,7 @@ void Cluster::move_yellow(Random& engine)
                 if (!engine.try_event(YELLOW_HOME_PROBABILITY))
                 {
                     curr_person.set_is_at_home(false);
-                    curr_person.pathfinder_yellow(engine);
+                    curr_person.pathfinder_non_white(engine.rounded_gauss(2,0.5)+1,engine);
                 }
                 else //has to stay home(based on probability)
                 {
@@ -259,7 +261,7 @@ void Cluster::move_orange(Random& engine)
                 if (!engine.try_event(ORANGE_HOME_PROBABILITY))
                 {
                     curr_person.set_is_at_home(false);
-                    curr_person.pathfinder_orange(engine);
+                    curr_person.pathfinder_non_white(engine.rounded_gauss(1,0.3)+1,engine);
                 }
                 else //has to stay home(based on probability)
                 {
@@ -304,7 +306,7 @@ void Cluster::move_red(Random& engine)
                 if (!engine.try_event(RED_HOME_PROBABILITY))
                 {
                     curr_person.set_is_at_home(false);
-                    curr_person.pathfinder_red(engine);
+                    curr_person.pathfinder_non_white(engine.rounded_gauss(0,0.2)+1,engine);
                 }
                 else //has to stay home(based on probability)
                 {
@@ -334,10 +336,7 @@ void Cluster::move_red(Random& engine)
         }
     }
 }
-void Cluster::remove_person_i(int person_i)
-{
-    remove_by_value<int>(People_i,person_i);
-}
+
 /////////////////////////////////////////////////////
 /////    REMOVE DEAD PEOPLE FROM THIS CLUSTER   /////
 /////////////////////////////////////////////////////

@@ -56,10 +56,27 @@ target_link_libraries(app3 PRIVATE   position3
                                      group3
                                      cluster3
                                      simulation3
-                                     clock3
+#                                     rectangle3
                                      random)
 target_include_directories(app3 PUBLIC "${PROJECT_BINARY_DIR}" ../include/epidemic3
                                                                ../include)
 target_link_libraries(app3 PUBLIC ${ROOT_LIBRARIES} ${ROOT_EXE_LINKER_FLAGS})
 target_clangformat_setup(app3) ##allow for code formatting
 
+add_executable(app3-sfml main3-sfml.cpp)
+
+target_compile_features(app3-sfml PRIVATE cxx_std_17)
+target_compile_options(app3-sfml PRIVATE -Wall -Wextra -fsanitize=address)
+target_link_options(app3-sfml PRIVATE -fsanitize=address)
+target_link_libraries(app3-sfml PRIVATE  position3
+                                         location3
+                                         person3
+                                         group3
+                                         cluster3
+                                         simulation3
+#                                         rectangle3
+                                         random)
+target_link_libraries(app3-sfml PRIVATE sfml-graphics)
+target_include_directories(app3-sfml PUBLIC "${PROJECT_BINARY_DIR}"
+        ../include/epidemic3)
+target_clangformat_setup(app3-sfml) ##allow for code formatting

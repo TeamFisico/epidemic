@@ -21,7 +21,7 @@ set(HEADER_LIST3  "${epidemic_SOURCE_DIR}/include/epidemic3/parameters.hpp"
                   "${epidemic_SOURCE_DIR}/include/epidemic3/cluster.hpp"
                   "${epidemic_SOURCE_DIR}/include/epidemic3/person.hpp"
                   "${epidemic_SOURCE_DIR}/include/epidemic3/simulation.hpp"
-                  "${epidemic_SOURCE_DIR}/include/epidemic3/clock.hpp"
+                  "${epidemic_SOURCE_DIR}/include/epidemic3/rectangle.hpp"
                   "${epidemic_SOURCE_DIR}/include/random.hpp")
 
 add_subdirectory(epidemic3)

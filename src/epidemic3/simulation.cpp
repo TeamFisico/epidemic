@@ -2,8 +2,159 @@
 #include <fstream>
 #include <iostream>
 
+
+
+std::vector<double> total_spread{};
+std::vector<double> spread_infectedd{};
+std::vector<double> spread_exposedd{};
+std::vector<double> close_people{};
+std::vector<double> close_people_cluster{};
+int times_close_people_called;
+int times_close_cluster_people_called;
+int times_total_spread_called;
+int times_spread_infected_called;
+int times_spread_exposed_called;
+
 namespace smooth_simulation
 {
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////      BENCHMARKING CLASSES                ///////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+class ClosePeople
+{
+  private:
+    std::chrono::time_point<std::chrono::high_resolution_clock> m_StartTimepoint;
+  public:
+    ClosePeople()
+    {
+        m_StartTimepoint = std::chrono::high_resolution_clock::now();
+    }
+    void Stop()
+    {
+        auto endTimepoint = std::chrono::high_resolution_clock::now();
+        auto start = std::chrono::time_point_cast<std::chrono::microseconds>(m_StartTimepoint).time_since_epoch().count();
+        auto end = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch().count();
+
+        auto duration = end - start;
+        double ms = duration * 0.001;
+        ++times_close_people_called;
+        close_people.push_back(ms);
+    }
+    ~ClosePeople()
+    {
+        Stop();
+    }
+};
+
+class SpreadTimer
+{
+  private:
+    std::chrono::time_point<std::chrono::high_resolution_clock> m_StartTimepoint;
+  public:
+    SpreadTimer()
+    {
+        m_StartTimepoint = std::chrono::high_resolution_clock::now();
+    }
+    void Stop()
+    {
+        auto endTimepoint = std::chrono::high_resolution_clock::now();
+        auto start = std::chrono::time_point_cast<std::chrono::microseconds>(m_StartTimepoint).time_since_epoch().count();
+        auto end = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch().count();
+
+        auto duration = end - start;
+        double ms = duration * 0.001;
+        ++times_total_spread_called;
+        total_spread.push_back(ms);
+    }
+    ~SpreadTimer()
+    {
+        Stop();
+    }
+};
+class SpreadExposed
+{
+  private:
+    std::chrono::time_point<std::chrono::high_resolution_clock> m_StartTimepoint;
+  public:
+    SpreadExposed()
+    {
+        m_StartTimepoint = std::chrono::high_resolution_clock::now();
+    }
+    void Stop()
+    {
+        auto endTimepoint = std::chrono::high_resolution_clock::now();
+        auto start = std::chrono::time_point_cast<std::chrono::microseconds>(m_StartTimepoint).time_since_epoch().count();
+        auto end = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch().count();
+
+        auto duration = end - start;
+        double ms = duration * 0.001;
+        ++times_spread_exposed_called;
+        spread_exposedd.push_back(ms);
+    }
+    ~SpreadExposed()
+    {
+        Stop();
+    }
+};
+class SpreadInfected
+{
+  private:
+    std::chrono::time_point<std::chrono::high_resolution_clock> m_StartTimepoint;
+  public:
+    SpreadInfected()
+    {
+        m_StartTimepoint = std::chrono::high_resolution_clock::now();
+    }
+    void Stop()
+    {
+        auto endTimepoint = std::chrono::high_resolution_clock::now();
+        auto start = std::chrono::time_point_cast<std::chrono::microseconds>(m_StartTimepoint).time_since_epoch().count();
+        auto end = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch().count();
+
+        auto duration = end - start;
+        double ms = duration * 0.001;
+        ++times_spread_infected_called;
+        spread_infectedd.push_back(ms);
+    }
+    ~SpreadInfected()
+    {
+        Stop();
+    }
+};
+class ClosePeopleCluster
+{
+  private:
+    std::chrono::time_point<std::chrono::high_resolution_clock> m_StartTimepoint;
+  public:
+    ClosePeopleCluster()
+    {
+        m_StartTimepoint = std::chrono::high_resolution_clock::now();
+    }
+    void Stop()
+    {
+        auto endTimepoint = std::chrono::high_resolution_clock::now();
+        auto start = std::chrono::time_point_cast<std::chrono::microseconds>(m_StartTimepoint).time_since_epoch().count();
+        auto end = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch().count();
+
+        auto duration = end - start;
+        double ms = duration * 0.001;
+        ++times_close_cluster_people_called;
+        close_people_cluster.push_back(ms);
+    }
+    ~ClosePeopleCluster()
+    {
+        Stop();
+    }
+};
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////    WORLD CREATION  ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -455,6 +606,9 @@ Simulation::Simulation(double side, double spread_radius, double alpha, double b
 /////////////////////////////////////////////////////
 void Simulation::close_people_fill(const Person& current_person, std::vector<int>& close_people_i)
 {
+    ///////// BENCHMARKING ///////////
+    ClosePeople c{};
+    //////////////////////////////////
     close_people_i.clear();
     for (auto& cl : Clusters) // loop over clusters
     {
@@ -481,6 +635,9 @@ void Simulation::close_people_fill(const Person& current_person, std::vector<int
 /////////////////////////////////////////////////////
 void Simulation::close_cluster_people_fill(const Person& current_person, std::vector<int>& close_people_i)
 {
+    ///////// BENCHMARKING ///////////
+    ClosePeopleCluster c{};
+    //////////////////////////////////
     close_people_i.clear();
     for (int& person_i : Clusters[current_person.label].People_i) // loop over people in this person's cluster indeces
     {
@@ -498,11 +655,11 @@ void Simulation::close_cluster_people_fill(const Person& current_person, std::ve
 /////////////////////////////////////////////////////
 ////////            MOVE PEOPLE               ///////
 /////////////////////////////////////////////////////
-void Simulation::move()
+void Simulation::move(bool is_first_movement)
 {
-    for (auto& c : Clusters)
+    for (auto& cl : Clusters)
     {
-        c.move(engine);
+        cl.move(is_first_movement,engine);
     }
 }
 /////////////////////////////////////////////////////
@@ -510,6 +667,7 @@ void Simulation::move()
 /////////////////////////////////////////////////////
 void Simulation::spread_exposed(Person& person)
 {
+    SpreadExposed s{};
     // determine if this person will be able to be infected
     if (engine.try_event(alpha))
     {
@@ -521,6 +679,9 @@ void Simulation::spread_exposed(Person& person)
 /////////////////////////////////////////////////////
 void Simulation::spread_infected(Person& person,std::vector<int>& close_people_indeces_v)
 {
+    /////////// BENCHMARKING ///
+    SpreadInfected s{};
+    /////////////////////////////
     if (!person.at_home) // the person is not at home
     {
         if (Clusters[person.label].zone_type() == Zone::White) // the cluster is white
@@ -631,6 +792,7 @@ Data Simulation::get_simulation_data() const
 /////////////////////////////////////////////////////
 void Simulation::spread()
 {
+    SpreadTimer s{};
     std::vector<int> close_people_i; // contains close people indeces
 
     for (auto& cl : Clusters) // loop over clusters
@@ -668,7 +830,7 @@ void Simulation::simulate()
         auto start = std::chrono::high_resolution_clock::now();
         for (int steps = 1; steps < UPDATE_ZONES_INTERVAL; ++steps) // do 1 block
         {
-            move();
+            move(false);
             spread();
         }
         auto end = std::chrono::high_resolution_clock::now();
@@ -707,6 +869,52 @@ void Simulation::set_clusters_bounds_indeces()
         lower_index = upper_index + 1; // the upper becomes now lower for the next
     }                                  // end for
 }
+//////////////////////////////////////////
+///temporarily used to benchmark
+void Simulation::benchmarking()
+{
 
+
+
+    int n_blocks = 33;
+    update_data();
+    for (int j = 1; j < n_blocks; ++j)
+    {
+        for (int i = 0; i < UPDATE_ZONES_INTERVAL; ++i)
+        {
+            move(false);
+            spread();
+        }
+        update_data();
+        update_zones();
+    }
+
+    std::ofstream output {"timing.txt"};
+
+
+    double sum_close_people_cluster = std::accumulate(std::begin(close_people_cluster),std::end(close_people_cluster),0.000);
+    double sum_close_people = std::accumulate(std::begin(close_people),std::end(close_people),0.000);
+    double sum_exposed = std::accumulate(std::begin(spread_exposedd),std::end(spread_exposedd),0.000);
+    double sum_infected = std::accumulate(std::begin(spread_infectedd),std::end(spread_infectedd),0.000);
+    double sum_spread = std::accumulate(std::begin(total_spread),std::end(total_spread),0.000);
+
+    double total_steps = n_blocks * UPDATE_ZONES_INTERVAL;
+
+    output << "CLOSE PEOPLE IN CLUSTER\nCalled " <<times_close_cluster_people_called<<" times\n";
+    output << "Total time = " << sum_close_people_cluster<<"ms"<<std::endl;
+    output << "Mean time per call = " << (sum_close_people_cluster / times_close_cluster_people_called) <<"ms"<< std::endl;
+    output << "CLOSE PEOPLE EVERYWHERE\nCalled " <<times_close_people_called<<" times\n";
+    output << "Total time = " << sum_close_people<<"ms"<<std::endl;
+    output << "Mean time per call = " << (sum_close_people / times_close_people_called) <<"ms"<< std::endl;
+    output << "SPREAD EXPOSED\nCalled " <<times_spread_exposed_called<<" times\n";
+    output << "Total time = " << sum_exposed<<"ms"<<std::endl;
+    output << "Mean time per call = " << (sum_exposed / times_spread_exposed_called) << std::endl;
+    output << "SPREAD INFECTED\nCalled " <<times_spread_infected_called<<" times\n";
+    output << "Total time = " << sum_infected<<"ms"<<std::endl;
+    output << "Mean time per call = " << (sum_infected / times_spread_infected_called)<<"ms" << std::endl;
+    output << "SPREAD TOTALE\nCalled " <<times_total_spread_called<<" times\n";
+    output << "Total time = " << sum_spread<<"ms"<<std::endl;
+    output << "Mean time = " << (sum_spread / times_total_spread_called) <<"ms"<< std::endl;
+}
 
 } // namespace smooth_simulation

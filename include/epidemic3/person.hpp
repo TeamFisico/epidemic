@@ -60,25 +60,25 @@ class Person
     void update_status(); // pass to new condition
     bool at_target_location();
     void decrease_stay_counter(){ --stay_counter; }
-  private:
-
-    void remove_target_i(int target_i);
-
+    int get_path(int n ){ return Paths_i[n]; }
   public:
     void move(Random& engine);
     void next_location(Random& engine);
-    void pathfinder_white(Random& engine);
-    void pathfinder_orange(Random& engine);
-    void pathfinder_yellow(Random& engine);
-    void pathfinder_red(Random& engine);
+//    void pathfinder_white(Random& engine);
+//    void pathfinder_orange(Random& engine);
+//    void pathfinder_yellow(Random& engine);
+//    void pathfinder_red(Random& engine);
+    void pathfinder_white(int to_visit,Random& engine);
+    void pathfinder_non_white(int to_visit,Random& engine);
     void clean_path();
 };
 
 bool are_white_available(const Person& person);
 
-void weights_fill(Person const& person, std::vector<int>& white_labels, std::vector<double>& weights);
-std::vector<int> get_close_people_in_cluster(Person const& person);
-std::vector<int> get_close_people(Person const& person);
+void fill_with_weights(std::vector<double>& weights);
+//void weights_fill(Person const& person, std::vector<int>& white_labels, std::vector<double>& weights);
+//std::vector<int> get_close_people_in_cluster(Person const& person);
+//std::vector<int> get_close_people(Person const& person);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T> void remove_by_ref(std::vector<T>& vec, T& to_remove); // remove an integer(index from a vector<int>
 template<class T> void remove_by_value(std::vector<T>& vec, T to_remove); // remove an integer(index from a vector<int>

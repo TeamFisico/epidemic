@@ -1,6 +1,8 @@
 #ifndef CLOCK_HPP
 #define CLOCK_HPP
 
+#include <chrono>
+
 namespace smooth_simulation
 {
 class Clock
@@ -16,5 +18,9 @@ class Clock
 };
 
 } // namespace smooth_simulation
+
+
+
+
 
 #endif // CLOCK_HPP

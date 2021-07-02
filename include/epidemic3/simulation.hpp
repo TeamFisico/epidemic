@@ -5,10 +5,14 @@
 
 namespace smooth_simulation
 {
+//////////////////
 
+
+//////////////
 class Simulation
 {
   private:
+
     double side;          // side of the simulation area
     double spread_radius; // radius under which 2 people can infect each other
     double alpha;
@@ -40,7 +44,7 @@ class Simulation
     friend class Person;
     Simulation(double side, double spread_radius, double alpha, double beta, double gamma, double kappa, Data data);
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
-    void move();                      // move all the people
+    void move(bool is_first_movement);                      // move all the people
     void spread();                    // spread the disease
     void simulate();                  // simulate
     Data get_simulation_data() const; // return simulation data
@@ -49,12 +53,16 @@ class Simulation
     void update_zones(); // check the numbers of the epidemic and change Zones color
     void update_data();  // update simulation data
     void clear_dead_people();
+    void benchmarking();
 };
 // helper functions
 double weight_function(double distance, double LATP_parameter);    // weight function of LATP algorithm
 bool check_group(Group const& group, Position try_position);       // helper function for first_group_step()
 bool check_cluster(Cluster const& cluster, Position try_position); // helper function for first_group_step()
 bool check_labeled_clusters(int label, Position try_position);     // helper function for first_group_step()
+
+
+
 } // namespace smooth_simulation
 
 #endif // SIMULATION_HPP

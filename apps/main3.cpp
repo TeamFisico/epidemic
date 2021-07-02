@@ -12,52 +12,36 @@
 
 using namespace smooth_simulation;
 
-std::string st(Person p)
-{
-    switch (p.current_status())
-    {
-    case Status::Exposed:
-        return {"Exposed"};
-    case Status::Infected:
-        return{"Infected"};
-    case Status::Susceptible:
-        return {"Susceptible"};
-    case Status::Dead:
-         return {"Dead"};
-    }
-}
-
 int main(int argc,char* argv[])
 {
     using namespace smooth_simulation;
     using namespace std::literals::chrono_literals;
 
-    unsigned int nE = 134;
-    unsigned int nI = 6000;
+    unsigned int nE = 150;
+    unsigned int nI = 350;
     unsigned int nR = 2;
     unsigned int nS = POPULATION_SIZE - nE - nI - nR;
 
-    Simulation sim{800, 1.0, 0.025, 0.15, 0.02, 0.0005, {nS,nE,nI,nR}};
+    Simulation sim{1200, 1.0, 0.025, 0.15, 0.02, 0.0005, {nS,nE,nI,nR,0}};
+   std::ofstream o {"NYC.txt"};
+//    std::array<int,CLUSTERS_SIZE> exposed{};
+//    std::array<int,CLUSTERS_SIZE> infected{};
+//    std::array<int,CLUSTERS_SIZE> recovered{};
+//    for (auto& p : sim.People)
+//    {
+//        if (p.current_status() == Status::Exposed) ++exposed[p.home_cluster()];
+//        if (p.current_status() == Status::Infected) ++infected[p.home_cluster()];
+//        if (p.current_status() == Status::Recovered) ++recovered[p.home_cluster()];
+//    }
+//    for (int i = 0; i < CLUSTERS_SIZE; ++i)
+//    {
+//        std::cout <<"Cluster["<<i<<"]\n";
+//        std::cout <<"I == " <<infected[i]<<std::endl;
+//        std::cout <<"E == " <<exposed[i]<<std::endl;
+//        std::cout <<"R == " <<recovered[i]<<std::endl;
+//    }
 
-    std::array<int,CLUSTERS_SIZE> exposed{};
-    std::array<int,CLUSTERS_SIZE> infected{};
-    std::array<int,CLUSTERS_SIZE> recovered{};
-    for (auto& p : sim.People)
-    {
-        if (p.current_status() == Status::Exposed) ++exposed[p.home_cluster()];
-        if (p.current_status() == Status::Infected) ++infected[p.home_cluster()];
-        if (p.current_status() == Status::Recovered) ++recovered[p.home_cluster()];
-    }
-    for (int i = 0; i < CLUSTERS_SIZE; ++i)
-    {
-        std::cout <<"Cluster["<<i<<"]\n";
-        std::cout <<"I == " <<infected[i]<<std::endl;
-        std::cout <<"E == " <<exposed[i]<<std::endl;
-        std::cout <<"R == " <<recovered[i]<<std::endl;
-    }
-
-
-    //    std::ofstream o {"prova.txt"};
+//       sim.benchmarking();
 //
 //    std::vector<Data> result;
 //    double move_duration = 0;
@@ -65,7 +49,7 @@ int main(int argc,char* argv[])
 //    sim.update_data();
 //    result.push_back(sim.get_simulation_data());
 //    print_data(sim.get_simulation_data(),o);
-//    for (int j = 1; j < 50; ++j)
+//    for (int j = 1; j < 200; ++j)
 //    {
 //        move_duration = 0;
 //        spread_duration = 0;
@@ -89,8 +73,21 @@ int main(int argc,char* argv[])
 //        std::cout << "Block["<<j<<"]"<<std::endl;
 //        std::cout<<"Move -->"<<move_duration<<std::endl;
 //        std::cout << "Spread -- > "<<spread_duration<<std::endl;
-//
 //    }
+
+   sim.move();
+   sim.move();
+   int j = 0;
+   for (auto& p  : sim.People)
+   {
+      std::cout << p.get_target_i()<<std::endl;
+       ++j;
+   }
+
+
+
+//
+//
 //
 //    // ROOT CODE
 //    TApplication app("app", &argc, argv);
@@ -138,9 +135,9 @@ int main(int argc,char* argv[])
 //    c0->Modified();
 //    c0->Update();
 //    TRootCanvas *rc = (TRootCanvas *)c0->GetCanvasImp();
-//    rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
+////    rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
 //    app.Run();
-//
-//
+
+
 
 }
