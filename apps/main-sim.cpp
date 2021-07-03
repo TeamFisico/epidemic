@@ -14,48 +14,49 @@
 
 int main(int argc, char *argv[])
 {
-    using namespace sim;
+    using namespace smooth_sim;
 
-/*    auto start = std::chrono::high_resolution_clock::now();
+    /*    auto start = std::chrono::high_resolution_clock::now();
 
-    Simulation prova{25000 ,3, 25000, 4, 5, 500, 1000,0.5,0.3,0.2,0.5,20,10};
+        Simulation prova{25000 ,3, 25000, 4, 5, 500, 1000,0.5,0.3,0.2,0.5,20,10};
 
-    auto end = std::chrono::high_resolution_clock::now();
+        auto end = std::chrono::high_resolution_clock::now();
 
-    std::chrono::duration<float> duration = end - start;
-    std::cout << "Time taken : " << duration.count() << " s " << std::endl;
+        std::chrono::duration<float> duration = end - start;
+        std::cout << "Time taken : " << duration.count() << " s " << std::endl;
 
-    auto start2 = std::chrono::high_resolution_clock::now();
+        auto start2 = std::chrono::high_resolution_clock::now();
 
-    prova.move();
+        prova.move();
 
-    auto end2 = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<float> duration2 = end2 - start2;
-    std::cout << "Time taken : " << duration2.count() << " s " << std::endl;
+        auto end2 = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<float> duration2 = end2 - start2;
+        std::cout << "Time taken : " << duration2.count() << " s " << std::endl;
 
-    auto start3 = std::chrono::high_resolution_clock::now();
+        auto start3 = std::chrono::high_resolution_clock::now();
 
-    prova.move();
+        prova.move();
 
-    auto end3 = std::chrono::high_resolution_clock::now();
+        auto end3 = std::chrono::high_resolution_clock::now();
 
-    std::chrono::duration<float> duration3 = end3 - start3;
-    std::cout << "Time taken : " << duration3.count() << " s " << std::endl;
+        std::chrono::duration<float> duration3 = end3 - start3;
+        std::cout << "Time taken : " << duration3.count() << " s " << std::endl;
 
-    auto start4 = std::chrono::high_resolution_clock::now();
+        auto start4 = std::chrono::high_resolution_clock::now();
 
-    prova.spread();
+        prova.spread();
 
-    auto end4 = std::chrono::high_resolution_clock::now();
+        auto end4 = std::chrono::high_resolution_clock::now();
 
-    std::chrono::duration<float> duration4 = end4 - start4;
-    std::cout << "Time taken : " << duration4.count() << " s " << std::endl;
-*/
+        std::chrono::duration<float> duration4 = end4 - start4;
+        std::cout << "Time taken : " << duration4.count() << " s " << std::endl;
+    */
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    Simulation prova{25000 ,3, 200, 4, 5, 1000, 800,0.1,0.02,0.1,1,20,10};
-    for(int k = 0; k < 10; ++k){
+    Simulation prova{25000, 3, 200, 4, 5, 1000, 800, 0.1, 0.02, 0.1, 1, 20, 10};
+    for (int k = 0; k < 10; ++k)
+    {
         prova.move();
     }
 
@@ -65,10 +66,10 @@ int main(int argc, char *argv[])
     std::cout << "Generation and first movement : " << duration.count() << " s " << std::endl;
 
     auto start1 = std::chrono::high_resolution_clock::now();
-    auto start2= std::chrono::high_resolution_clock::now();
+    auto start2 = std::chrono::high_resolution_clock::now();
 
-    auto end1= std::chrono::high_resolution_clock::now();
-    auto end2= std::chrono::high_resolution_clock::now();
+    auto end1 = std::chrono::high_resolution_clock::now();
+    auto end2 = std::chrono::high_resolution_clock::now();
 
     double move_count;
     double spread_count;
@@ -76,11 +77,13 @@ int main(int argc, char *argv[])
     std::vector<Data> result{};
     std::vector<Position> positions{};
     std::vector<bool> at_home{};
-    for(int i = 0; i < 50; ++i){
+    for (int i = 0; i < 50; ++i)
+    {
         move_count = 0;
         spread_count = 0;
         start = std::chrono::high_resolution_clock::now();
-        for(int j = 0; j < 10; ++j){
+        for (int j = 0; j < 10; ++j)
+        {
             start1 = std::chrono::high_resolution_clock::now();
             prova.move();
             end1 = std::chrono::high_resolution_clock::now();
@@ -89,8 +92,8 @@ int main(int argc, char *argv[])
             end2 = std::chrono::high_resolution_clock::now();
             prova.update_Condition();
             result.push_back(prova.get_data());
-            positions.push_back(prova.person_pos(0,0));
-            at_home.push_back(prova.at_home(0,0));
+            positions.push_back(prova.person_pos(0, 0));
+            at_home.push_back(prova.at_home(0, 0));
 
             std::chrono::duration<float> duration1 = end1 - start1;
             std::chrono::duration<float> duration2 = end2 - start2;
@@ -100,7 +103,9 @@ int main(int argc, char *argv[])
         prova.update_Colors();
         end = std::chrono::high_resolution_clock::now();
         duration = end - start;
-        std::cout << i+1 <<"-nth Cycle : " << duration.count() << " s " << "   Move: " << move_count << " s " << "   Spread: " << spread_count << " s " << std::endl;
+        std::cout << i + 1 << "-nth Cycle : " << duration.count() << " s "
+                  << "   Move: " << move_count << " s "
+                  << "   Spread: " << spread_count << " s " << std::endl;
     }
 
     std::ofstream out{"output.txt"};
@@ -112,7 +117,8 @@ int main(int argc, char *argv[])
 
     for (int i = 0; i < positions.size(); ++i)
     {
-        out << "X = " << positions[i].get_x() << " Y = " << positions[i].get_y() << "   at home: " <<at_home[i] << std::endl;
+        out << "X = " << positions[i].get_x() << " Y = " << positions[i].get_y() << "   at home: " << at_home[i]
+            << std::endl;
     }
 
     // ROOT CODE

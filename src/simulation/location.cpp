@@ -7,7 +7,9 @@ namespace smooth_sim
 {
 // Constructor
 Location::Location(Position location_pos, double location_Radius, int cluster_index)
-    : location_pos{location_pos}, location_Radius{location_Radius}, cluster_index{cluster_index}
+    : location_pos{location_pos},
+      location_Radius{location_Radius},
+      cluster_index{cluster_index}
 {
 }
 // Default Constructor WIP
@@ -34,4 +36,4 @@ Location rand_loc(Position blh_corner, Position trh_corner, double radius, int c
 {
     return {rand_pos(blh_corner, trh_corner), radius, cluster_index};
 }
-} //namespace smooth_sim
+} // namespace smooth_sim

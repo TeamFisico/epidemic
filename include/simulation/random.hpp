@@ -35,6 +35,6 @@ class Random
     int rand_stay();
 };
 
-} // namespace smooth_simulation
+} // namespace smooth_sim
 
 #endif // RANDOM_HPP

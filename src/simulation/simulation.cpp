@@ -9,8 +9,13 @@ namespace smooth_sim
 Simulation::Simulation(int S, int E, int I, int R, int number_of_clusters, int number_of_Locations, double Side,
                        double alpha, double gamma, double beta, double spread_radius, int time_in_minutes,
                        int step_in_minutes)
-    : world{Side, number_of_clusters, number_of_Locations, S, E, I, R}, alpha{alpha}, beta{beta}, gamma{gamma},
-      spread_radius{spread_radius}, time_in_minutes{time_in_minutes}, step_in_minutes{step_in_minutes}
+    : world{Side, number_of_clusters, number_of_Locations, S, E, I, R},
+      alpha{alpha},
+      beta{beta},
+      gamma{gamma},
+      spread_radius{spread_radius},
+      time_in_minutes{time_in_minutes},
+      step_in_minutes{step_in_minutes}
 {
 }
 
@@ -30,7 +35,10 @@ void Simulation::Close_People(Person &current_person, std::vector<Person *> &clo
                     !world.Clusters().operator[](i).population().operator[](j).is_at_home())
                 { // check if person is close_enough, Susceptible and not at_home
                     close_people.push_back(
-                        &world.Clusters().operator[](i).population().operator[](j).Person_ref()); // push a pointer to the current person back to the end of the vector
+                        &world.Clusters().operator[](i).population().operator[](j).Person_ref()); // push a pointer to
+                                                                                                  // the current person
+                                                                                                  // back to the end of
+                                                                                                  // the vector
                 }
             }
         }
@@ -124,8 +132,9 @@ std::vector<Location *> Simulation::green_loc_list()
     for (int i = 0; i < world.Clusters().size(); ++i)
     {
         if (world.Clusters().operator[](i).get_color() == Color::Green)
-        {                                                                 // if cluster is green
-            for (auto a : world.Clusters().operator[](i).Location_list()) // TODO CHECK IF IS SAFE TO DO IT WITH POINTERS
+        { // if cluster is green
+            for (auto a :
+                 world.Clusters().operator[](i).Location_list()) // TODO CHECK IF IS SAFE TO DO IT WITH POINTERS
             {
                 result.push_back(a);
             }
@@ -178,7 +187,8 @@ void Simulation::spread()
                     }
                     else // if cluster is Yellow or Red
                     {
-                        Close_Cluster_People(a.Person_ref(), close_people); // susceptible people in the same Cluster near the infected that are not at home
+                        Close_Cluster_People(a.Person_ref(), close_people); // susceptible people in the same Cluster
+                                                                            // near the infected that are not at home
                     }
                     for (auto &b : close_people)
                     {
@@ -428,7 +438,8 @@ bool Simulation::at_home(int cluster_index, int person_index)
 
 void Simulation::simulate()
 {
-    // TODO set the variables based on the total simulation time and the time interval of simulation, as the speed of movement, the spreads variables, ecc..
+    // TODO set the variables based on the total simulation time and the time interval of simulation, as the speed of
+    // movement, the spreads variables, ecc..
     for (int i = 0; i < time_in_minutes / step_in_minutes; ++i)
     {
         move();   // move all people
@@ -437,4 +448,4 @@ void Simulation::simulate()
     }
 }
 
-} //namespace smooth_sim
+} // namespace smooth_sim

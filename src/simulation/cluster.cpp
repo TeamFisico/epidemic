@@ -8,7 +8,9 @@ namespace smooth_sim
 {
 
 Cluster::Cluster(int S, int E, int I, int R, int number_of_location, Rectangle Area, Color color, int cluster_index)
-    : Area{Area}, color{color}, cluster_index{cluster_index}
+    : Area{Area},
+      color{color},
+      cluster_index{cluster_index}
 {
     int N = S + E + I + R;
     Random rng;
@@ -191,4 +193,4 @@ Location *Cluster::select_location(int n)
     return &groups.operator[](group_index).Locations().operator[](n);
 }
 
-} //namespace smooth_sim
+} // namespace smooth_sim

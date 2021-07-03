@@ -9,8 +9,7 @@ Rectangle::Rectangle(Position &blh_corner, Position &trh_corner) : blh_corner{bl
 {
 }
 
-Rectangle::Rectangle()
-: blh_corner{}, trh_corner{}
+Rectangle::Rectangle() : blh_corner{}, trh_corner{}
 {
 }
 
@@ -24,7 +23,8 @@ std::vector<Rectangle> Rectangle::Split()
     std::vector<Rectangle> result;
     result.clear();
     Random rng;
-    int selected_side = rng.int_uniform(0,1);            //Select the random side to divide, if 0 select the x-axis side, if 1 select the y-axis side
+    int selected_side = rng.int_uniform(
+        0, 1); // Select the random side to divide, if 0 select the x-axis side, if 1 select the y-axis side
     // make sure that rectangle that have a side at least three times the other have the longest_side as the selected
     if ((trh_corner.get_x() - blh_corner.get_x()) <= 2 * (trh_corner.get_y() - blh_corner.get_y()))
     {
@@ -38,13 +38,13 @@ std::vector<Rectangle> Rectangle::Split()
     double max{};
     if (selected_side == 0)
     { // select the parameter to generate the coordinate for the new rectangles
-        min = (3*blh_corner.get_x() + trh_corner.get_x()) / 4;
-        max = (3*trh_corner.get_x() + blh_corner.get_x()) / 4;
+        min = (3 * blh_corner.get_x() + trh_corner.get_x()) / 4;
+        max = (3 * trh_corner.get_x() + blh_corner.get_x()) / 4;
     }
     if (selected_side == 1)
     {
-        min = (3*blh_corner.get_y() + trh_corner.get_y()) / 4;
-        max = (3*trh_corner.get_y() + blh_corner.get_y()) / 4;
+        min = (3 * blh_corner.get_y() + trh_corner.get_y()) / 4;
+        max = (3 * trh_corner.get_y() + blh_corner.get_y()) / 4;
     }
     double rnum = rng.uniform(min, max);
     if (selected_side == 0)
@@ -87,7 +87,7 @@ std::vector<Rectangle> Rectangle::Divide(int n)
         Area2.clear();
         for (auto a : result)
         { // fill the Area vector
-            Area2.push_back(a.get_area()*a.get_area());
+            Area2.push_back(a.get_area() * a.get_area());
         }
         double total_area = std::accumulate(Area2.begin(), Area2.end(), 0.);
         int index = rng.discrete(Area2);
@@ -103,4 +103,4 @@ std::vector<Rectangle> Rectangle::Divide(int n)
     }
     return result;
 }
-} //namespace smooth_sim
+} // namespace smooth_sim

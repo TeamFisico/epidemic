@@ -9,7 +9,11 @@ namespace smooth_sim
 {
 // Constructor
 mobility_model::mobility_model(Person person, int stay, double home_probability, bool at_home)
-    : person{person}, target_location{nullptr}, stay{stay}, home_probability{home_probability}, at_home{at_home},
+    : person{person},
+      target_location{nullptr},
+      stay{stay},
+      home_probability{home_probability},
+      at_home{at_home},
       going_home{false}
 {
 }
@@ -102,4 +106,4 @@ double rand_speed(double min, double max)
     Random rng;
     return rng.uniform(min, max);
 }
-} //namespace smooth_sim
+} // namespace smooth_sim

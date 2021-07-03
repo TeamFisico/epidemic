@@ -54,7 +54,8 @@ World::World(double Side_length, int number_of_clusters, int number_of_location,
             --remaining_cluster;
         }
     }
-    // create and fill 3 vectors with the number of (E,I,R respectively) individuals for each cluster, in this case use an uniform distribution that assign 10 individuals at a time(or the remaiming ones) E Individuals
+    // create and fill 3 vectors with the number of (E,I,R respectively) individuals for each cluster, in this case use
+    // an uniform distribution that assign 10 individuals at a time(or the remaiming ones) E Individuals
     std::vector<int> E_pop_num(number_of_clusters, 0);
     int E_pop_left = E;
     while (E_pop_left > 10)
@@ -176,7 +177,8 @@ int World::number_of_people()
 }
 
 void World::generate_path(int to_visit, const std::vector<double> &weights, std::vector<Location *> &path,
-                          Random &rng) // the vector weight has to be created in Simulation::move() for every cluster so that the weight of the current cluster is equal the sum of the other weights
+                          Random &rng) // the vector weight has to be created in Simulation::move() for every cluster so
+                                       // that the weight of the current cluster is equal the sum of the other weights
 {
     path.reserve(to_visit);
     // Second Method, using the cluster generate path
@@ -222,4 +224,4 @@ std::vector<Location *> generate_path(std::vector<Location *> list, double mean,
     }
     return result;
 }
-} //namespace smooth_sim
+} // namespace smooth_sim

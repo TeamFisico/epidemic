@@ -44,4 +44,4 @@ std::vector<Location *> Group::Location_list()
     }
     return result;
 }
-}//namespace smooth_sim
+} // namespace smooth_sim

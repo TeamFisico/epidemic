@@ -1,4 +1,3 @@
-############################# 1ST PART   ################################
 
 set(HEADER_LIST_SEIR   "${epidemic_SOURCE_DIR}/include/epidemic1/seir.hpp"
                        "${epidemic_SOURCE_DIR}/include/epidemic1/seir_rks.hpp")

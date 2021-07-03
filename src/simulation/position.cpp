@@ -59,4 +59,4 @@ Position rand_pos(Position blh_corner, Position trh_corner)
     return result;
 }
 
-} //namespace smooth_sim
+} // namespace smooth_sim

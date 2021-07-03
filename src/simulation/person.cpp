@@ -4,7 +4,11 @@ namespace smooth_sim
 {
 // Constructor
 Person::Person(State condition, Position pos, State new_condition, Location home, int cluster_index)
-    : condition{condition}, pos{pos}, new_condition{new_condition}, home{home}, cluster_index{cluster_index}
+    : condition{condition},
+      pos{pos},
+      new_condition{new_condition},
+      home{home},
+      cluster_index{cluster_index}
 {
 }
 // Default constructor
@@ -38,4 +42,4 @@ bool Person::at_location(Location *loc)
     return (pos.InRadius(loc->get_pos(), loc->get_radius()));
 }
 
-} //namespace smooth_sim
+} // namespace smooth_sim
