@@ -7,7 +7,8 @@
 namespace smooth_sim
 {
 
-Cluster::Cluster(int S, int E, int I, int R, int number_of_location, Rectangle Area, Color color, int cluster_index,Random wrld_engine)
+Cluster::Cluster(int S, int E, int I, int R, int number_of_location, Rectangle Area, Color color, int cluster_index,
+                 Random const &wrld_engine)
     : Area{Area},
       color{color},
       cluster_index{cluster_index},
@@ -20,8 +21,8 @@ Cluster::Cluster(int S, int E, int I, int R, int number_of_location, Rectangle A
     for (int i = 0; i < N;)
     {
         int home_pop = cl_engine.int_uniform(1, 5); // number of people in the current home
-        Location current_home = rand_loc(Area.get_blh_corner(), Area.get_trh_corner(), HOME_RADIUS,
-                                         cluster_index,cl_engine); // TODO add a macro for HOME_RADIUS value
+        Location current_home = rand_loc(Area.get_blh_corner(), Area.get_trh_corner(), HOME_RADIUS, cluster_index,
+                                         cl_engine); // TODO add a macro for HOME_RADIUS value
         for (int j = 0; j < home_pop && i < N; ++j)
         {
             Person curr{Status::Susceptible, current_home.get_pos(), Status::Susceptible, current_home, cluster_index};
@@ -35,18 +36,18 @@ Cluster::Cluster(int S, int E, int I, int R, int number_of_location, Rectangle A
     {
         if (i < E)
         {
-            Population[i].Person_ref().set_current_status(Status::Exposed);
-            Population[i].Person_ref().set_new_status(Status::Exposed);
+            Population[i].person_ref().set_current_status(Status::Exposed);
+            Population[i].person_ref().set_new_status(Status::Exposed);
         }
         else if (i < E + I)
         {
-            Population[i].Person_ref().set_current_status(Status::Infected);
-            Population[i].Person_ref().set_new_status(Status::Infected);
+            Population[i].person_ref().set_current_status(Status::Infected);
+            Population[i].person_ref().set_new_status(Status::Infected);
         }
         else if (i < E + I + R)
         {
-            Population[i].Person_ref().set_current_status(Status::Recovered);
-            Population[i].Person_ref().set_new_status(Status::Recovered);
+            Population[i].person_ref().set_current_status(Status::Recovered);
+            Population[i].person_ref().set_new_status(Status::Recovered);
         }
     }
     // Determine the number of groups
@@ -80,11 +81,11 @@ Cluster::Cluster(int S, int E, int I, int R, int number_of_location, Rectangle A
     // fill the group vector
     for (int i = 0; i < number_of_groups; ++i)
     {
-        groups.emplace_back(loc_num[i], gen_group_center(loc_num[i]), cluster_index,cl_engine);
+        groups.emplace_back(loc_num[i], gen_group_center(loc_num[i]), cluster_index, cl_engine);
     }
 }
 //
-//std::vector<Location *> Cluster::Location_list()
+// std::vector<Location *> Cluster::Location_list()
 //{
 //    std::vector<Location *> result;
 //    result.clear();
@@ -99,7 +100,7 @@ Cluster::Cluster(int S, int E, int I, int R, int number_of_location, Rectangle A
 //    return result;
 //}
 //
-//std::vector<Person *> Cluster::Person_list()
+// std::vector<Person *> Cluster::Person_list()
 //{
 //    std::vector<Person *> result;
 //    result.clear();
@@ -110,6 +111,14 @@ Cluster::Cluster(int S, int E, int I, int R, int number_of_location, Rectangle A
 //    return result;
 //}
 
+double Cluster::base()
+{
+    return Area.get_trh_corner().get_x() - Area.get_blh_corner().get_x();
+}
+double Cluster::height()
+{
+    return Area.get_trh_corner().get_y() - Area.get_blh_corner().get_y();
+}
 int Cluster::number_of_locations()
 {
     int sum{};
@@ -132,7 +141,8 @@ Position Cluster::gen_group_center(int num_of_loc)
     while (!end_loop)
     {
         end_loop = true;
-        new_center = rand_pos(Area.get_blh_corner(), Area.get_trh_corner(),cl_engine); // generate random center position
+        new_center =
+            rand_pos(Area.get_blh_corner(), Area.get_trh_corner(), cl_engine); // generate random center position
         for (auto &a : groups)
         { // check if this center is far enough from other groups center
             if (a.get_center().distance_to(new_center) <= (a.size() + num_of_loc) * TRANSMISSION_RANGE / 10)
@@ -196,7 +206,7 @@ Location *Cluster::select_location(int n)
             n -= size;
         }
     }
-    return& groups[group_index].Locations()[n];
+    return &groups[group_index].Locations()[n];
 }
 
 } // namespace smooth_sim

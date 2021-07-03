@@ -17,7 +17,8 @@ Location::Location(Position location_pos, double location_Radius, int cluster_in
 {
 }*/
 
-Location generate_close_loc(Position &pos, double min_distance, double max_distance, int cluster_index,Random& group_engine)
+Location generate_close_loc(Position& pos, double min_distance, double max_distance, int cluster_index,
+                            Random& group_engine)
 {
     double rangle = group_engine.uniform(0, 2 * PI);
     double rdistance = group_engine.uniform(min_distance, max_distance);
@@ -26,13 +27,13 @@ Location generate_close_loc(Position &pos, double min_distance, double max_dista
     double x = pos.get_x() + v_x;
     double y = pos.get_y() + v_y;
     Position res{x, y};
-    double radius =
-        group_engine.gauss(LOCATION_RADIUS_MEAN, LOCATION_RADIUS_DEV); // arbitrary way to generate Locatio radius, still WIP
+    double radius = group_engine.gauss(LOCATION_RADIUS_MEAN,
+                                       LOCATION_RADIUS_DEV); // arbitrary way to generate Locatio radius, still WIP
     return {res, radius, cluster_index};
 }
 
-Location rand_loc(Position blh_corner, Position trh_corner, double radius, int cluster_index,Random& cluster_engine)
+Location rand_loc(Position blh_corner, Position trh_corner, double radius, int cluster_index, Random& cluster_engine)
 {
-    return {rand_pos(blh_corner, trh_corner,cluster_engine), radius, cluster_index};
+    return {rand_pos(blh_corner, trh_corner, cluster_engine), radius, cluster_index};
 }
 } // namespace smooth_sim

@@ -6,7 +6,6 @@ add_subdirectory(seir)
 
 
 set(HEADER_LIST_SIM    "${epidemic_SOURCE_DIR}/include/simulation/random.hpp"
-                       "${epidemic_SOURCE_DIR}/include/simulation/randutils.hpp"
                        "${epidemic_SOURCE_DIR}/include/simulation/parameters.hpp"
                        "${epidemic_SOURCE_DIR}/include/simulation/position.hpp"
                        "${epidemic_SOURCE_DIR}/include/simulation/location.hpp"

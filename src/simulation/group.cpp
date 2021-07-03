@@ -3,12 +3,12 @@
 namespace smooth_sim
 {
 
-Group::Group(int number_of_locations, Position center, int cluster_index,Random cluster_engine) // TODO add TRANSMISSION_RANGE as a macro
-     :grp_engine{cluster_engine}
+Group::Group(int number_of_locations, Position center, int cluster_index, Random const &cluster_engine)
+    : grp_engine{cluster_engine}
 {
     locations.clear();
     // generate first locations
-    locations.push_back(generate_close_loc(center, 0, TRANSMISSION_RANGE / 10, cluster_index,grp_engine));
+    locations.push_back(generate_close_loc(center, 0, TRANSMISSION_RANGE / 10, cluster_index, grp_engine));
     // generate other locations with a loop
     for (int i = 1; i < number_of_locations; ++i)
     {
@@ -16,7 +16,8 @@ Group::Group(int number_of_locations, Position center, int cluster_index,Random 
         while (!is_ok)
         {
             is_ok = true;
-            Location new_loc = generate_close_loc(center, 0, (i + 1) * TRANSMISSION_RANGE / 10, cluster_index,grp_engine);
+            Location new_loc =
+                generate_close_loc(center, 0, (i + 1) * TRANSMISSION_RANGE / 10, cluster_index, grp_engine);
             for (auto a : locations)
             {
                 if (a.get_pos().distance_to(new_loc.get_pos()) < TRANSMISSION_RANGE / 10)
@@ -31,7 +32,7 @@ Group::Group(int number_of_locations, Position center, int cluster_index,Random 
     }
 }
 
-//Location *Group::get_location(int i)
+// Location *Group::get_location(int i)
 //{
 //    return &locations[i];
 //}

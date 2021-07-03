@@ -89,7 +89,7 @@ std::vector<Rectangle> Rectangle::Divide(int n)
         { // fill the Area vector
             Area2.push_back(a.get_area() * a.get_area());
         }
-        double total_area = std::accumulate(Area2.begin(), Area2.end(), 0.);
+        //        double total_area = std::accumulate(Area2.begin(), Area2.end(), 0.);
         int index = rng.discrete(Area2);
         auto it = result.begin();
         it += index;

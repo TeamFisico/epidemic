@@ -5,24 +5,19 @@ namespace smooth_sim
 // Constructor
 Person::Person(Status current_status, Position position, Status new_status, Location home, int cluster_index)
     : status{current_status},
-      pos{position},
       new_status{new_status},
+      pos{position},
       home{home},
-      cluster_index{cluster_index}
+      label{cluster_index}
 {
 }
-// Default constructor
-/*Person::Person()
-: condition{}, pos{}, newcondition{}, home{}
-{}*/
-
 
 Location *Person::get_home()
 {
     return &home;
 }
 
-void Person::pass_condition()
+void Person::update_status()
 {
     status = new_status;
 }

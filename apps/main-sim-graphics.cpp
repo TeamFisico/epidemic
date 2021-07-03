@@ -8,9 +8,9 @@ using namespace smooth_sim;
 
 int main()
 {
-    auto start = std::chrono::high_resolution_clock::now();
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<float> duration{};
+    //    auto start = std::chrono::high_resolution_clock::now();
+    //    auto end = std::chrono::high_resolution_clock::now();
+    //    std::chrono::duration<float> duration{};
     Simulation prova{25000, 3, 200, 4, 5, 1500, 1200, 0.1, 0.02, 0.4, 1, 20, 10};
     sf::RenderWindow window(sf::VideoMode(1200, 1200), "My window");
     window.display();
@@ -69,7 +69,7 @@ int main()
     int counter{};
     while (window.isOpen())
     {
-        sf::Event event;
+        sf::Event event{};
         while (window.pollEvent(event))
         {
             // "close requested" event: we close the window
@@ -78,7 +78,7 @@ int main()
         window.clear(sf::Color::Black);
         prova.move();
         prova.spread();
-        prova.update_Condition();
+        prova.update_people_status();
         if (counter % 10 == 0)
         {
             prova.update_Colors();
@@ -89,7 +89,7 @@ int main()
         for (auto& a : prova.get_world().Clusters())
         { // Draw the clusters(as rectangles)
             cluster.setSize(sf::Vector2f(a.base(), a.height()));
-            cluster.setPosition(a.area().get_blh_corner().get_x(), a.area().get_blh_corner().get_y());
+            cluster.setPosition(a.cluster_area().get_blh_corner().get_x(), a.cluster_area().get_blh_corner().get_y());
             /*switch(a.get_color()){
                 case Color::Green: cluster.setFillColor(sf::Color::Green);
                 case Color::Yellow: cluster.setFillColor(sf::Color::Yellow);
@@ -165,21 +165,21 @@ int main()
             {
                 if (!b.is_at_home())
                 {
-                    if (b.Person_ref().get_current_status() == Status::Susceptible)
+                    if (b.person_ref().get_current_status() == Status::Susceptible)
                     {
                         people[4 * count].color = sf::Color::White;
                         people[4 * count + 1].color = sf::Color::White;
                         people[4 * count + 2].color = sf::Color::White;
                         people[4 * count + 3].color = sf::Color::White;
                     }
-                    else if (b.Person_ref().get_current_status() == Status::Exposed)
+                    else if (b.person_ref().get_current_status() == Status::Exposed)
                     {
                         people[4 * count].color = sf::Color::Cyan;
                         people[4 * count + 1].color = sf::Color::Cyan;
                         people[4 * count + 2].color = sf::Color::Cyan;
                         people[4 * count + 3].color = sf::Color::Cyan;
                     }
-                    else if (b.Person_ref().get_current_status() == Status::Infected)
+                    else if (b.person_ref().get_current_status() == Status::Infected)
                     {
                         people[4 * count].color = sf::Color::Magenta;
                         people[4 * count + 1].color = sf::Color::Magenta;
@@ -193,8 +193,8 @@ int main()
                         people[4 * count + 2].color = sf::Color::Black;
                         people[4 * count + 3].color = sf::Color::Black;
                     }
-                    x_0 = b.Person_ref().get_pos().get_x();
-                    y_0 = b.Person_ref().get_pos().get_y();
+                    x_0 = b.person_ref().get_pos().get_x();
+                    y_0 = b.person_ref().get_pos().get_y();
                     people[4 * count].position = sf::Vector2f(x_0 - r, y_0 - r);
                     people[4 * count + 1].position = sf::Vector2f(x_0 + r, y_0 - r);
                     people[4 * count + 2].position = sf::Vector2f(x_0 + r, y_0 + r);

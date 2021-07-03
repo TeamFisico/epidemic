@@ -4,8 +4,9 @@
 
 namespace smooth_sim
 {
-World::World(double Side_length, int number_of_clusters, int number_of_location, int S, int E, int I, int R,Random& simulation_engine)
-      :wrld_eng{simulation_engine}
+World::World(double Side_length, int number_of_clusters, int number_of_location, int S, int E, int I, int R,
+             Random simulation_engine)
+    : wrld_eng{simulation_engine}
 {
     Position blh_corner{0, 0};
     Position trh_corner{Side_length, Side_length};
@@ -85,16 +86,17 @@ World::World(double Side_length, int number_of_clusters, int number_of_location,
     clusters.reserve(number_of_clusters);
     for (int i = 0; i < number_of_clusters; ++i)
     {
-        clusters.emplace_back(S_pop_num[i], E_pop_num[i], I_pop_num[i],R_pop_num[i], loc_num[i], cluster_areas[i], Color::Green,i,wrld_eng);
+        clusters.emplace_back(S_pop_num[i], E_pop_num[i], I_pop_num[i], R_pop_num[i], loc_num[i], cluster_areas[i],
+                              Color::Green, i, wrld_eng);
     }
 }
 
-//World::World() : Area{}, clusters{}
+// World::World() : Area{}, clusters{}
 //{
 //}
 
 /////ununsed functions
-//std::vector<Location *> World::Location_list()
+// std::vector<Location *> World::Location_list()
 //{
 //    std::vector<Location *> result;
 //    result.clear();
@@ -109,7 +111,7 @@ World::World(double Side_length, int number_of_clusters, int number_of_location,
 //    return result;
 //}
 //
-//std::vector<Person *> World::Total_Population()
+// std::vector<Person *> World::Total_Population()
 //{
 //    std::vector<Person *> result;
 //    result.clear();
@@ -124,7 +126,7 @@ World::World(double Side_length, int number_of_clusters, int number_of_location,
 //    return result;
 //}
 //
-//Cluster *World::select_cluster()
+// Cluster *World::select_cluster()
 //{
 //    // generate vector with number of locations for every cluster
 //    int total_pop = number_of_people();
@@ -175,7 +177,8 @@ int World::number_of_people()
 
 // the vector weight has to be created in Simulation::move() for every cluster so
 // that the weight of the current cluster is equal the sum of the other weights
-void World::generate_path(int to_visit, const std::vector<double> &weights, std::vector<Location *> &path,Random &simulation_engine)
+void World::generate_path(int to_visit, const std::vector<double> &weights, std::vector<Location *> &path,
+                          Random &simulation_engine)
 {
     path.reserve(to_visit);
     // Second Method, using the cluster generate path
@@ -184,21 +187,21 @@ void World::generate_path(int to_visit, const std::vector<double> &weights, std:
     {
         choose[simulation_engine.discrete(weights)] += 1;
     }
-    for (int i = 0; i < weights.size(); ++i)
+    for (unsigned long i = 0; i < weights.size(); ++i)
     {
         if (choose[i] > 0) { clusters[i].generate_path(choose[i], path, simulation_engine); }
     }
 }
 /// UNUSED
-//Cluster *World::get_cluster(int index)
+// Cluster *World::get_cluster(int index)
 //{
 //    auto it = clusters.begin();
 //    it += index;
 //    return &(*it);
 //}
-//unused function
+// unused function
 //
-//std::vector<Location *> generate_path(std::vector<Location *> list, double mean, double dev)
+// std::vector<Location *> generate_path(std::vector<Location *> list, double mean, double dev)
 //{
 //    Random rng;
 //    int to_visit = rng.rounded_gauss(mean - 1, dev) + 1; // make sure is always >= 1

@@ -18,23 +18,23 @@ class mobility_model
     bool going_home; // true if it is moving home, false otherwise
     double alpha;    // exponent of the LATP algorithm, used to calculate the next location
   public:
-    friend Person;
+    friend class Person;
     mobility_model(Person person, int stay, double home_probability, bool at_home); // Constructor
-    mobility_model();                                                               // Default constructor
-    void next_location(
-        Random& rng); // Randomly select the new location to visit; or home if you do not have anymore location to visit
+    mobility_model() = delete;                                                      // Default constructor
+    void next_location(Random& engine); // Randomly select the new location to visit; or home if you do not have anymore
+                                        // location to visit
     bool at_target_location(); // return true if the pointed person is inside pointed location Radius, return false
-                               // otherwise
-    void move(double speed, Random& rng); // move the pointed Person to the pointed target_location
+    void move(double speed, Random& engine); // move the pointed Person to the pointed target_location
     void recall_home(); // set the target_location to home. to be called when curfew start or at a cluster color change
-//    void change_home_prob(double prob);     // change home_probability
+                        //    void change_home_prob(double prob);     // change home_probability
     void not_at_home() { at_home = false; } // set at_home to false
-    bool is_at_home() { return at_home; }
-    double home_prob() { return home_probability; }
-    int& Stay() { return stay; }
+    bool is_at_home() const { return at_home; }
+    double home_prob() const { return home_probability; }
+    void decrease_stay() { --stay; }
+    int stay_time() const { return stay; }
     int cluster_index(); // return the index of the cluster in which the pointed person reside
     std::vector<Location*>& path() { return Path; }
-    Person& Person_ref() { return person; }
+    Person& person_ref() { return person; }
 };
 
 double rand_speed(double min, double max);

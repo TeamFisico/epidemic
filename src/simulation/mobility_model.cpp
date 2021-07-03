@@ -16,18 +16,13 @@ mobility_model::mobility_model(Person person, int stay, double home_probability,
 {
 }
 
-// Default Constructor WIP
-/*mobility_model::mobility_model()
-{
-}*/
-
-void mobility_model::next_location(Random& rng)
+void mobility_model::next_location(Random& engine)
 {
     if (going_home)
     { // called when person is at home with target location home
         at_home = true;
         going_home = false;
-        stay = rng.rand_stay();
+        stay = engine.rand_stay();
     }
     if (Path.empty())
     { // if Path vector empty select home
@@ -38,7 +33,7 @@ void mobility_model::next_location(Random& rng)
     { // if Path ha only one element select that element
         target_location = Path.operator[](0);
         Path.clear();
-        stay = rng.rand_stay();
+        stay = engine.rand_stay();
     }
     else // if Path vector has more than one element ran the LATP Algorithm to select next Location
     {
@@ -61,14 +56,14 @@ void mobility_model::next_location(Random& rng)
             probabilities.push_back(a / denom);
         }
         // select next_location to visit based on the probabilities vector
-        int index_result = rng.discrete(probabilities);
+        int index_result = engine.discrete(probabilities);
         target_location =
             Path.operator[](index_result); // set the target Location to the Location found using LATP algorithm
         // remove the selected location pointer from the Path vector
         auto it = Path.begin(); // generate an iterator to the star of the Path vector
         it = it + index_result; // make sure the iterator point to the selected location
         Path.erase(it);         // erase the selected Location from the Path vector
-        stay = rng.rand_stay();
+        stay = engine.rand_stay();
     }
 }
 
@@ -89,17 +84,17 @@ void mobility_model::recall_home()
     target_location = person.get_home();
 }
 
-//void mobility_model::change_home_prob(double prob)
+// void mobility_model::change_home_prob(double prob)
 //{
 //    home_probability = prob;
 //}
 
 int mobility_model::cluster_index()
 {
-    return person.get_cluster_index();
+    return person.get_label();
 }
 
-double rand_speed(double min, double max,Random& engine)
+double rand_speed(double min, double max, Random& engine)
 {
     return engine.uniform(min, max);
 }

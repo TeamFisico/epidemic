@@ -61,5 +61,9 @@ int Random::rand_stay()
     pause_time = term4;
     return round(pause_time);
 }
+double Random::rand_speed()
+{
+    return uniform(MIN_SPEED, MAX_SPEED);
+}
 
 } // namespace smooth_sim

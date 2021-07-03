@@ -11,10 +11,11 @@ class Group
     std::vector<Location> locations;
     Position center;
     Random grp_engine;
+
   public:
-    Group(int number_of_locations, Position center, int cluster_index,Random cluster_engine);
-//    Group();
-// unused   Location* get_location(int i);          // get pointer to i_nth Location
+    Group(int number_of_locations, Position center, int cluster_index, Random const& cluster_engine);
+    Group() = default;
+    // unused   Location* get_location(int i);          // get pointer to i_nth Location
     std::vector<Location*> Location_list(); // function that return pointer to all locations in the Group
     std::vector<Location>& Locations() { return locations; }
     int size() { return locations.size(); }

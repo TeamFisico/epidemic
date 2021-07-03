@@ -3,8 +3,8 @@
 #include <iomanip>
 #include <iostream>
 
+#include "lyra/lyra.hpp" // LYRA HEADER
 #include "simulation.hpp"
-#include "lyra/lyra.hpp"  // LYRA HEADER
 
 /////////  ROOT HEADERS  ///////
 #include "TApplication.h"
@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
             start2 = std::chrono::high_resolution_clock::now();
             prova.spread();
             end2 = std::chrono::high_resolution_clock::now();
-            prova.update_Condition();
+            prova.update_people_status();
             result.push_back(prova.get_data());
             positions.push_back(prova.person_pos(0, 0));
             at_home.push_back(prova.at_home(0, 0));
@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
         out << "S = " << a.S << " E = " << a.E << " I = " << a.I << " R = " << a.R << std::endl;
     }
 
-    for (int i = 0; i < positions.size(); ++i)
+    for (unsigned long i = 0; i < positions.size(); ++i)
     {
         out << "X = " << positions[i].get_x() << " Y = " << positions[i].get_y() << "   at home: " << at_home[i]
             << std::endl;
