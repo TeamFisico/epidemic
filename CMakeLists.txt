@@ -36,7 +36,7 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
     # Update submodules as needed
     option(GIT_SUBMODULE "Check submodules during build" ON)
     if(GIT_SUBMODULE)
-        message(STATUS "Submodule update")
+        message(STATUS "Update submodules of this project")
         execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                 RESULT_VARIABLE GIT_SUBMOD_RESULT)
@@ -75,10 +75,14 @@ endif()
 # The compiled library code is here
 add_subdirectory(src)
 
+#The bundled external library are here(as git submodules)
+add_subdirectory(extern)
+
 # The executable code is here
 add_subdirectory(apps)
 
 # Test code is here
+enable_testing()
 add_subdirectory(tests)
 
 

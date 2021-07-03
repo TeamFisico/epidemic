@@ -1,6 +1,5 @@
 #ifndef PARAMETERS_HPP
 #define PARAMETERS_HPP
-#include "../../configuration.h"
 
 double constexpr TRANSMISSION_RANGE = 0.5;
 double constexpr HOME_RADIUS = 0.5;

@@ -1,6 +1,6 @@
 
-set(HEADER_LIST_SEIR   "${epidemic_SOURCE_DIR}/include/epidemic1/seir.hpp"
-                       "${epidemic_SOURCE_DIR}/include/epidemic1/seir_rks.hpp")
+set(HEADER_LIST_SEIR   "${epidemic_SOURCE_DIR}/include/seir/seir1.hpp"
+                       "${epidemic_SOURCE_DIR}/include/seir/seir2.hpp")
 
 add_subdirectory(seir)
 

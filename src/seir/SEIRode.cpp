@@ -1,4 +1,4 @@
-#include "SEIRode.hpp"
+#include "seir2.hpp"
 #include <iostream>
 #include <stdexcept>
 

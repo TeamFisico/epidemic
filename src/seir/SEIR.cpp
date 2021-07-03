@@ -1,4 +1,4 @@
-#include "SEIR.hpp"
+#include "seir1.hpp"
 
 // Constructor
 sim::sim(const State &initial_state, double alpha, double beta, double gamma)

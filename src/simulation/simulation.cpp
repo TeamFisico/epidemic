@@ -1,7 +1,5 @@
 #include "simulation.hpp"
-#include "parameters.hpp"
 #include "random.hpp"
-#include <cassert>
 
 namespace smooth_sim
 {

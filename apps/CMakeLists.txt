@@ -9,6 +9,7 @@ target_compile_features(seir1 PRIVATE cxx_std_17)
 target_compile_options(seir1 PRIVATE -Wall -Wextra -fsanitize=address)
 target_link_options(seir1 PRIVATE -fsanitize=address)
 target_link_libraries(seir1 PRIVATE standard_solver)
+target_link_libraries(seir1 PRIVATE lyra)
 target_link_libraries(seir1 PUBLIC ${ROOT_LIBRARIES} ${ROOT_EXE_LINKER_FLAGS})
 target_include_directories(seir1 PUBLIC "${PROJECT_BINARY_DIR}"
                                         ../include/seir)
@@ -19,6 +20,7 @@ target_compile_features(seir2 PRIVATE cxx_std_17)
 target_compile_options(seir2 PRIVATE -Wall -Wextra -fsanitize=address)
 target_link_options(seir2 PRIVATE -fsanitize=address)
 target_link_libraries(seir2 PRIVATE runge_kutta_solver)
+target_link_libraries(seir2 PRIVATE lyra)
 target_link_libraries(seir2 PUBLIC ${ROOT_LIBRARIES} ${ROOT_EXE_LINKER_FLAGS})
 target_include_directories(seir2 PUBLIC "${PROJECT_BINARY_DIR}"
                                          ../include/seir)
@@ -38,6 +40,8 @@ target_link_libraries(sim PRIVATE  random
                                    person
                                    mobility_model
                                    simulation)
+target_link_libraries(sim PUBLIC ${ROOT_LIBRARIES} ${ROOT_EXE_LINKER_FLAGS})
+target_link_libraries(sim PRIVATE lyra)
 target_include_directories(sim PUBLIC "${PROJECT_BINARY_DIR}"
                                       ../include/simulation)
 target_clangformat_setup(sim) ##allow for code formatting
@@ -56,6 +60,7 @@ target_link_libraries(sim-graphics PRIVATE  random
                                             person
                                             mobility_model
                                             simulation)
+target_link_libraries(sim-graphics PRIVATE lyra)
 target_link_libraries(sim-graphics PRIVATE sfml-graphics)
 target_include_directories(sim-graphics PUBLIC "${PROJECT_BINARY_DIR}"
                                                ../include/simulation)

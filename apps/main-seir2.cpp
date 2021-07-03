@@ -1,5 +1,5 @@
 
-#include "SEIRode.hpp"
+#include "seir2.hpp"
 
 ////////STANDARD ///////
 #include <fstream>

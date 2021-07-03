@@ -9,10 +9,11 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "SEIR.hpp"
+#include "seir1.hpp"
 
 int main(int argc, char *argv[])
 {
+
     int pop{0};
     int sim_time{100};
     double param1{0.0}; // beta

@@ -1,10 +1,12 @@
-#include "iomanip"
-#include "simulation.hpp"
 #include <chrono>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 
-/////////  ROOT  ///////
+#include "simulation.hpp"
+#include "lyra/lyra.hpp"  // LYRA HEADER
+
+/////////  ROOT HEADERS  ///////
 #include "TApplication.h"
 #include "TCanvas.h"
 #include "TF1.h"
