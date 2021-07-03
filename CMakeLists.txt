@@ -1,7 +1,8 @@
 #to be tested with multiple versions
 cmake_minimum_required(VERSION 3.16)
+cmake_policy(VERSION 3.16)
 project(epidemic
-        VERSION 1.0
+        VERSION 3.0
         DESCRIPTION "SEIR model for an epidemic"
         LANGUAGES CXX)
 
