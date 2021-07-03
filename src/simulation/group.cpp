@@ -3,11 +3,12 @@
 namespace smooth_sim
 {
 
-Group::Group(int number_of_locations, Position center, int cluster_index) // TODO add TRANSMISSION_RANGE as a macro
+Group::Group(int number_of_locations, Position center, int cluster_index,Random cluster_engine) // TODO add TRANSMISSION_RANGE as a macro
+     :grp_engine{cluster_engine}
 {
     locations.clear();
     // generate first locations
-    locations.push_back(generate_close_loc(center, 0, TRANSMISSION_RANGE / 10, cluster_index));
+    locations.push_back(generate_close_loc(center, 0, TRANSMISSION_RANGE / 10, cluster_index,grp_engine));
     // generate other locations with a loop
     for (int i = 1; i < number_of_locations; ++i)
     {
@@ -15,7 +16,7 @@ Group::Group(int number_of_locations, Position center, int cluster_index) // TOD
         while (!is_ok)
         {
             is_ok = true;
-            Location new_loc = generate_close_loc(center, 0, (i + 1) * TRANSMISSION_RANGE / 10, cluster_index);
+            Location new_loc = generate_close_loc(center, 0, (i + 1) * TRANSMISSION_RANGE / 10, cluster_index,grp_engine);
             for (auto a : locations)
             {
                 if (a.get_pos().distance_to(new_loc.get_pos()) < TRANSMISSION_RANGE / 10)
@@ -30,17 +31,17 @@ Group::Group(int number_of_locations, Position center, int cluster_index) // TOD
     }
 }
 
-Location *Group::get_location(int i)
-{
-    return &locations.operator[](i);
-}
+//Location *Group::get_location(int i)
+//{
+//    return &locations[i];
+//}
 std::vector<Location *> Group::Location_list()
 {
     std::vector<Location *> result;
     result.clear();
     for (unsigned int i = 0; i <= locations.size(); ++i)
     {
-        result.push_back(&locations.operator[](i));
+        result.push_back(&locations[i]);
     }
     return result;
 }

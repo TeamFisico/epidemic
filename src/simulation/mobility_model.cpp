@@ -1,8 +1,6 @@
 #include "mobility_model.hpp"
-#include "parameters.hpp"
 #include "random.hpp"
 #include <cassert>
-#include <iostream>
 #include <numeric>
 
 namespace smooth_sim
@@ -79,9 +77,9 @@ bool mobility_model::at_target_location()
     return person.at_location(target_location);
 }
 
-void mobility_model::move(double speed, Random& rng)
+void mobility_model::move(double speed, Random& engine)
 {
-    person.get_pos().move_toward(target_location->get_pos(), speed, rng);
+    person.get_pos().move_toward(target_location->get_pos(), speed, engine);
 }
 
 void mobility_model::recall_home()
@@ -91,19 +89,18 @@ void mobility_model::recall_home()
     target_location = person.get_home();
 }
 
-void mobility_model::change_home_prob(double prob)
-{
-    home_probability = prob;
-}
+//void mobility_model::change_home_prob(double prob)
+//{
+//    home_probability = prob;
+//}
 
 int mobility_model::cluster_index()
 {
     return person.get_cluster_index();
 }
 
-double rand_speed(double min, double max)
+double rand_speed(double min, double max,Random& engine)
 {
-    Random rng;
-    return rng.uniform(min, max);
+    return engine.uniform(min, max);
 }
 } // namespace smooth_sim

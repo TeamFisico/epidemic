@@ -18,6 +18,7 @@ struct Data
 class Simulation
 {
   private:
+    Random sim_engine;
     World world;
     // std::vector<mobility_model> people;
     double alpha;
@@ -30,7 +31,7 @@ class Simulation
   public:
     Simulation(int S, int E, int I, int R, int number_of_clusters, int number_of_Locations, double Side, double alpha,
                double gamma, double beta, double spread_radius, int time_in_days, int step_in_minutes);
-    World &get_world() { return world; }
+    World& get_world() { return world; }
     void Close_People(Person &current_person,
                       std::vector<Person *> &close_people); // function that put in a vector pointers to all
                                                             // other inRadius Susceptible People in green clusters
@@ -40,7 +41,7 @@ class Simulation
                                               // susceptible people in the same cluster
     Data get_Cluster_data(int i);             // get the summary data from i-nth cluster
     Data get_data();                          // get the summary data.
-    std::vector<Location *> green_loc_list(); // list of locations of non_red clusters
+// unused   std::vector<Location *> green_loc_list(); // list of locations of non_red clusters
     void update_Colors();                     // Update Clusters Color based on infected population
     void spread();                            // Function that, if *this is I, check close People and try
                                               // to spread virus to close S if *this is E or I check if the

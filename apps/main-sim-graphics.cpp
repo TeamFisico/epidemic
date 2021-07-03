@@ -11,7 +11,7 @@ int main()
     auto start = std::chrono::high_resolution_clock::now();
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> duration{};
-    Simulation prova{19000, 3, 200, 4, 5, 1500, 1200, 0.1, 0.02, 0.1, 1, 20, 10};
+    Simulation prova{25000, 3, 200, 4, 5, 1500, 1200, 0.1, 0.02, 0.4, 1, 20, 10};
     sf::RenderWindow window(sf::VideoMode(1200, 1200), "My window");
     window.display();
     sf::VertexArray locations(sf::Triangles, 24 * prova.get_world().number_of_locations());
@@ -165,21 +165,21 @@ int main()
             {
                 if (!b.is_at_home())
                 {
-                    if (b.Person_ref().get_condition() == State::S)
+                    if (b.Person_ref().get_current_status() == Status::Susceptible)
                     {
                         people[4 * count].color = sf::Color::White;
                         people[4 * count + 1].color = sf::Color::White;
                         people[4 * count + 2].color = sf::Color::White;
                         people[4 * count + 3].color = sf::Color::White;
                     }
-                    else if (b.Person_ref().get_condition() == State::E)
+                    else if (b.Person_ref().get_current_status() == Status::Exposed)
                     {
                         people[4 * count].color = sf::Color::Cyan;
                         people[4 * count + 1].color = sf::Color::Cyan;
                         people[4 * count + 2].color = sf::Color::Cyan;
                         people[4 * count + 3].color = sf::Color::Cyan;
                     }
-                    else if (b.Person_ref().get_condition() == State::I)
+                    else if (b.Person_ref().get_current_status() == Status::Infected)
                     {
                         people[4 * count].color = sf::Color::Magenta;
                         people[4 * count + 1].color = sf::Color::Magenta;

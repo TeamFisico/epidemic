@@ -6,7 +6,7 @@
 
 #ifndef RANDOM_HPP
 #define RANDOM_HPP
-#include "randutils.hpp"
+#include "../../extern/randutils.hpp"
 #include <vector>
 
 using namespace randutils;
@@ -20,6 +20,7 @@ class Random
     mt19937_rng eng; // Marsenne Twister engine
   public:
     Random();                                  // engine constructor
+    Random(const Random& other_engine);   //copy constructor
     mt19937_rng engine() const { return eng; } // return the engine to perform other actions
 
     // extract one number from a distributions
@@ -28,9 +29,6 @@ class Random
     double gauss(double mean, double stddev);
     int rounded_gauss(double mean, double stddev);
     int discrete(std::vector<double> weights);
-    int piecewise(std::vector<int> nums,
-                  std::vector<double> weights); // fill a container with numbers generated according to a distribution
-                                                // (see randutils::generate)
     bool try_event(double prob);
     int rand_stay();
 };

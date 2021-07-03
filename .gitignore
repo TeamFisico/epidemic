@@ -1,4 +1,6 @@
 build
+sim_build
+test_build
 cmake-build-debug
 .idea
 *.swp

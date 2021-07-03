@@ -3,10 +3,10 @@
 namespace smooth_sim
 {
 // Constructor
-Person::Person(State condition, Position pos, State new_condition, Location home, int cluster_index)
-    : condition{condition},
-      pos{pos},
-      new_condition{new_condition},
+Person::Person(Status current_status, Position position, Status new_status, Location home, int cluster_index)
+    : status{current_status},
+      pos{position},
+      new_status{new_status},
       home{home},
       cluster_index{cluster_index}
 {
@@ -16,16 +16,6 @@ Person::Person(State condition, Position pos, State new_condition, Location home
 : condition{}, pos{}, newcondition{}, home{}
 {}*/
 
-State &Person::get_condition()
-{
-    return condition;
-}
-
-void Person::set_conditions(State cond)
-{
-    condition = cond;
-    new_condition = cond;
-}
 
 Location *Person::get_home()
 {
@@ -34,7 +24,7 @@ Location *Person::get_home()
 
 void Person::pass_condition()
 {
-    condition = new_condition;
+    status = new_status;
 }
 
 bool Person::at_location(Location *loc)

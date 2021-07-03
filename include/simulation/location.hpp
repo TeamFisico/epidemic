@@ -21,10 +21,10 @@ class Location
     const int& c_index() { return cluster_index; }
 };
 Location generate_close_loc(Position& pos, double min_distance, double max_distance,
-                            int cluster_index); // generate a new location in a random position in the circle that has
+                            int cluster_index,Random& group_engine); // generate a new location in a random position in the circle that has
                                                 // pos as a centre and max_distance as radius
 Location rand_loc(Position blh_corner, Position trh_corner, double radius,
-                  int cluster_index); // generate a random location inside the specified rectangle
+                  int cluster_index,Random& cluster_engine); // generate a random location inside the specified rectangle
 } // namespace smooth_sim
 
 #endif // LOCATION_HPP
