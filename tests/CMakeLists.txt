@@ -15,7 +15,6 @@ target_link_libraries(seir.t PRIVATE standard_solver
                                      runge_kutta_solver)
 add_test(NAME seir.t COMMAND seir.t)
 
-
 add_executable(sim.t test2.cpp $<TARGET_OBJECTS:test_main>)
 
 target_include_directories(sim.t PUBLIC ../include/simulation
