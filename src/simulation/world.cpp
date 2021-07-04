@@ -4,9 +4,12 @@
 
 namespace smooth_sim
 {
-World::World(double Side_length, int number_of_clusters, int number_of_location, int S, int E, int I, int R,
-             Random simulation_engine)
-    : wrld_eng{simulation_engine}
+
+////////////////////////////////////////////////////////
+/////               WORLD CONSTRUCTOR             //////
+////////////////////////////////////////////////////////
+World::World(double Side_length, int number_of_clusters, int number_of_location, int S, int E, int I, int R)
+    : wrld_eng{}
 {
     Position blh_corner{0, 0};
     Position trh_corner{Side_length, Side_length};
@@ -87,9 +90,18 @@ World::World(double Side_length, int number_of_clusters, int number_of_location,
     for (int i = 0; i < number_of_clusters; ++i)
     {
         clusters.emplace_back(S_pop_num[i], E_pop_num[i], I_pop_num[i], R_pop_num[i], loc_num[i], cluster_areas[i],
-                              Color::Green, i, wrld_eng);
+                              Color::Green, i,WHITE_ZONE_LATP_ALPHA);
     }
 }
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////           PRIVATE METHODS           /////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////           PUBLIC METHODS            /////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // World::World() : Area{}, clusters{}
 //{
@@ -155,30 +167,28 @@ World::World(double Side_length, int number_of_clusters, int number_of_location,
 //    return &clusters[](index_result);
 //}
 
-int World::number_of_locations()
+unsigned int World::locations_num()
 {
-    int sum{};
-    for (auto &a : clusters)
-    {
-        sum += a.number_of_locations();
-    }
-    return sum;
+    auto add_op = [&](unsigned int a,Cluster b){ return a + b.locations_num(); };
+    return std::accumulate(std::begin(clusters),std::end(clusters),0,add_op);
+//    unsigned int sum{};
+//    for (auto& a : clusters)
+//    {
+//        sum += a.number_of_locations();
+//    }
+//    return sum;
 }
 
-int World::number_of_people()
+unsigned int World::people_num()
 {
-    int sum{};
-    for (auto &a : clusters)
-    {
-        sum += a.number_of_people();
-    }
-    return sum;
+    auto add_op = [&](unsigned int a,Cluster b){ return a + b.people_num(); };
+    return std::accumulate(std::begin(clusters),std::end(clusters),0,add_op);
 }
 
 // the vector weight has to be created in Simulation::move() for every cluster so
 // that the weight of the current cluster is equal the sum of the other weights
-void World::generate_path(int to_visit, const std::vector<double> &weights, std::vector<Location *> &path,
-                          Random &simulation_engine)
+void World::generate_path(int to_visit, const std::vector<double>& weights, std::vector<Location*>& path,
+                          Random& simulation_engine)
 {
     path.reserve(to_visit);
     // Second Method, using the cluster generate path

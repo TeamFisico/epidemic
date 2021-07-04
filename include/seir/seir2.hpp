@@ -43,14 +43,14 @@ class ode
     int simulation_time() const { return t; }
     State initial_state() const { return S_0; }
 
-    State RungeKuttaSolver(const State &oldState); // returns the new state calculated
+    State RungeKuttaSolver(const State& oldState); // returns the new state calculated
                                                    // with RungeKutta 4th order method
 };
 
 // The simulation output is a vector containing the States
 using Simulation = std::vector<State>;
 
-void simulation(ode sim, Simulation &result);
+void simulation(ode sim, Simulation& result);
 
 } // namespace seir
 

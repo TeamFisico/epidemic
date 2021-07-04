@@ -11,10 +11,10 @@ int main()
     //    auto start = std::chrono::high_resolution_clock::now();
     //    auto end = std::chrono::high_resolution_clock::now();
     //    std::chrono::duration<float> duration{};
-    Simulation prova{25000, 3, 200, 4, 5, 1500, 1200, 0.1, 0.02, 0.4, 1, 20, 10};
+    Simulation prova{25000, 3, 200, 4, 5, 1500, 1200, 0.1, 0.02, 0.15, 1, 20, 10};
     sf::RenderWindow window(sf::VideoMode(1200, 1200), "My window");
     window.display();
-    sf::VertexArray locations(sf::Triangles, 24 * prova.get_world().number_of_locations());
+    sf::VertexArray locations(sf::Triangles, 24 * prova.get_world().locations_num());
     int count = 0;
     // double x_0, y_0, x_1, y_1, x_2, y_2, x_3, y_3, x_4, y_4, x_5, y_5, x_6, y_6, x_7, y_7, x_8, y_8; //points to
     // construct the various octagons
@@ -79,7 +79,7 @@ int main()
         prova.move();
         prova.spread();
         prova.update_people_status();
-        if (counter % 10 == 0)
+        if (counter % UPDATE_ZONES_INTERVAL == 0)
         {
             prova.update_Colors();
             std::cout << counter / 10 << "nth cycle" << std::endl;
@@ -155,7 +155,7 @@ int main()
         }*/
 
         // with vertex array, should be faster
-        sf::VertexArray people(sf::Quads, prova.get_world().number_of_people() * 4);
+        sf::VertexArray people(sf::Quads, prova.get_world().people_num() * 4);
         double x_0, y_0;
         r = 1;
         count = 0;

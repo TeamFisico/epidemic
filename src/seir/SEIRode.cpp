@@ -27,7 +27,7 @@ ode::ode(int population, int time, State initial_state, double beta, double alph
 //  DEFAULT CONDITIONS : POPULATION: 100000,TIME: 80 DAYS, 1 //
 //   INFECTED, BETA = 0.7, ALPHA = 0.5 , GAMMA = 0.2       //
 ///////////////////////////////////////////////////////////////
-const ode &default_ode()
+const ode& default_ode()
 {
     State df{99999, 0, 1, 0};
     static ode def{100000, 80, df, 0.7, 0.5, 0.2};
@@ -97,7 +97,7 @@ bool ode::is_valid(ode obj)
 //     RUNGE KUTTA METHOD     //
 ////////////////////////////////
 // 4TH order method with an error of O(h^5)
-State ode::RungeKuttaSolver(const State &oldState)
+State ode::RungeKuttaSolver(const State& oldState)
 // method solving solving SEIR system of differential equations
 // using Runge Kutta 4th order method
 {
@@ -168,7 +168,7 @@ State ode::RungeKuttaSolver(const State &oldState)
 ////////////////////////////////
 //     SIMULATION FUNCTION    //
 ////////////////////////////////
-void simulation(ode sim, Simulation &result)
+void simulation(ode sim, Simulation& result)
 {
     result.clear(); // empty the vector
     State current_state = sim.initial_state();

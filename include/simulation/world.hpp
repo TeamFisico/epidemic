@@ -10,21 +10,23 @@ class World
     Random wrld_eng;
 
   public:
-    World(double Side_length, int number_of_clusters, int number_of_location, int S, int E, int I, int R,
-          Random simulation_engine);
+    World(double Side_length, int number_of_clusters, int number_of_location, int S, int E, int I, int R);
     World() = delete;
+  private:
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    unsigned int size() const { return clusters.size(); }  //num of clusters in World
+    unsigned int locations_num(); // get the number of total locations in the world
+    unsigned int people_num();    // get the number of total people in the world
+    std::vector<Cluster>& Clusters() { return clusters; };
+    void generate_path(int to_visit, const std::vector<double>& weights, std::vector<Location*>& path,
+                       Random& simulation_engine);
     // unused functions
     //    std::vector<Location*> Location_list();  // get a vector of pointer to all locations in the world
     //    std::vector<Person*> Total_Population(); // get a vector of pointer to all Person in the world
     //    Cluster* select_cluster();               // randomly chose a cluster based on number of Locations
-    int number_of_locations(); // get the number of total locations in the world
-    int number_of_people();    // get the number of total people in the world
-    // unused
     //    Cluster* get_cluster(int index);         // return a pointer to index cluster
-    std::vector<Cluster>& Clusters() { return clusters; };
-    // generate path from selecting from all green clusters
-    void generate_path(int to_visit, const std::vector<double>& weights, std::vector<Location*>& path,
-                       Random& simulation_engine);
 };
 
 // unused

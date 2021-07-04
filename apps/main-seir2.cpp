@@ -14,7 +14,7 @@
 #include "TMultiGraph.h"
 #include "TRootCanvas.h"
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     using namespace seir;
 
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
             {
                 conditions = {pop, sim_time, start, param1, param2, param3};
             }
-            catch (std::runtime_error const &e)
+            catch (std::runtime_error const& e)
             {
                 std::cerr << "Runtime error: " << e.what() << std::endl;
                 return 1;
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
                  "───────├"
               << std::endl;
     int t1 = 1;
-    for (auto &a : mysimulation)
+    for (auto& a : mysimulation)
     {
         out << "S = " << a.S << " E = " << a.E << " I = " << a.I << " R = " << a.R << std::endl;
 
@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
     c0->Modified();
     c0->Update();
 
-    TRootCanvas *rc = (TRootCanvas *)c0->GetCanvasImp();
+    TRootCanvas* rc = (TRootCanvas*)c0->GetCanvasImp();
     rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
     app.Run();
 

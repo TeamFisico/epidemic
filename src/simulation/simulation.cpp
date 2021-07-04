@@ -11,7 +11,7 @@ Simulation::Simulation(int S, int E, int I, int R, int number_of_clusters, int n
                        double alpha, double gamma, double beta, double spread_radius, int time_in_minutes,
                        int step_in_minutes)
     : sim_engine{},
-      world{Side, number_of_clusters, number_of_Locations, S, E, I, R, sim_engine},
+      world{Side, number_of_clusters, number_of_Locations, S, E, I, R},
       alpha{alpha},
       beta{beta},
       gamma{gamma},
@@ -20,19 +20,28 @@ Simulation::Simulation(int S, int E, int I, int R, int number_of_clusters, int n
       step_in_minutes{step_in_minutes}
 {
 }
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////           PRIVATE METHODS           /////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////           PUBLIC METHODS            /////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////
 ////  PUBLIC METHOD: CLOSE PEOPLE ALL AROUND WORLD  ////
 ////////////////////////////////////////////////////////
-void Simulation::Close_People(Person &current_person, std::vector<Person *> &close_people)
+void Simulation::Close_People(Person& current_person, std::vector<Person*>& close_people)
 {
     close_people.clear();
-    for (auto &cl : world.Clusters())
+    for (auto& cl : world.Clusters())
     {
         if (cl.get_color() == Color::Green)
         {
-            for (auto &p : cl.population())
+            for (auto& p : cl.population())
             {
-                Position const &pos = p.person_ref().get_pos();
+                Position const& pos = p.person_ref().get_pos();
                 if (pos.InRadius(current_person.get_pos(), spread_radius) &&
                     p.person_ref().get_current_status() == Status::Susceptible &&
                     !p.is_at_home()) // check if person is close_enough, Susceptible and not at_home
@@ -46,12 +55,12 @@ void Simulation::Close_People(Person &current_person, std::vector<Person *> &clo
 ////////////////////////////////////////////////////////
 /////  PUBLIC METHOD: CLOSE PEOPLE ALL AROUND WORLD  ///
 ////////////////////////////////////////////////////////
-void Simulation::Close_Cluster_People(Person &current_person, std::vector<Person *> &close_people)
+void Simulation::Close_Cluster_People(Person& current_person, std::vector<Person*>& close_people)
 {
     close_people.clear();
-    for (auto &a : world.Clusters()[current_person.get_label()].population())
+    for (auto& a : world.Clusters()[current_person.get_label()].population())
     {
-        const Position &pos = a.person_ref().get_pos();
+        const Position& pos = a.person_ref().get_pos();
         if (pos.InRadius(current_person.get_pos(), spread_radius) &&
             a.person_ref().get_current_status() == Status::Susceptible && !a.is_at_home())
         { // check if person is close_enough, Susceptible and not at_home
@@ -67,7 +76,7 @@ Data Simulation::get_Cluster_data(int i)
     unsigned int nE = 0;
     unsigned int nI = 0;
     unsigned int nR = 0;
-    for (auto &a : world.Clusters()[i].population())
+    for (auto& a : world.Clusters()[i].population())
     {
         switch (a.person_ref().get_current_status())
         {
@@ -94,9 +103,9 @@ Data Simulation::get_data()
     unsigned int nE{};
     unsigned int nI{};
     unsigned int nR{};
-    for (auto &c : world.Clusters())
+    for (auto& c : world.Clusters())
     {
-        for (auto &a : c.population())
+        for (auto& a : c.population())
         {
             switch (a.person_ref().get_current_status())
             {
@@ -142,24 +151,32 @@ void Simulation::update_Colors()
     for (unsigned long i = 0; i < world.Clusters().size(); ++i)
     {
         Data data = get_Cluster_data(i);
-        if (data.I / data.S >= RED_ZONE_CONDITION) { world.Clusters()[i].set_color(Color::Red); }
+        if (data.I / data.S >= RED_ZONE_CONDITION)
+        {
+            world.Clusters()[i].set_color(Color::Red);
+            world.Clusters()[i].set_LATP(RED_ZONE_LATP_ALPHA);
+        }
         else if (data.I / data.S >= YELLOW_ZONE_CONDITION)
         {
             world.Clusters()[i].set_color(Color::Yellow);
+            world.Clusters()[i].set_LATP(YELLOW_ZONE_LATP_ALPHA);
+
         }
         else
         {
             world.Clusters()[i].set_color(Color::Green);
+            world.Clusters()[i].set_LATP(WHITE_ZONE_LATP_ALPHA);
+
         }
     }
 }
 
 void Simulation::spread()
 {
-    std::vector<Person *> close_people{};
-    for (auto &c : world.Clusters())
+    std::vector<Person*> close_people{};
+    for (auto& c : world.Clusters())
     {
-        for (auto &a : c.population())
+        for (auto& a : c.population())
         {
             if (a.person_ref().get_current_status() == Status::Exposed)
             { // if current person is in dormant Status
@@ -180,7 +197,7 @@ void Simulation::spread()
                         Close_Cluster_People(a.person_ref(), close_people); // susceptible people in the same Cluster
                                                                             // near the infected that are not at home
                     }
-                    for (auto &b : close_people)
+                    for (auto& b : close_people)
                     {
                         if (sim_engine.try_event(beta)) { b->set_new_status(Status::Exposed); }
                     }
@@ -191,9 +208,9 @@ void Simulation::spread()
     }
 }
 
-void Simulation::move_white(Cluster &cluster, std::vector<double> &weights)
+void Simulation::move_white(Cluster& cluster, std::vector<double>& weights)
 {
-    for (auto &p : cluster.population())
+    for (auto& p : cluster.population())
     {
         if (p.is_at_home())
         {
@@ -216,7 +233,7 @@ void Simulation::move_white(Cluster &cluster, std::vector<double> &weights)
             if (p.stay_time() <= 0)
             {
                 clean_path(p);
-                p.next_location(sim_engine);
+                p.next_location(sim_engine,cluster.get_LATP());
             }
             else
             {
@@ -229,9 +246,9 @@ void Simulation::move_white(Cluster &cluster, std::vector<double> &weights)
         }
     }
 }
-void Simulation::move_yellow(Cluster &cluster)
+void Simulation::move_yellow(Cluster& cluster)
 {
-    for (auto &p : cluster.population())
+    for (auto& p : cluster.population())
     {
         if (p.is_at_home())
         {
@@ -255,7 +272,7 @@ void Simulation::move_yellow(Cluster &cluster)
             if (p.stay_time() <= 0)
             {
                 clean_path(p);
-                p.next_location(sim_engine);
+                p.next_location(sim_engine,cluster.get_LATP());
             }
             else
             {
@@ -268,9 +285,9 @@ void Simulation::move_yellow(Cluster &cluster)
         }
     }
 }
-void Simulation::move_red(Cluster &cluster)
+void Simulation::move_red(Cluster& cluster)
 {
-    for (auto &p : cluster.population())
+    for (auto& p : cluster.population())
     {
         if (p.is_at_home())
         {
@@ -294,7 +311,7 @@ void Simulation::move_red(Cluster &cluster)
             if (p.stay_time() <= 0)
             {
                 clean_path(p);
-                p.next_location(sim_engine);
+                p.next_location(sim_engine,cluster.get_LATP());
             }
             else
             {
@@ -310,7 +327,7 @@ void Simulation::move_red(Cluster &cluster)
 
 void Simulation::move()
 {
-    for (auto &cluster : world.Clusters())
+    for (auto& cluster : world.Clusters())
     {
         if (cluster.get_color() == Color::Green)
         {
@@ -320,13 +337,12 @@ void Simulation::move()
             {
                 if (world.Clusters()[i].get_color() == Color::Green)
                 {
-                    weights[i] = world.Clusters()[i].number_of_locations();
+                    weights[i] = world.Clusters()[i].locations_num();
                 }
             }
             double sum = std::accumulate(weights.begin(), weights.end(), 0.) -
-                         world.Clusters()[cluster.index()]
-                             .number_of_locations(); // sum of all locations in green cluster except current one
-            weights[cluster.index()] =
+                         world.Clusters()[cluster.get_label()].locations_num(); // sum of all locations in green cluster except current one
+            weights[cluster.get_label()] =
                 sum; // make sure there is a 50 percent probability hat chosen location is from current cluster
             move_white(cluster, weights);
         }
@@ -343,16 +359,16 @@ void Simulation::move()
 
 void Simulation::update_people_status()
 {
-    for (auto &c : world.Clusters())
+    for (auto& c : world.Clusters())
     {
-        for (auto &a : c.population()) // set all the people's condition to new_condition
+        for (auto& a : c.population()) // set all the people's condition to new_condition
         {
             a.person_ref().update_status();
         }
     }
 }
 
-void Simulation::clean_path(mobility_model &person)
+void Simulation::clean_path(mobility_model& person)
 {
     for (unsigned long i = 0; i < person.path().size(); ++i)
     {

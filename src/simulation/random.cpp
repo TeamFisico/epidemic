@@ -14,10 +14,6 @@ Random::Random()
                                 // https://www.pcg-random.org/posts/simple-portable-cpp-seed-entropy.html)
     eng = default_engine;
 }
-Random::Random(const Random &other_engine)
-{
-    eng = other_engine.eng;
-}
 
 double Random::uniform(double lower, double upper)
 {
@@ -45,20 +41,19 @@ bool Random::try_event(double probability)
 }
 int Random::rand_stay()
 {
-    double term1 = 0.0;
-    double term2 = 0.0;
-    double term3 = 0.0;
-    double term4 = 0.0;
+    double t1 = 0.0;
+    double t2 = 0.0;
+    double t3 = 0.0;
+    double t4 = 0.0;
     double pause_time = 0.0;
 
     double u = uniform(0, 1); // number in range [0,1)
 
-    term1 =
-        (u * pow(MAX_PAUSE, PAUSE_EXPONENT)) - (u * pow(MIN_PAUSE, PAUSE_EXPONENT)) - pow(MAX_PAUSE, PAUSE_EXPONENT);
-    term2 = pow(MAX_PAUSE, PAUSE_EXPONENT) * pow(MIN_PAUSE, PAUSE_EXPONENT);
-    term3 = -(term1 / term2);
-    term4 = pow(term3, (-1 / PAUSE_EXPONENT));
-    pause_time = term4;
+    t1 = (u * pow(MAX_PAUSE, PAUSE_EXPONENT)) - (u * pow(MIN_PAUSE, PAUSE_EXPONENT)) - pow(MAX_PAUSE, PAUSE_EXPONENT);
+    t2 = pow(MAX_PAUSE, PAUSE_EXPONENT) * pow(MIN_PAUSE, PAUSE_EXPONENT);
+    t3 = -(t1 / t2);
+    t4 = pow(t3, (-1 / PAUSE_EXPONENT));
+    pause_time = t4;
     return round(pause_time);
 }
 double Random::rand_speed()

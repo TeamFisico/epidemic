@@ -3,8 +3,8 @@
 namespace smooth_sim
 {
 
-Group::Group(int number_of_locations, Position center, int cluster_index, Random const &cluster_engine)
-    : grp_engine{cluster_engine}
+Group::Group(int number_of_locations, Position center, int cluster_index)
+    : grp_engine{}
 {
     locations.clear();
     // generate first locations
@@ -32,18 +32,22 @@ Group::Group(int number_of_locations, Position center, int cluster_index, Random
     }
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////           PRIVATE METHODS           /////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////           PUBLIC METHODS            /////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+unsigned int Group::locations_num()
+{
+    return locations.size();
+}
+// unused
 // Location *Group::get_location(int i)
 //{
 //    return &locations[i];
 //}
-std::vector<Location *> Group::Location_list()
-{
-    std::vector<Location *> result;
-    result.clear();
-    for (unsigned int i = 0; i <= locations.size(); ++i)
-    {
-        result.push_back(&locations[i]);
-    }
-    return result;
-}
 } // namespace smooth_sim

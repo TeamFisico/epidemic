@@ -5,7 +5,7 @@
 namespace smooth_sim
 {
 
-Rectangle::Rectangle(Position &blh_corner, Position &trh_corner) : blh_corner{blh_corner}, trh_corner{trh_corner}
+Rectangle::Rectangle(Position& blh_corner, Position& trh_corner) : blh_corner{blh_corner}, trh_corner{trh_corner}
 {
 }
 

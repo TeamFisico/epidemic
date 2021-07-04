@@ -5,8 +5,11 @@
 
 namespace smooth_sim
 {
-// Constructor
-mobility_model::mobility_model(Person person, int stay, double home_probability, bool at_home)
+
+////////////////////////////////////////////////////////
+/////         MOBILITY MODEL CONSTRUCTOR          //////
+////////////////////////////////////////////////////////
+mobility_model::mobility_model(Person person, int stay,double home_probability, bool at_home)
     : person{person},
       target_location{nullptr},
       stay{stay},
@@ -16,7 +19,16 @@ mobility_model::mobility_model(Person person, int stay, double home_probability,
 {
 }
 
-void mobility_model::next_location(Random& engine)
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////           PRIVATE METHODS           /////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////           PUBLIC METHODS            /////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void mobility_model::next_location(Random& engine,double cluster_LATP_parameter)
 {
     if (going_home)
     { // called when person is at home with target location home
@@ -42,7 +54,7 @@ void mobility_model::next_location(Random& engine)
         inverse_distances.clear();
         for (auto& a : Path)
         { // fill the inverse_distances vector
-            double dist = 1 / pow(a->get_pos().distance_to(person.get_pos()), alpha);
+            double dist = 1 / pow(a->get_pos().distance_to(person.get_pos()), cluster_LATP_parameter);
             inverse_distances.push_back(dist);
         }
         std::vector<double> probabilities; // vector where we store the probabilities of the same index in Path

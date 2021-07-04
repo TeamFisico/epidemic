@@ -1,7 +1,7 @@
 #include "seir1.hpp"
 
 // Constructor
-sim::sim(const State &initial_state, double alpha, double beta, double gamma)
+sim::sim(const State& initial_state, double alpha, double beta, double gamma)
     : state0{initial_state},
       alpha{alpha},
       beta{beta},
@@ -10,7 +10,7 @@ sim::sim(const State &initial_state, double alpha, double beta, double gamma)
 }
 
 // default values
-const sim &default_sim()
+const sim& default_sim()
 {
     State df{99999, 0, 1, 0, 100000};
     static sim def{df, 0.5, 0.7, 0.2};

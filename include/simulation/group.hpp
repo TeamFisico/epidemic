@@ -13,12 +13,12 @@ class Group
     Random grp_engine;
 
   public:
-    Group(int number_of_locations, Position center, int cluster_index, Random const& cluster_engine);
+    Group(int number_of_locations, Position center, int cluster_index);
     Group() = default;
     // unused   Location* get_location(int i);          // get pointer to i_nth Location
-    std::vector<Location*> Location_list(); // function that return pointer to all locations in the Group
+    unsigned int locations_num(); // function that return pointer to all locations in the Group
     std::vector<Location>& Locations() { return locations; }
-    int size() { return locations.size(); }
+    unsigned int size() { return locations.size(); }
     Position get_center() { return center; }
 };
 

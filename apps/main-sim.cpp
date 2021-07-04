@@ -14,7 +14,7 @@
 #include "TMultiGraph.h"
 #include "TRootCanvas.h"
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     using namespace smooth_sim;
 
@@ -79,12 +79,12 @@ int main(int argc, char *argv[])
     std::vector<Data> result{};
     std::vector<Position> positions{};
     std::vector<bool> at_home{};
-    for (int i = 0; i < 50; ++i)
+    for (int i = 0; i < 30; ++i)
     {
         move_count = 0;
         spread_count = 0;
         start = std::chrono::high_resolution_clock::now();
-        for (int j = 0; j < 10; ++j)
+        for (int j = 0; j < UPDATE_ZONES_INTERVAL; ++j)
         {
             start1 = std::chrono::high_resolution_clock::now();
             prova.move();
@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
 
     std::ofstream out{"output.txt"};
 
-    for (auto &a : result)
+    for (auto& a : result)
     {
         out << "S = " << a.S << " E = " << a.E << " I = " << a.I << " R = " << a.R << std::endl;
     }
@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
     mg->SetTitle("Evolution; steps; number of people");
 
     int t2 = 0;
-    for (auto &a : result)
+    for (auto& a : result)
     {
         gS->SetPoint(t2, t2, a.S);
         gE->SetPoint(t2, t2, a.E);
@@ -163,7 +163,7 @@ int main(int argc, char *argv[])
 
     c0->Modified();
     c0->Update();
-    TRootCanvas *rc = (TRootCanvas *)c0->GetCanvasImp();
+    TRootCanvas* rc = (TRootCanvas*)c0->GetCanvasImp();
     rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
     app.Run();
 }

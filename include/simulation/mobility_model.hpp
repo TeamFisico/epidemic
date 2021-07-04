@@ -10,18 +10,17 @@ class mobility_model
 {
   private:
     Person person;
-    std::vector<Location*> Path; // Vector with pointer to the location the person need to visit, in no particular order
-    Location* target_location;   // current target_location
-    int stay;                    // How much time people stay at a location //TODO make some of these variables as macro
-    double home_probability;
-    bool at_home;    // true if the pointed person is at home, false otherwise
-    bool going_home; // true if it is moving home, false otherwise
-    double alpha;    // exponent of the LATP algorithm, used to calculate the next location
+    std::vector<Location*> Path;  // Vector with pointer to the location the person need to visit, in no particular order
+    Location* target_location;    // current target_location
+    int stay;                     // How much time people stay at a location
+    double home_probability;      //probability for a person to stay home
+    bool at_home;                 // boolean keeping track whether the person subject to the mob model is home or not
+    bool going_home;             // boolean keeping track whether the person has target == home
   public:
     friend class Person;
-    mobility_model(Person person, int stay, double home_probability, bool at_home); // Constructor
+    mobility_model(Person person, int stay,double home_probability, bool at_home); // Constructor
     mobility_model() = delete;                                                      // Default constructor
-    void next_location(Random& engine); // Randomly select the new location to visit; or home if you do not have anymore
+    void next_location(Random& engine,double cluster_LATP_parameter); // Randomly select the new location to visit; or home if you do not have anymore
                                         // location to visit
     bool at_target_location(); // return true if the pointed person is inside pointed location Radius, return false
     void move(double speed, Random& engine); // move the pointed Person to the pointed target_location
@@ -37,7 +36,6 @@ class mobility_model
     Person& person_ref() { return person; }
 };
 
-double rand_speed(double min, double max);
 } // namespace smooth_sim
 
 #endif

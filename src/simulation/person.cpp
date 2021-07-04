@@ -12,7 +12,7 @@ Person::Person(Status current_status, Position position, Status new_status, Loca
 {
 }
 
-Location *Person::get_home()
+Location* Person::get_home()
 {
     return &home;
 }
@@ -22,7 +22,7 @@ void Person::update_status()
     status = new_status;
 }
 
-bool Person::at_location(Location *loc)
+bool Person::at_location(Location* loc)
 {
     return (pos.InRadius(loc->get_pos(), loc->get_radius()));
 }

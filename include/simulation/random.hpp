@@ -20,7 +20,6 @@ class Random
     mt19937_rng eng; // Marsenne Twister engine
   public:
     Random();                                  // engine constructor
-    Random(const Random& other_engine);        // copy constructor
     mt19937_rng engine() const { return eng; } // return the engine to perform other actions
 
     // extract one number from a distributions

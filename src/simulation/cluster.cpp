@@ -7,32 +7,35 @@
 namespace smooth_sim
 {
 
-Cluster::Cluster(int S, int E, int I, int R, int number_of_location, Rectangle Area, Color color, int cluster_index,
-                 Random const &wrld_engine)
+//////////////////////////////////////////////
+///////      CLUSTER CONSTRUCTOR        //////
+//////////////////////////////////////////////
+Cluster::Cluster(unsigned S, unsigned E, unsigned I,unsigned R, int number_of_location, Rectangle Area, Color color, int cluster_label,double cluster_LATP_parameter)
     : Area{Area},
       color{color},
-      cluster_index{cluster_index},
-      cl_engine{wrld_engine}
+      label{cluster_label},
+      LATP_alpha{cluster_LATP_parameter},
+      cl_engine{}
 {
     int N = S + E + I + R;
     Population.clear();
     Population.reserve(N); // reserve space for the population vector
     // generate the population vector; initialize all person as susceptible and at home
-    for (int i = 0; i < N;)
+    int index = 0;
+    while ( index < N)
     {
         int home_pop = cl_engine.int_uniform(1, 5); // number of people in the current home
-        Location current_home = rand_loc(Area.get_blh_corner(), Area.get_trh_corner(), HOME_RADIUS, cluster_index,
-                                         cl_engine); // TODO add a macro for HOME_RADIUS value
-        for (int j = 0; j < home_pop && i < N; ++j)
+        Location current_home = rand_loc(Area.get_blh_corner(), Area.get_trh_corner(), HOME_RADIUS, cluster_label,cl_engine);
+        for (int j = 0; j < home_pop && index < N; ++j)
         {
-            Person curr{Status::Susceptible, current_home.get_pos(), Status::Susceptible, current_home, cluster_index};
-            Population.emplace_back(curr, 0, HOME_PROBABILITY, true);
-            Population[i].recall_home(); // set target location as person's home
-            ++i;
+            Person curr{Status::Susceptible, current_home.get_pos(), Status::Susceptible, current_home, cluster_label};
+            Population.emplace_back(curr, 0,HOME_PROBABILITY, true);
+            Population[index].recall_home(); // set target location as person's home
+            ++index;
         }
     }
     // change person's condition and next condition to have the right number of Statuss
-    for (int i = 0; i < E + I + R; ++i)
+    for (unsigned i = 0; i < E + I + R; ++i)
     {
         if (i < E)
         {
@@ -81,10 +84,114 @@ Cluster::Cluster(int S, int E, int I, int R, int number_of_location, Rectangle A
     // fill the group vector
     for (int i = 0; i < number_of_groups; ++i)
     {
-        groups.emplace_back(loc_num[i], gen_group_center(loc_num[i]), cluster_index, cl_engine);
+        groups.emplace_back(loc_num[i], gen_group_center(loc_num[i]),label);
     }
 }
-//
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////           PRIVATE METHODS           /////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////           PUBLIC METHODS            /////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+double Cluster::base()
+{
+    return Area.get_trh_corner().get_x() - Area.get_blh_corner().get_x();
+}
+double Cluster::height()
+{
+    return Area.get_trh_corner().get_y() - Area.get_blh_corner().get_y();
+}
+unsigned Cluster::locations_num()
+{
+    auto add_op = [&](unsigned int a,Group b){ return a + b.size(); };
+    return std::accumulate(std::begin(groups),std::end(groups),0,add_op);
+}
+
+unsigned Cluster::people_num()
+{
+    return Population.size();
+}
+
+Position Cluster::gen_group_center(int num_of_loc)
+{
+    bool end_loop = false;
+    Position new_center{};
+    while (!end_loop)
+    {
+        end_loop = true;
+        new_center =
+            rand_pos(Area.get_blh_corner(), Area.get_trh_corner(), cl_engine); // generate random center position
+        for (auto& a : groups)
+        { // check if this center is far enough from other groups center
+            if (a.get_center().distance_to(new_center) <= (a.size() + num_of_loc) * TRANSMISSION_RANGE / 10)
+            {
+                end_loop = false;
+                break;
+            }
+        }
+    }
+    return new_center;
+}
+
+void Cluster::generate_path(int to_visit, std::vector<Location*>& path, Random& cl_engine)
+{
+    int last_index = -1;
+    for (auto& a : groups)
+    {
+        last_index += a.size();
+    }
+    std::vector<int> result_indexes;
+    for (int i = 0; i < to_visit; ++i)
+    { // select the random indexes
+        bool continue_loop = true;
+        int curr_index;
+        while (continue_loop)
+        {
+            continue_loop = false;
+            curr_index = cl_engine.int_uniform(0, last_index);
+            for (auto& a : result_indexes)
+            {
+                if (curr_index == a)
+                {
+                    continue_loop = true;
+                    break;
+                }
+            }
+        }
+        result_indexes.push_back(curr_index);
+    }
+    for (int i = 0; i < to_visit; ++i)
+    {
+        path.push_back(select_location(result_indexes[i]));
+    }
+}
+
+Location* Cluster::select_location(unsigned n)
+{
+    assert(n >= 0 && n < locations_num());
+    int g_size = groups.size();
+    int group_index;
+    for (int j = 0; j < g_size; ++j)
+    {
+        int size = groups[j].size();
+        if (n < size)
+        {
+            group_index = j;
+            j = g_size;
+        }
+        else
+        {
+            n -= size;
+        }
+    }
+    return &groups[group_index].Locations()[n];
+}
+
+// unused
 // std::vector<Location *> Cluster::Location_list()
 //{
 //    std::vector<Location *> result;
@@ -111,102 +218,5 @@ Cluster::Cluster(int S, int E, int I, int R, int number_of_location, Rectangle A
 //    return result;
 //}
 
-double Cluster::base()
-{
-    return Area.get_trh_corner().get_x() - Area.get_blh_corner().get_x();
-}
-double Cluster::height()
-{
-    return Area.get_trh_corner().get_y() - Area.get_blh_corner().get_y();
-}
-int Cluster::number_of_locations()
-{
-    int sum{};
-    for (auto &a : groups)
-    {
-        sum += a.Location_list().size();
-    }
-    return sum;
-}
-
-int Cluster::number_of_people()
-{
-    return Population.size();
-}
-
-Position Cluster::gen_group_center(int num_of_loc)
-{
-    bool end_loop = false;
-    Position new_center{};
-    while (!end_loop)
-    {
-        end_loop = true;
-        new_center =
-            rand_pos(Area.get_blh_corner(), Area.get_trh_corner(), cl_engine); // generate random center position
-        for (auto &a : groups)
-        { // check if this center is far enough from other groups center
-            if (a.get_center().distance_to(new_center) <= (a.size() + num_of_loc) * TRANSMISSION_RANGE / 10)
-            {
-                end_loop = false;
-                break;
-            }
-        }
-    }
-    return new_center;
-}
-
-void Cluster::generate_path(int to_visit, std::vector<Location *> &path, Random &cl_engine)
-{
-    int last_index = -1;
-    for (auto &a : groups)
-    {
-        last_index += a.size();
-    }
-    std::vector<int> result_indexes;
-    for (int i = 0; i < to_visit; ++i)
-    { // select the random indexes
-        bool continue_loop = true;
-        int curr_index;
-        while (continue_loop)
-        {
-            continue_loop = false;
-            curr_index = cl_engine.int_uniform(0, last_index);
-            for (auto &a : result_indexes)
-            {
-                if (curr_index == a)
-                {
-                    continue_loop = true;
-                    break;
-                }
-            }
-        }
-        result_indexes.push_back(curr_index);
-    }
-    for (int i = 0; i < to_visit; ++i)
-    {
-        path.push_back(select_location(result_indexes[i]));
-    }
-}
-
-Location *Cluster::select_location(int n)
-{
-    assert(n >= 0 && n < number_of_locations());
-    int g_size = groups.size();
-    int group_index;
-    for (int j = 0; j < g_size; ++j)
-    {
-        int size = groups[j].size();
-        if (n < size)
-        {
-            group_index = j;
-            j = g_size;
-        }
-        else
-        {
-            n -= size;
-        }
-    }
-    return &groups[group_index].Locations()[n];
-}
 
 } // namespace smooth_sim
