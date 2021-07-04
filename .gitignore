@@ -17,3 +17,5 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
+/test_build/
+/sim_build/
