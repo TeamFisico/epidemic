@@ -1,3 +1,5 @@
+#ifndef WORLD_HPP
+#define WORLD_HPP
 #include "cluster.hpp"
 
 namespace smooth_sim
@@ -34,3 +36,5 @@ class World
 // number of pointer to Location from the provided one
 
 } // namespace smooth_sim
+
+#endif

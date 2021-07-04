@@ -11,10 +11,47 @@ int main()
     //    auto start = std::chrono::high_resolution_clock::now();
     //    auto end = std::chrono::high_resolution_clock::now();
     //    std::chrono::duration<float> duration{};
-    Simulation prova{25000, 3, 200, 4, 5, 1500, 1200, 0.1, 0.02, 0.15, 1, 20, 10};
+    Simulation prova{25000, 3, 200, 4, 5, 1500, 1200, 0.1, 0.02, 0.4, 1, 20, 10};
     sf::RenderWindow window(sf::VideoMode(1200, 1200), "My window");
     window.display();
-    sf::VertexArray locations(sf::Triangles, 24 * prova.get_world().locations_num());
+
+    sf::VertexArray Clusters(sf::Quads, 4*prova.get_world().Clusters().size());
+    sf::VertexArray Borders(sf::Lines,8*prova.get_world().Clusters().size());
+    std::array<double, 4> X{};
+    std::array<double, 4> Y{};
+    for (int i = 0; i < prova.get_world().Clusters().size(); ++i){
+        auto &cl_a= prova.get_world().Clusters()[i].cluster_area();
+        X[0] = cl_a.get_blh_corner().get_x();
+        Y[0] = cl_a.get_blh_corner().get_y();
+        X[1] = cl_a.get_trh_corner().get_x();
+        Y[1] = cl_a.get_blh_corner().get_y();
+        X[2] = cl_a.get_blh_corner().get_x();
+        Y[2] = cl_a.get_trh_corner().get_y();
+        X[3] = cl_a.get_trh_corner().get_x();
+        Y[3] = cl_a.get_trh_corner().get_y();
+        //Set cluster's vertices(color to be set in the while loop)
+        Clusters[4*i].position = sf::Vector2f(X[0],Y[0]);
+        Clusters[4*i + 1].position = sf::Vector2f(X[1],Y[1]);
+        Clusters[4*i + 2].position = sf::Vector2f(X[2],Y[2]);
+        Clusters[4*i + 3].position = sf::Vector2f(X[3],Y[3]);
+        //Set Cluster's borders(with already setted colors)
+        //Set position
+        Borders[8*i].position = sf::Vector2f(X[0],Y[0]);
+        Borders[8*i + 1].position = sf::Vector2f(X[1],Y[1]);
+        Borders[8*i + 2].position = sf::Vector2f(X[1],Y[1]);
+        Borders[8*i + 3].position = sf::Vector2f(X[2],Y[2]);
+        Borders[8*i + 4].position = sf::Vector2f(X[2],Y[2]);
+        Borders[8*i + 5].position = sf::Vector2f(X[3],Y[3]);
+        Borders[8*i + 6].position = sf::Vector2f(X[3],Y[3]);
+        Borders[8*i + 7].position = sf::Vector2f(X[0],Y[0]);
+        //Set color
+        for(int j = 0; j < 8; ++j){
+            Borders[8*i].color = sf::Color::Black;
+        }
+    }
+
+
+    sf::VertexArray locations(sf::Triangles, 24 * prova.get_world().number_of_locations());
     int count = 0;
     // double x_0, y_0, x_1, y_1, x_2, y_2, x_3, y_3, x_4, y_4, x_5, y_5, x_6, y_6, x_7, y_7, x_8, y_8; //points to
     // construct the various octagons
@@ -79,22 +116,18 @@ int main()
         prova.move();
         prova.spread();
         prova.update_people_status();
-        if (counter % UPDATE_ZONES_INTERVAL == 0)
+        if (counter % 10 == 0)
         {
             prova.update_Colors();
             std::cout << counter / 10 << "nth cycle" << std::endl;
         }
         ++counter;
-        sf::RectangleShape cluster;
+        //Transitioned from RectangleShape to Vertex array
+        /*sf::RectangleShape cluster;
         for (auto& a : prova.get_world().Clusters())
         { // Draw the clusters(as rectangles)
             cluster.setSize(sf::Vector2f(a.base(), a.height()));
             cluster.setPosition(a.cluster_area().get_blh_corner().get_x(), a.cluster_area().get_blh_corner().get_y());
-            /*switch(a.get_color()){
-                case Color::Green: cluster.setFillColor(sf::Color::Green);
-                case Color::Yellow: cluster.setFillColor(sf::Color::Yellow);
-                case Color::Red: cluster.setFillColor(sf::Color::Red);
-            }*/
             if (a.get_color() == Color::Green) { cluster.setFillColor(sf::Color::Green); }
             else if (a.get_color() == Color::Yellow)
             {
@@ -107,7 +140,29 @@ int main()
             cluster.setOutlineThickness(1);
             cluster.setOutlineColor(sf::Color::Black);
             window.draw(cluster);
+        }*/
+
+        //Set Cluster Color
+        for (int i = 0; i < prova.get_world().Clusters().size(); ++i)
+        {
+            auto& cl = prova.get_world().Clusters()[i];
+            sf::Color color;
+            if(cl.get_color() == Color::Green){
+                color = sf::Color::Green;
+            }
+            else if(cl.get_color() == Color::Yellow){
+                color = sf::Color::Yellow;
+            }
+            else{
+                color = sf::Color::Red;
+            }
+            Clusters[4*i].color = color;
+            Clusters[4*i + 1].color = color;
+            Clusters[4*i + 2].color = color;
+            Clusters[4*i + 3].color = color;
         }
+        window.draw(Clusters);
+        window.draw(Borders);
 
         // With sf::CircleShape it takes 1.1 seconds with 1000 locations, there is a need to change to vertex array
         /*sf::CircleShape circle;
@@ -155,7 +210,7 @@ int main()
         }*/
 
         // with vertex array, should be faster
-        sf::VertexArray people(sf::Quads, prova.get_world().people_num() * 4);
+        sf::VertexArray people(sf::Quads, prova.get_world().number_of_people() * 4);
         double x_0, y_0;
         r = 1;
         count = 0;
