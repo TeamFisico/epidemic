@@ -51,7 +51,7 @@ int main()
     }
 
 
-    sf::VertexArray locations(sf::Triangles, 24 * prova.get_world().number_of_locations());
+    sf::VertexArray locations(sf::Triangles, 24 * prova.get_world().locations_num());
     int count = 0;
     // double x_0, y_0, x_1, y_1, x_2, y_2, x_3, y_3, x_4, y_4, x_5, y_5, x_6, y_6, x_7, y_7, x_8, y_8; //points to
     // construct the various octagons
@@ -210,7 +210,7 @@ int main()
         }*/
 
         // with vertex array, should be faster
-        sf::VertexArray people(sf::Quads, prova.get_world().number_of_people() * 4);
+        sf::VertexArray people(sf::Quads, prova.get_world().people_num() * 4);
         double x_0, y_0;
         r = 1;
         count = 0;
