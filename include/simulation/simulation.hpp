@@ -38,7 +38,7 @@ class Simulation
     void close_cluster_people(Person& current_person, std::vector<Person*>& close_people_v);
 
     // clean person's path, removing all location that are not in green cluster
-    void clean_path(mobility_model& person);
+    void clean_path(Mobility_model& person);
 
     // move algorithm in the case of a Green Cluster
     void move_white(Cluster& cluster, std::vector<double>& weights_v);

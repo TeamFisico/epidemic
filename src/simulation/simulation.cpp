@@ -369,7 +369,7 @@ void Simulation::move()
     }
 }
 
-void Simulation::clean_path(mobility_model& person)
+void Simulation::clean_path(Mobility_model& person)
 {
     for (unsigned long i = 0; i < person.path().size(); ++i)
     {

@@ -6,7 +6,7 @@
 #include <vector>
 namespace smooth_sim
 {
-class mobility_model
+class Mobility_model
 {
   private:
     Person person;
@@ -18,8 +18,8 @@ class mobility_model
     bool going_home;             // boolean keeping track whether the person has target == home
   public:
     friend class Person;
-    mobility_model(Person person, int stay, double home_probability, bool at_home); // Constructor
-    mobility_model() = delete;                                                      // Default constructor
+    Mobility_model(Person person, int stay, double home_probability, bool at_home); // Constructor
+    Mobility_model() = delete;                                                      // Default constructor
     void next_location(Random& engine,
                        double cluster_LATP_parameter); // Randomly select the new location to visit; or home if you do
                                                        // not have anymore location to visit

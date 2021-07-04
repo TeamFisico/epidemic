@@ -5,6 +5,10 @@ double constexpr PI = 3.14159265358979323846;
 
 double constexpr TRANSMISSION_RANGE = 0.5;
 double constexpr HOME_RADIUS = 0.5;
+double constexpr MEAN_GROUP_SIZE = 0.125;
+double constexpr GROUP_SIZE_STDDEV = 0.03125;
+double constexpr MEAN_FAMILY_COMPONENTS = 2.5;
+double constexpr MEAN_FAMILY_STDDEV = 0.5;
 double constexpr LOCATION_RADIUS_MEAN = 4;
 double constexpr LOCATION_RADIUS_DEV = 1;
 double constexpr MAXIMUM_ANGLE_VARIATION = PI / 36;

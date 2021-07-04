@@ -21,7 +21,7 @@ int main()
     std::array<double, 4> Y{};
     for (unsigned i = 0; i < prova.world_ref().size(); ++i)
     {
-        auto& cl_a = prova.world_ref().get_clusters_ref()[i].cluster_area();
+        auto& cl_a = prova.world_ref().clusters_ref()[i].cluster_area();
         X[0] = cl_a.get_blh_corner().get_x();
         Y[0] = cl_a.get_blh_corner().get_y();
         X[1] = cl_a.get_blh_corner().get_x();
@@ -59,7 +59,7 @@ int main()
     int r = 0;
     std::array<double, 9> x{};
     std::array<double, 9> y{};
-    for (auto& cl : prova.world_ref().get_clusters_ref())
+    for (auto& cl : prova.world_ref().clusters_ref())
     {
         for (auto& gr : cl.Groups())
         {
@@ -143,9 +143,9 @@ int main()
         }*/
 
         // Set Cluster Color
-        for (unsigned i = 0; i < prova.world_ref().get_clusters_ref().size(); ++i)
+        for (unsigned i = 0; i < prova.world_ref().clusters_ref().size(); ++i)
         {
-            auto& cl = prova.world_ref().get_clusters_ref()[i];
+            auto& cl = prova.world_ref().clusters_ref()[i];
             sf::Color color;
             if (cl.get_zone() == Zone::Green) { color = sf::Color::Green; }
             else if (cl.get_zone() == Zone::Yellow)
@@ -214,7 +214,7 @@ int main()
         double x_0, y_0;
         r = 1;
         count = 0;
-        for (auto& a : prova.world_ref().get_clusters_ref())
+        for (auto& a : prova.world_ref().clusters_ref())
         {
             for (auto& b : a.people_ref())
             {

@@ -9,7 +9,7 @@ namespace smooth_sim
 ////////////////////////////////////////////////////////
 /////         MOBILITY MODEL CONSTRUCTOR          //////
 ////////////////////////////////////////////////////////
-mobility_model::mobility_model(Person person, int stay, double home_probability, bool at_home)
+Mobility_model::Mobility_model(Person person, int stay, double home_probability, bool at_home)
     : person{person},
       target_location{nullptr},
       stay{stay},
@@ -26,7 +26,7 @@ mobility_model::mobility_model(Person person, int stay, double home_probability,
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////           PUBLIC METHODS            /////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void mobility_model::next_location(Random& engine, double cluster_LATP_parameter)
+void Mobility_model::next_location(Random& engine, double cluster_LATP_parameter)
 {
     if (going_home)
     { // called when person is at home with target location home
@@ -77,29 +77,29 @@ void mobility_model::next_location(Random& engine, double cluster_LATP_parameter
     }
 }
 
-bool mobility_model::at_target_location()
+bool Mobility_model::at_target_location()
 {
     return person.at_location(target_location);
 }
 
-void mobility_model::move(double speed, Random& engine)
+void Mobility_model::move(double speed, Random& engine)
 {
     person.get_pos().move_toward(target_location->get_pos(), speed, engine);
 }
 
-void mobility_model::recall_home()
+void Mobility_model::recall_home()
 {
     Path.clear();
     stay = 0;
     target_location = person.get_home();
 }
 
-// void mobility_model::change_home_prob(double prob)
+// void Mobility_model::change_home_prob(double prob)
 //{
 //    home_probability = prob;
 //}
 
-int mobility_model::cluster_index()
+int Mobility_model::cluster_index()
 {
     return person.get_label();
 }

@@ -23,7 +23,7 @@ World::World(double Side_length, int number_of_clusters, int number_of_locations
     std::vector<int> locations_number(number_of_clusters, 0);
     fill_with_locations_num(number_of_clusters, number_of_locations, locations_number);
 
-    ///////// Distribution of S,E,I,R people over the world determination /////////
+    ///////// Distribution of S,E,I,R people over the clusters determination /////////
 
     std::vector<int> susceptibles(number_of_clusters, 0);
     std::vector<int> exposed(number_of_clusters, 0);
@@ -36,7 +36,8 @@ World::World(double Side_length, int number_of_clusters, int number_of_locations
     ///////// Clusters construction /////////
 
     clusters.reserve(number_of_clusters);
-    for (int i = 0; i < number_of_clusters; ++i)
+
+    for (int i = 0; i < number_of_clusters; ++i) //construct clusters vector element by element
     {
         clusters.emplace_back(susceptibles[i], exposed[i], infected[i], recovered[i], locations_number[i],
                               cluster_areas[i], Zone::Green, i, WHITE_ZONE_LATP_ALPHA);
@@ -144,7 +145,7 @@ unsigned World::size() const
 ///////////////// NUMBER OF LOCATIONS IN WORLD /////////////////
 unsigned World::locations_num() const
 {
-    auto add_op = [&](unsigned int a, Cluster b) { return a + b.locations_num(); };
+    auto add_op = [&](unsigned a, Cluster b) { return a + b.locations_num(); };
     return std::accumulate(std::begin(clusters), std::end(clusters), 0, add_op);
 }
 ///////////////// NUMBER OF PEOPLE IN WORLD /////////////////
