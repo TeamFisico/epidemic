@@ -23,12 +23,12 @@ int main()
         auto &cl_a= prova.get_world().Clusters()[i].cluster_area();
         X[0] = cl_a.get_blh_corner().get_x();
         Y[0] = cl_a.get_blh_corner().get_y();
-        X[1] = cl_a.get_trh_corner().get_x();
-        Y[1] = cl_a.get_blh_corner().get_y();
-        X[2] = cl_a.get_blh_corner().get_x();
+        X[1] = cl_a.get_blh_corner().get_x();
+        Y[1] = cl_a.get_trh_corner().get_y();
+        X[2] = cl_a.get_trh_corner().get_x();
         Y[2] = cl_a.get_trh_corner().get_y();
         X[3] = cl_a.get_trh_corner().get_x();
-        Y[3] = cl_a.get_trh_corner().get_y();
+        Y[3] = cl_a.get_blh_corner().get_y();
         //Set cluster's vertices(color to be set in the while loop)
         Clusters[4*i].position = sf::Vector2f(X[0],Y[0]);
         Clusters[4*i + 1].position = sf::Vector2f(X[1],Y[1]);
@@ -46,7 +46,7 @@ int main()
         Borders[8*i + 7].position = sf::Vector2f(X[0],Y[0]);
         //Set color
         for(int j = 0; j < 8; ++j){
-            Borders[8*i].color = sf::Color::Black;
+            Borders[8*i + j].color = sf::Color::Black;
         }
     }
 
