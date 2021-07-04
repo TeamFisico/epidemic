@@ -10,27 +10,29 @@ namespace smooth_sim
 //////////////////////////////////////////////
 ///////      CLUSTER CONSTRUCTOR        //////
 //////////////////////////////////////////////
-Cluster::Cluster(unsigned S, unsigned E, unsigned I,unsigned R, int number_of_location, Rectangle Area, Color color, int cluster_label,double cluster_LATP_parameter)
+Cluster::Cluster(unsigned S, unsigned E, unsigned I, unsigned R, int number_of_location, Rectangle Area,
+                 Zone cluster_zone, int cluster_label, double cluster_LATP_parameter)
     : Area{Area},
-      color{color},
+      zone{cluster_zone},
       label{cluster_label},
       LATP_alpha{cluster_LATP_parameter},
       cl_engine{}
 {
     int N = S + E + I + R;
-    Population.clear();
-    Population.reserve(N); // reserve space for the population vector
-    // generate the population vector; initialize all person as susceptible and at home
+    people.clear();
+    people.reserve(N); // reserve space for the people vector
+    // generate the people vector; initialize all person as susceptible and at home
     int index = 0;
-    while ( index < N)
+    while (index < N)
     {
         int home_pop = cl_engine.int_uniform(1, 5); // number of people in the current home
-        Location current_home = rand_loc(Area.get_blh_corner(), Area.get_trh_corner(), HOME_RADIUS, cluster_label,cl_engine);
+        Location current_home =
+            rand_loc(Area.get_blh_corner(), Area.get_trh_corner(), HOME_RADIUS, cluster_label, cl_engine);
         for (int j = 0; j < home_pop && index < N; ++j)
         {
             Person curr{Status::Susceptible, current_home.get_pos(), Status::Susceptible, current_home, cluster_label};
-            Population.emplace_back(curr, 0,HOME_PROBABILITY, true);
-            Population[index].recall_home(); // set target location as person's home
+            people.emplace_back(curr, 0, HOME_PROBABILITY, true);
+            people[index].recall_home(); // set target location as person's home
             ++index;
         }
     }
@@ -39,18 +41,18 @@ Cluster::Cluster(unsigned S, unsigned E, unsigned I,unsigned R, int number_of_lo
     {
         if (i < E)
         {
-            Population[i].person_ref().set_current_status(Status::Exposed);
-            Population[i].person_ref().set_new_status(Status::Exposed);
+            people[i].person_ref().set_current_status(Status::Exposed);
+            people[i].person_ref().set_new_status(Status::Exposed);
         }
         else if (i < E + I)
         {
-            Population[i].person_ref().set_current_status(Status::Infected);
-            Population[i].person_ref().set_new_status(Status::Infected);
+            people[i].person_ref().set_current_status(Status::Infected);
+            people[i].person_ref().set_new_status(Status::Infected);
         }
         else if (i < E + I + R)
         {
-            Population[i].person_ref().set_current_status(Status::Recovered);
-            Population[i].person_ref().set_new_status(Status::Recovered);
+            people[i].person_ref().set_current_status(Status::Recovered);
+            people[i].person_ref().set_new_status(Status::Recovered);
         }
     }
     // Determine the number of groups
@@ -84,15 +86,13 @@ Cluster::Cluster(unsigned S, unsigned E, unsigned I,unsigned R, int number_of_lo
     // fill the group vector
     for (int i = 0; i < number_of_groups; ++i)
     {
-        groups.emplace_back(loc_num[i], gen_group_center(loc_num[i]),label);
+        groups.emplace_back(loc_num[i], gen_group_center(loc_num[i]), label);
     }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////           PRIVATE METHODS           /////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////           PUBLIC METHODS            /////////////////////////////////////////////
@@ -107,13 +107,13 @@ double Cluster::height()
 }
 unsigned Cluster::locations_num()
 {
-    auto add_op = [&](unsigned int a,Group b){ return a + b.size(); };
-    return std::accumulate(std::begin(groups),std::end(groups),0,add_op);
+    auto add_op = [&](unsigned int a, Group b) { return a + b.size(); };
+    return std::accumulate(std::begin(groups), std::end(groups), 0, add_op);
 }
 
 unsigned Cluster::people_num()
 {
-    return Population.size();
+    return people.size();
 }
 
 Position Cluster::gen_group_center(int num_of_loc)
@@ -211,12 +211,11 @@ Location* Cluster::select_location(unsigned n)
 //{
 //    std::vector<Person *> result;
 //    result.clear();
-//    for (unsigned int i = 0; i <= Population.size(); ++i)
+//    for (unsigned int i = 0; i <= people.size(); ++i)
 //    {
-//        result.push_back(&Population[i].Person_ref());
+//        result.push_back(&people[i].Person_ref());
 //    }
 //    return result;
 //}
-
 
 } // namespace smooth_sim

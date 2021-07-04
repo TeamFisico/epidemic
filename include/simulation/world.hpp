@@ -12,26 +12,52 @@ class World
     Random wrld_eng;
 
   public:
-    World(double Side_length, int number_of_clusters, int number_of_location, int S, int E, int I, int R);
+    // Constructor
+    World(double Side_length, int number_of_clusters, int number_of_locations, int S, int E, int I, int R);
+
+    // Disable compiler generated default constructor
     World() = delete;
+
   private:
+    void fill_with_locations_num(unsigned clusters_num, int locations_num, std::vector<int>& loc_num);
+
+    // fill input vector with S individuals with an index corresponding to their belonging cluster
+    void fill_with_S_individuals(unsigned clusters_num, int S, std::vector<int>& S_v);
+
+    // fill 3 vectors with the number of (E,I,R respectively) individuals for each cluster using an uniform distribution
+    // assigning a block of people at a time(or the remaining ones)
+    void fill_with_E_I_R_individuals(unsigned clusters_num, int E, int I, int R, std::vector<int>& E_v,
+                                     std::vector<int>& I_v, std::vector<int>& R_v);
 
   public:
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    unsigned int size() const { return clusters.size(); }  //num of clusters in World
-    unsigned int locations_num(); // get the number of total locations in the world
-    unsigned int people_num();    // get the number of total people in the world
-    std::vector<Cluster>& Clusters() { return clusters; };
+    // Let Simulation be a friend, so that will have access to private members
+    friend class Simulation;
+
+    // number of clusters in this World
+    unsigned size() const;
+
+    // number of locations in this World
+    unsigned locations_num() const;
+
+    // number of people in this World
+    unsigned people_num() const;
+
+    // returns vector containing clusters in World
+    std::vector<Cluster> get_clusters() const;
+
+    // returns reference to the vector containing all World's clusters
+    std::vector<Cluster>& clusters_ref();
+
+    // generates path(locations to visit) by invoking each cluster's path generation
     void generate_path(int to_visit, const std::vector<double>& weights, std::vector<Location*>& path,
                        Random& simulation_engine);
-    // unused functions
-    //    std::vector<Location*> Location_list();  // get a vector of pointer to all locations in the world
-    //    std::vector<Person*> Total_Population(); // get a vector of pointer to all Person in the world
-    //    Cluster* select_cluster();               // randomly chose a cluster based on number of Locations
-    //    Cluster* get_cluster(int index);         // return a pointer to index cluster
 };
 
-// unused
+// unused functions
+//    std::vector<Location*> Location_list();  // get a vector of pointer to all locations in the world
+//    std::vector<Person*> Total_Population(); // get a vector of pointer to all Person in the world
+//    Cluster* select_cluster();               // randomly chose a cluster based on number of Locations
+//    Cluster* get_cluster(int index);         // return a pointer to index cluster
 // std::vector<Location*> generate_path(std::vector<Location*> list, double mean,double dev); // generate a random
 // number of pointer to Location from the provided one
 

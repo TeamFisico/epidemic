@@ -8,27 +8,61 @@ namespace smooth_sim
 ////////////////////////////////////////////////////////
 /////               WORLD CONSTRUCTOR             //////
 ////////////////////////////////////////////////////////
-World::World(double Side_length, int number_of_clusters, int number_of_location, int S, int E, int I, int R)
+World::World(double Side_length, int number_of_clusters, int number_of_locations, int S, int E, int I, int R)
     : wrld_eng{}
 {
+    ///////// Area partitioning  /////////
+
     Position blh_corner{0, 0};
     Position trh_corner{Side_length, Side_length};
     Area = {blh_corner, trh_corner};
+    std::vector<Rectangle> cluster_areas = Area.divide(number_of_clusters);
 
-    std::vector<Rectangle> cluster_areas = Area.Divide(number_of_clusters);
-    // create and fill a vector with the number of location for each cluster
-    std::vector<int> loc_num(number_of_clusters, 0);
-    int loc_left = number_of_location;
-    int remaining_cluster = number_of_clusters;
+    ///////// Locations in each cluster determination /////////
+
+    std::vector<int> locations_number(number_of_clusters, 0);
+    fill_with_locations_num(number_of_clusters, number_of_locations, locations_number);
+
+    ///////// Distribution of S,E,I,R people over the world determination /////////
+
+    std::vector<int> susceptibles(number_of_clusters, 0);
+    std::vector<int> exposed(number_of_clusters, 0);
+    std::vector<int> infected(number_of_clusters, 0);
+    std::vector<int> recovered(number_of_clusters, 0);
+
+    fill_with_S_individuals(number_of_clusters, S, susceptibles);
+    fill_with_E_I_R_individuals(number_of_clusters, E, I, R, exposed, infected, recovered);
+
+    ///////// Clusters construction /////////
+
+    clusters.reserve(number_of_clusters);
     for (int i = 0; i < number_of_clusters; ++i)
     {
-        if (i == number_of_clusters - 1) { loc_num[i] += loc_left; }
+        clusters.emplace_back(susceptibles[i], exposed[i], infected[i], recovered[i], locations_number[i],
+                              cluster_areas[i], Zone::Green, i, WHITE_ZONE_LATP_ALPHA);
+    }
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////           PRIVATE METHODS           /////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void World::fill_with_locations_num(unsigned clusters_num, int locations_num, std::vector<int>& loc_num)
+{
+    assert(loc_num.size() == clusters_num);
+    int loc_left = locations_num;
+    int remaining_cluster = clusters_num;
+    for (unsigned i = 0; i < clusters_num; ++i)
+    {
+        if (i == clusters_num - 1) // the current cluster is the last one
+        {
+            loc_num[i] += loc_left;
+        }
         else
         {
             double mean = static_cast<double>(loc_left) / static_cast<double>(remaining_cluster);
             int current = wrld_eng.rounded_gauss(mean, mean / 4);
-            while (current >= loc_left || current <= 0)
-            { // make sure current value is valid
+            while (current >= loc_left || current <= 0) // make sure current value is valid
+            {
                 current = wrld_eng.rounded_gauss(mean, mean / 4);
             }
             loc_num[i] += current;
@@ -36,76 +70,122 @@ World::World(double Side_length, int number_of_clusters, int number_of_location,
             --remaining_cluster;
         }
     }
-    // create and fill a vector with the number of susceptible individuals for each cluster
-    std::vector<int> S_pop_num(number_of_clusters, 0);
+}
+///////////////// FILL WITH S INDIVIDUALS IN CORRESPONDING CLUSTERS /////////////////
+void World::fill_with_S_individuals(unsigned clusters_num, int S, std::vector<int>& S_v)
+{
+    assert(S_v.size() == clusters_num);
+
     int S_pop_left = S;
-    remaining_cluster = number_of_clusters;
-    for (int i = 0; i < number_of_clusters; ++i)
+    int left_clusters = clusters_num;
+    for (unsigned i = 0; i < clusters_num; ++i)
     {
-        if (i == number_of_clusters - 1) { S_pop_num[i] += S_pop_left; }
+        if (i == clusters_num - 1) // current cluster is the last one
+        {
+            S_v[i] += S_pop_left;
+        }
         else
         {
-            double mean = static_cast<double>(S_pop_left) / static_cast<double>(remaining_cluster);
+            double mean = (static_cast<double>(S_pop_left) / static_cast<double>(left_clusters));
             int current = wrld_eng.rounded_gauss(mean, mean / 4);
-            while (current >= 4 * S_pop_left / 5 || current <= S_pop_left / 5)
-            { // make sure current value is valid
+            while (current >= 4 * S_pop_left / 5 || current <= S_pop_left / 5) // make sure current value is valid
+            {
                 current = wrld_eng.rounded_gauss(mean, mean / 4);
             }
-            S_pop_num[i] += current;
+            S_v[i] += current;
             S_pop_left -= current;
-            --remaining_cluster;
+            --left_clusters;
         }
     }
-    // create and fill 3 vectors with the number of (E,I,R respectively) individuals for each cluster, in this case use
-    // an uniform distribution that assign 10 individuals at a time(or the remaiming ones) E Individuals
-    std::vector<int> E_pop_num(number_of_clusters, 0);
-    int E_pop_left = E;
-    while (E_pop_left > 10)
-    {
-        E_pop_num[wrld_eng.int_uniform(0, number_of_clusters - 1)] += 10;
-        E_pop_left -= 10;
-    }
-    E_pop_num[wrld_eng.int_uniform(0, number_of_clusters - 1)] += E_pop_left;
-    // I individuals
-    std::vector<int> I_pop_num(number_of_clusters, 0);
-    int I_pop_left = I;
-    while (I_pop_left > 10)
-    {
-        I_pop_num[wrld_eng.int_uniform(0, number_of_clusters - 1)] += 10;
-        I_pop_left -= 10;
-    }
-    I_pop_num[wrld_eng.int_uniform(0, number_of_clusters - 1)] += I_pop_left;
-    // R Individuals
-    std::vector<int> R_pop_num(number_of_clusters, 0);
-    int R_pop_left = R;
-    while (R_pop_left > 10)
-    {
-        R_pop_num[wrld_eng.int_uniform(0, number_of_clusters - 1)] += 10;
-        R_pop_left -= 10;
-    }
-    R_pop_num[wrld_eng.int_uniform(0, number_of_clusters - 1)] += R_pop_left;
-    // fill the cluster vector
-    clusters.clear();
-    clusters.reserve(number_of_clusters);
-    for (int i = 0; i < number_of_clusters; ++i)
-    {
-        clusters.emplace_back(S_pop_num[i], E_pop_num[i], I_pop_num[i], R_pop_num[i], loc_num[i], cluster_areas[i],
-                              Color::Green, i,WHITE_ZONE_LATP_ALPHA);
-    }
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////           PRIVATE METHODS           /////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////// FILL WITH E,I,R INDIVIDUALS IN CORRESPONDING CLUSTERS /////////////////
+void World::fill_with_E_I_R_individuals(unsigned clusters_nums, int E, int I, int R, std::vector<int>& E_v,
+                                        std::vector<int>& I_v, std::vector<int>& R_v)
+{
+    assert(E_v.size() == clusters_nums);
+    assert(I_v.size() == clusters_nums);
+    assert(R_v.size() == clusters_nums);
 
+    int constexpr ppl_block = 10;
 
-
+    int E_pop_left = E;
+    while (E_pop_left > ppl_block)
+    {
+        E_v[wrld_eng.int_uniform(0, -1)] += ppl_block;
+        E_pop_left -= ppl_block;
+    }
+    E_v[wrld_eng.int_uniform(0, clusters_nums - 1)] += E_pop_left;
+    // I individuals
+    int I_pop_left = I;
+    while (I_pop_left > ppl_block)
+    {
+        I_v[wrld_eng.int_uniform(0, clusters_nums - 1)] += ppl_block;
+        I_pop_left -= ppl_block;
+    }
+    I_v[wrld_eng.int_uniform(0, clusters_nums - 1)] += I_pop_left;
+    // R Individuals
+    int R_pop_left = R;
+    while (R_pop_left > ppl_block)
+    {
+        R_v[wrld_eng.int_uniform(0, clusters_nums - 1)] += ppl_block;
+        R_pop_left -= ppl_block;
+    }
+    R_v[wrld_eng.int_uniform(0, clusters_nums - 1)] += R_pop_left;
+}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////           PUBLIC METHODS            /////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// World::World() : Area{}, clusters{}
-//{
-//}
+///////////////// WORLD SIZE /////////////////
+unsigned World::size() const
+{
+    return clusters.size();
+}
+///////////////// NUMBER OF LOCATIONS IN WORLD /////////////////
+unsigned World::locations_num() const
+{
+    auto add_op = [&](unsigned int a, Cluster b) { return a + b.locations_num(); };
+    return std::accumulate(std::begin(clusters), std::end(clusters), 0, add_op);
+}
+///////////////// NUMBER OF PEOPLE IN WORLD /////////////////
+unsigned World::people_num() const
+{
+    auto add_op = [&](unsigned int a, Cluster b) { return a + b.people_num(); };
+    return std::accumulate(std::begin(clusters), std::end(clusters), 0, add_op);
+}
+///////////////// REFERENCE TO CLUSTERS /////////////////
+std::vector<Cluster>& World::clusters_ref()
+{
+    return clusters;
+}
+///////////////// GET CLUSTERS /////////////////
+std::vector<Cluster> World::get_clusters() const
+{
+    return clusters;
+}
+///////////////// GENERATE PATH  /////////////////
+void World::generate_path(int to_visit, const std::vector<double>& weights, std::vector<Location*>& path,
+                          Random& simulation_engine)
+{
+    // the vector weight has to be created in Simulation::move() for every cluster so
+    // that the weight of the current cluster is equal the sum of the other weights
+    path.reserve(to_visit);
+    // Using cluster to generate path
+    std::vector<int> choose(weights.size(), 0); // number of location to chose from any of the cluster
+    for (int i = 0; i < to_visit; ++i)
+    {
+        choose[simulation_engine.discrete(weights)] += 1;
+    }
+    for (unsigned long i = 0; i < weights.size(); ++i)
+    {
+        if (choose[i] > 0) { clusters[i].generate_path(choose[i], path, simulation_engine); }
+    }
+}
+} // namespace smooth_sim
+
+//////////////////////////////////////////////////////
+
+/// UNUSED
 
 /////ununsed functions
 // std::vector<Location *> World::Location_list()
@@ -167,42 +247,6 @@ World::World(double Side_length, int number_of_clusters, int number_of_location,
 //    return &clusters[](index_result);
 //}
 
-unsigned int World::locations_num()
-{
-    auto add_op = [&](unsigned int a,Cluster b){ return a + b.locations_num(); };
-    return std::accumulate(std::begin(clusters),std::end(clusters),0,add_op);
-//    unsigned int sum{};
-//    for (auto& a : clusters)
-//    {
-//        sum += a.number_of_locations();
-//    }
-//    return sum;
-}
-
-unsigned int World::people_num()
-{
-    auto add_op = [&](unsigned int a,Cluster b){ return a + b.people_num(); };
-    return std::accumulate(std::begin(clusters),std::end(clusters),0,add_op);
-}
-
-// the vector weight has to be created in Simulation::move() for every cluster so
-// that the weight of the current cluster is equal the sum of the other weights
-void World::generate_path(int to_visit, const std::vector<double>& weights, std::vector<Location*>& path,
-                          Random& simulation_engine)
-{
-    path.reserve(to_visit);
-    // Second Method, using the cluster generate path
-    std::vector<int> choose(weights.size(), 0); // number of location to chose from any of the cluster
-    for (int i = 0; i < to_visit; ++i)
-    {
-        choose[simulation_engine.discrete(weights)] += 1;
-    }
-    for (unsigned long i = 0; i < weights.size(); ++i)
-    {
-        if (choose[i] > 0) { clusters[i].generate_path(choose[i], path, simulation_engine); }
-    }
-}
-/// UNUSED
 // Cluster *World::get_cluster(int index)
 //{
 //    auto it = clusters.begin();
@@ -235,4 +279,3 @@ void World::generate_path(int to_visit, const std::vector<double>& weights, std:
 //    }
 //    return result;
 //}
-} // namespace smooth_sim

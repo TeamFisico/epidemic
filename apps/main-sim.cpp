@@ -102,7 +102,7 @@ int main(int argc, char* argv[])
             move_count += duration1.count();
             spread_count += duration2.count();
         }
-        prova.update_Colors();
+        prova.update_zones();
         end = std::chrono::high_resolution_clock::now();
         duration = end - start;
         std::cout << i + 1 << "-nth Cycle : " << duration.count() << " s "

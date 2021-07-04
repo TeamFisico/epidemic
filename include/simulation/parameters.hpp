@@ -23,6 +23,7 @@ double constexpr YELLOW_ZONE_LATP_ALPHA = 15;
 double constexpr RED_ZONE_LATP_ALPHA = 30;
 double constexpr PAUSE_EXPONENT = 0.5;
 int constexpr UPDATE_ZONES_INTERVAL = 10;
+double constexpr STEP_TIME = 10; // minutes
 double constexpr MIN_SPEED = 2.0;
 double constexpr MAX_SPEED = 5.0;
 double constexpr MAX_PAUSE = 15.0;
