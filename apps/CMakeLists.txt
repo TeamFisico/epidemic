@@ -50,16 +50,16 @@ add_executable(sim-graphics main-sim-graphics.cpp)
 target_compile_features(sim-graphics PRIVATE cxx_std_17)
 target_compile_options(sim-graphics PRIVATE -Wall -Wextra -fsanitize=address)
 target_link_options(sim-graphics PRIVATE -fsanitize=address)
-target_link_libraries(sim-graphics PRIVATE  random
-                                            position
-                                            location
-                                            rectangle
-                                            group
-                                            cluster
-                                            world
-                                            person
+target_link_libraries(sim-graphics PRIVATE  simulation
                                             mobility_model
-                                            simulation)
+                                            person
+                                            world
+                                            cluster
+                                            group
+                                            rectangle
+                                            location
+                                            position
+                                            random)
 target_link_libraries(sim-graphics PRIVATE lyra)
 target_link_libraries(sim-graphics PRIVATE sfml-graphics)
 target_include_directories(sim-graphics PUBLIC "${PROJECT_BINARY_DIR}"
