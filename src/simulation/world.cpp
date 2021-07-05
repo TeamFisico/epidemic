@@ -35,11 +35,11 @@ World::World(double Side_length, int number_of_clusters, int number_of_locations
 
     ///////// Clusters construction /////////
 
-    clusters.reserve(number_of_clusters);
+    Clusters.reserve(number_of_clusters);
 
     for (int i = 0; i < number_of_clusters; ++i) //construct clusters vector element by element
     {
-        clusters.emplace_back(susceptibles[i], exposed[i], infected[i], recovered[i], locations_number[i],
+        Clusters.emplace_back(susceptibles[i], exposed[i], infected[i], recovered[i], locations_number[i],
                               cluster_areas[i], Zone::Green, i, WHITE_ZONE_LATP_ALPHA);
     }
 }
@@ -47,6 +47,7 @@ World::World(double Side_length, int number_of_clusters, int number_of_locations
 /////////////////////////////////////           PRIVATE METHODS           /////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+///////////////// FILL A VECTOR WITH NUMBER OF LOCATIONS FOR THE CORRESPONDING CLUSTER /////////////////
 void World::fill_with_locations_num(unsigned clusters_num, int locations_num, std::vector<int>& loc_num)
 {
     assert(loc_num.size() == clusters_num);
@@ -140,29 +141,29 @@ void World::fill_with_E_I_R_individuals(unsigned clusters_nums, int E, int I, in
 ///////////////// WORLD SIZE /////////////////
 unsigned World::size() const
 {
-    return clusters.size();
+    return Clusters.size();
 }
 ///////////////// NUMBER OF LOCATIONS IN WORLD /////////////////
 unsigned World::locations_num() const
 {
     auto add_op = [&](unsigned a, Cluster b) { return a + b.locations_num(); };
-    return std::accumulate(std::begin(clusters), std::end(clusters), 0, add_op);
+    return std::accumulate(std::begin(Clusters), std::end(Clusters), 0, add_op);
 }
 ///////////////// NUMBER OF PEOPLE IN WORLD /////////////////
 unsigned World::people_num() const
 {
     auto add_op = [&](unsigned int a, Cluster b) { return a + b.people_num(); };
-    return std::accumulate(std::begin(clusters), std::end(clusters), 0, add_op);
-}
-///////////////// REFERENCE TO CLUSTERS /////////////////
-std::vector<Cluster>& World::clusters_ref()
-{
-    return clusters;
+    return std::accumulate(std::begin(Clusters), std::end(Clusters), 0, add_op);
 }
 ///////////////// GET CLUSTERS /////////////////
 std::vector<Cluster> World::get_clusters() const
 {
-    return clusters;
+    return Clusters;
+}
+///////////////// REFERENCE TO CLUSTERS /////////////////
+std::vector<Cluster>& World::clusters()
+{
+    return Clusters;
 }
 ///////////////// GENERATE PATH  /////////////////
 void World::generate_path(int to_visit, const std::vector<double>& weights, std::vector<Location*>& path,
@@ -179,16 +180,14 @@ void World::generate_path(int to_visit, const std::vector<double>& weights, std:
     }
     for (unsigned long i = 0; i < weights.size(); ++i)
     {
-        if (choose[i] > 0) { clusters[i].generate_path(choose[i], path, simulation_engine); }
+        if (choose[i] > 0) { Clusters[i].generate_path(choose[i], path); }
     }
 }
 } // namespace smooth_sim
 
-//////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/// UNUSED
-
-/////ununsed functions
+/// UNUSED FUNCTIONS
 // std::vector<Location *> World::Location_list()
 //{
 //    std::vector<Location *> result;

@@ -10,7 +10,7 @@ namespace smooth_sim
 Simulation::Simulation(int S, int E, int I, int R, int number_of_clusters, int number_of_Locations, double Side,
                        double alpha, double gamma, double beta, double spread_radius, int time_in_minutes)
     : sim_engine{},
-      world{Side, number_of_clusters, number_of_Locations, S, E, I, R},
+      wrld{Side, number_of_clusters, number_of_Locations, S, E, I, R},
       alpha{alpha},
       beta{beta},
       gamma{gamma},
@@ -25,7 +25,7 @@ Simulation::Simulation(int S, int E, int I, int R, int number_of_clusters, int n
 ///////////////// MOVE WHITE /////////////////
 void Simulation::move_white(Cluster& cluster, std::vector<double>& weights_v)
 {
-    for (auto& p : cluster.people_ref())
+    for (auto& p : cluster.people())
     {
         if (p.is_at_home())
         {
@@ -34,7 +34,7 @@ void Simulation::move_white(Cluster& cluster, std::vector<double>& weights_v)
                 if (!sim_engine.try_event(p.home_prob())) // determine if person leaves home
                 {
                     p.set_is_at_home(false); // set the person as not at home
-                    world.generate_path(sim_engine.rounded_gauss(WHITE_PATH_MEAN, WHITE_PATH_STDDEV) + 1, weights_v,
+                    wrld.generate_path(sim_engine.rounded_gauss(WHITE_PATH_MEAN, WHITE_PATH_STDDEV) + 1, weights_v,
                                         p.path(), sim_engine);
                 }
             }
@@ -64,7 +64,7 @@ void Simulation::move_white(Cluster& cluster, std::vector<double>& weights_v)
 ///////////////// MOVE YELLOW /////////////////
 void Simulation::move_yellow(Cluster& cluster)
 {
-    for (auto& p : cluster.people_ref())
+    for (auto& p : cluster.people())
     {
         if (p.is_at_home())
         {
@@ -74,8 +74,7 @@ void Simulation::move_yellow(Cluster& cluster)
                 {                            // check if the person leave home
                     p.set_is_at_home(false); // set the person as not at home
                     // a.path() = sim::generate_path(list, 3, 0.5);
-                    cluster.generate_path(sim_engine.rounded_gauss(YELLOW_PATH_MEAN, YELLOW_PATH_STDDEV) + 1, p.path(),
-                                          sim_engine);
+                    cluster.generate_path(sim_engine.rounded_gauss(YELLOW_PATH_MEAN, YELLOW_PATH_STDDEV) + 1, p.path());
                 }
             }
             else
@@ -104,7 +103,7 @@ void Simulation::move_yellow(Cluster& cluster)
 ///////////////// MOVE RED /////////////////
 void Simulation::move_red(Cluster& cluster)
 {
-    for (auto& p : cluster.people_ref())
+    for (auto& p : cluster.people())
     {
         if (p.is_at_home())
         {
@@ -114,8 +113,7 @@ void Simulation::move_red(Cluster& cluster)
                 {                            // check if the person leave home
                     p.set_is_at_home(false); // set the person as not at home
                     // a.path() = sim::generate_path(list, 1, 0.2);
-                    cluster.generate_path(sim_engine.rounded_gauss(RED_PATH_MEAN, RED_PATH_STDDEV) + 1, p.path(),
-                                          sim_engine);
+                    cluster.generate_path(sim_engine.rounded_gauss(RED_PATH_MEAN, RED_PATH_STDDEV) + 1, p.path());
                 }
             }
             else
@@ -145,11 +143,11 @@ void Simulation::move_red(Cluster& cluster)
 void Simulation::close_people(Person& current_person, std::vector<Person*>& close_people)
 {
     close_people.clear();
-    for (auto& cl : world.clusters)
+    for (auto& cl : wrld.Clusters)
     {
         if (cl.get_zone() == Zone::Green)
         {
-            for (auto& p : cl.people_ref())
+            for (auto& p : cl.people())
             {
                 Position const& pos = p.person_ref().get_pos();
                 if (pos.InRadius(current_person.get_pos(), spread_radius) &&
@@ -166,7 +164,7 @@ void Simulation::close_people(Person& current_person, std::vector<Person*>& clos
 void Simulation::close_cluster_people(Person& current_person, std::vector<Person*>& close_people_v)
 {
     close_people_v.clear();
-    for (auto& a : world.clusters[current_person.get_label()].people_ref())
+    for (auto& a : wrld.Clusters[current_person.get_label()].people())
     {
         const Position& pos = a.person_ref().get_pos();
         if (pos.InRadius(current_person.get_pos(), spread_radius) &&
@@ -181,9 +179,9 @@ void Simulation::close_cluster_people(Person& current_person, std::vector<Person
 ///////////////// UPDATE PEOPLE STATUS /////////////////
 void Simulation::update_people_status()
 {
-    for (auto& cl : world.clusters)
+    for (auto& cl : wrld.Clusters)
     {
-        for (auto& p : cl.people_ref()) // set all the people's condition to new_condition
+        for (auto& p : cl.people()) // set all the people's condition to new_condition
         {
             p.person_ref().update_status();
         }
@@ -193,9 +191,13 @@ void Simulation::update_people_status()
 /////////////////////////////////////           PUBLIC METHODS            /////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////// MOVE WHITE /////////////////
-World& Simulation::world_ref()
+World& Simulation::world()
 {
-    return world;
+    return wrld;
+}
+World Simulation::get_world() const
+{
+        return wrld;
 }
 
 Data Simulation::get_Cluster_data(int i)
@@ -204,7 +206,7 @@ Data Simulation::get_Cluster_data(int i)
     unsigned int nE = 0;
     unsigned int nI = 0;
     unsigned int nR = 0;
-    for (auto& a : world.clusters[i].get_people())
+    for (auto& a : wrld.Clusters[i].get_people())
     {
         switch (a.get_person().get_current_status())
         {
@@ -231,7 +233,7 @@ Data Simulation::get_data()
     unsigned int nE{};
     unsigned int nI{};
     unsigned int nR{};
-    for (auto& c : world.clusters)
+    for (auto& c : wrld.Clusters)
     {
         for (auto& a : c.get_people())
         {
@@ -275,23 +277,23 @@ Data Simulation::get_data()
 ///////////////// UPDATE ZONES /////////////////
 void Simulation::update_zones()
 {
-    for (unsigned long i = 0; i < world.clusters.size(); ++i)
+    for (unsigned long i = 0; i < wrld.Clusters.size(); ++i)
     {
         Data data = get_Cluster_data(i);
         if (data.I / data.S >= RED_ZONE_CONDITION)
         {
-            world.clusters[i].set_zone(Zone::Red);
-            world.clusters[i].set_LATP(RED_ZONE_LATP_ALPHA);
+            wrld.Clusters[i].set_zone(Zone::Red);
+            wrld.Clusters[i].set_LATP(RED_ZONE_LATP_ALPHA);
         }
         else if (data.I / data.S >= YELLOW_ZONE_CONDITION)
         {
-            world.clusters[i].set_zone(Zone::Yellow);
-            world.clusters[i].set_LATP(YELLOW_ZONE_LATP_ALPHA);
+            wrld.Clusters[i].set_zone(Zone::Yellow);
+            wrld.Clusters[i].set_LATP(YELLOW_ZONE_LATP_ALPHA);
         }
         else
         {
-            world.clusters[i].set_zone(Zone::Green);
-            world.clusters[i].set_LATP(WHITE_ZONE_LATP_ALPHA);
+            wrld.Clusters[i].set_zone(Zone::Green);
+            wrld.Clusters[i].set_LATP(WHITE_ZONE_LATP_ALPHA);
         }
     }
 }
@@ -299,9 +301,9 @@ void Simulation::update_zones()
 void Simulation::spread()
 {
     std::vector<Person*> close_people_v{};
-    for (auto& cl : world.clusters)
+    for (auto& cl : wrld.Clusters)
     {
-        for (auto& p : cl.people_ref()) // p is the current person
+        for (auto& p : cl.people()) // p is the current person
         {
             if (p.person_ref().get_current_status() == Status::Exposed)
             { // if current person is in dormant Status
@@ -341,19 +343,19 @@ void Simulation::spread()
 ///////////////// MOVE /////////////////
 void Simulation::move()
 {
-    for (auto& cluster : world.clusters)
+    for (auto& cluster : wrld.Clusters)
     {
         if (cluster.get_zone() == Zone::Green)
         {
-            std::vector<double> weights(world.clusters.size(), 0); // weights for every inth cluster
+            std::vector<double> weights(wrld.Clusters.size(), 0); // weights for every inth cluster
             // fill the weight fot the various cluster, except for the current
-            for (unsigned long i = 0; i < world.clusters.size(); ++i)
+            for (unsigned long i = 0; i < wrld.Clusters.size(); ++i)
             {
-                if (world.clusters[i].get_zone() == Zone::Green) { weights[i] = world.clusters[i].locations_num(); }
+                if (wrld.Clusters[i].get_zone() == Zone::Green) { weights[i] = wrld.Clusters[i].locations_num(); }
             }
             // sum of all locations in green cluster except current one
             double sum = std::accumulate(weights.begin(), weights.end(), 0.) -
-                         world.clusters[cluster.get_label()].locations_num();
+                         wrld.Clusters[cluster.get_label()].locations_num();
             // make sure there is a 50 percent probability hat chosen location is from current cluster
             weights[cluster.get_label()] = sum;
             move_white(cluster, weights);
@@ -373,7 +375,7 @@ void Simulation::clean_path(Mobility_model& person)
 {
     for (unsigned long i = 0; i < person.path().size(); ++i)
     {
-        if (world.clusters[person.path()[i]->c_index()].get_zone() != Zone::Green)
+        if (wrld.Clusters[person.path()[i]->c_index()].get_zone() != Zone::Green)
         { // access the vector from opposite size, so you check all the elements correctly
             person.path()[i] =
                 person.path()[person.path().size() - 1]; // copy the last element of the vector to the current
@@ -386,12 +388,12 @@ void Simulation::clean_path(Mobility_model& person)
 /// TODO change this functions
 Position Simulation::person_pos(int cluster_index, int person_index)
 {
-    return world.clusters[cluster_index].people_ref()[person_index].person_ref().get_pos();
+    return wrld.Clusters[cluster_index].people()[person_index].person_ref().get_pos();
 }
 
 bool Simulation::at_home(int cluster_index, int person_index)
 {
-    return world.clusters[cluster_index].people_ref()[person_index].is_at_home();
+    return wrld.Clusters[cluster_index].people()[person_index].is_at_home();
 }
 
 void Simulation::simulate()

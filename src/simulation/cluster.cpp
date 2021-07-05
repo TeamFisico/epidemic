@@ -87,11 +87,11 @@ void Cluster::generate_groups(int locations_num)
             loc_left -= rnum;
         }
     }
-    assert(groups.empty());
-    groups.reserve(number_of_groups);
+    assert(Groups.empty());
+    Groups.reserve(number_of_groups);
     for (int i = 0; i < number_of_groups; ++i) //construct groups vector element by element
     {
-        groups.emplace_back(loc_num[i], gen_group_center(loc_num[i]), label);
+        Groups.emplace_back(loc_num[i], gen_group_center(loc_num[i]), index);
     }
 }
 ///////////////// GENERATE GROUP CENTER /////////////////
@@ -104,7 +104,7 @@ Position Cluster::gen_group_center(int num_of_loc)
         end_loop = true;
         new_center =
             rand_pos(Area.get_blh_corner(), Area.get_trh_corner(), cl_engine); // generate random center position
-        for (auto& a : groups)
+        for (auto& a : Groups)
         { // check if this center is far enough from other groups center
             if (a.get_center().distance_to(new_center) <= (a.size() + num_of_loc) * TRANSMISSION_RANGE / 10)
             {
@@ -138,6 +138,27 @@ void Cluster::set_E_I_R_individuals(int E, int I, int R)
         }
     }
 }
+///////////////// POINTER TO SELECTED LOCATION /////////////////
+Location* Cluster::select_location(int n)
+{
+    assert(n >= 0 && n < locations_num());
+    int g_size = Groups.size();
+    int group_index;
+    for (int j = 0; j < g_size; ++j)
+    {
+        int size = Groups[j].size();
+        if (n < size)
+        {
+            group_index = j;
+            j = g_size;
+        }
+        else
+        {
+            n -= size;
+        }
+    }
+    return &Groups[group_index].Locations()[n];
+}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////           PUBLIC METHODS            /////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -145,7 +166,7 @@ void Cluster::set_E_I_R_individuals(int E, int I, int R)
 ///////////////// SIZE OF THE CLUSTER  /////////////////
 unsigned Cluster::size() const
 {
-    return groups.size();
+    return Groups.size();
 }
 ///////////////// AREA OF THE CLUSTER /////////////////
 Rectangle& Cluster::area()
@@ -162,30 +183,58 @@ double Cluster::height()
 {
     return Area.get_trh_corner().get_y() - Area.get_blh_corner().get_y();
 }
-
 int Cluster::locations_num() const
 {
     auto add_op = [&](unsigned int a, Group b) { return a + b.size(); };
-    return std::accumulate(std::begin(groups), std::end(groups), 0, add_op);
+    return std::accumulate(std::begin(Groups), std::end(Groups), 0, add_op);
 }
-
+///////////////// REFERENCE TO PEOPLE IN THIS CLUSTER /////////////////
+std::vector<Mobility_model>& Cluster::people()
+{
+    return People;
+}
+///////////////// REFERENCE TO CLUSTER GROUPS /////////////////
+std::vector<Group>& Cluster::groups()
+{
+    return Groups;
+}
+///////////////// PEOPLE IN THIS CLUSTER /////////////////
+std::vector<Mobility_model> Cluster::get_people() const
+{
+    return People;
+}
+///////////////// NUMBER OF PEOPLE IN THIS CLUSTER /////////////////
 int Cluster::people_num() const
 {
     return People.size();
 }
+///////////////// CLUSTER INDEX IN CLUSTERS VECTOR(WORLD) /////////////////
+int Cluster::get_label() const
+{
+    return index;
+}
 
-
-
-void Cluster::generate_path(int to_visit, std::vector<Location*>& path, Random& cl_engine)
+///////////////// CLUSTER ZONE /////////////////
+Zone Cluster::get_zone() const
+{
+    return zone;
+}
+///////////////// CLUSTER LATP PARAMETER /////////////////
+double Cluster::get_LATP() const
+{
+    return LATP_alpha;
+}
+///////////////// PATH GENERATION FOR A PERSON /////////////////
+void Cluster::generate_path(int to_visit, std::vector<Location*>& path)
 {
     int last_index = -1;
-    for (auto& a : groups)
+    for (auto& a : Groups)
     {
         last_index += a.size();
     }
     std::vector<int> result_indexes;
-    for (int i = 0; i < to_visit; ++i)
-    { // select the random indexes
+    for (int i = 0; i < to_visit; ++i) // select the random indeces
+    {
         bool continue_loop = true;
         int curr_index;
         while (continue_loop)
@@ -209,26 +258,6 @@ void Cluster::generate_path(int to_visit, std::vector<Location*>& path, Random& 
     }
 }
 
-Location* Cluster::select_location(int n)
-{
-    assert(n >= 0 && n < locations_num());
-    int g_size = groups.size();
-    int group_index;
-    for (int j = 0; j < g_size; ++j)
-    {
-        int size = groups[j].size();
-        if (n < size)
-        {
-            group_index = j;
-            j = g_size;
-        }
-        else
-        {
-            n -= size;
-        }
-    }
-    return &groups[group_index].Locations()[n];
-}
 
 // unused
 // std::vector<Location *> Cluster::Location_list()

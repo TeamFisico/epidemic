@@ -15,13 +15,13 @@ int main()
     sf::RenderWindow window(sf::VideoMode(1200, 1200), "My window");
     window.display();
 
-    sf::VertexArray Clusters(sf::Quads, 4 * prova.world_ref().size());
-    sf::VertexArray Borders(sf::Lines, 8 * prova.world_ref().size());
+    sf::VertexArray Clusters(sf::Quads, 4 * prova.world().size());
+    sf::VertexArray Borders(sf::Lines, 8 * prova.world().size());
     std::array<double, 4> X{};
     std::array<double, 4> Y{};
-    for (unsigned i = 0; i < prova.world_ref().size(); ++i)
+    for (unsigned i = 0; i < prova.world().size(); ++i)
     {
-        auto& cl_a = prova.world_ref().clusters_ref()[i].cluster_area();
+        auto& cl_a = prova.world().clusters()[i].area();
         X[0] = cl_a.get_blh_corner().get_x();
         Y[0] = cl_a.get_blh_corner().get_y();
         X[1] = cl_a.get_blh_corner().get_x();
@@ -52,16 +52,16 @@ int main()
         }
     }
 
-    sf::VertexArray locations(sf::Triangles, 24 * prova.world_ref().locations_num());
+    sf::VertexArray locations(sf::Triangles, 24 * prova.world().locations_num());
     int count = 0;
     // double x_0, y_0, x_1, y_1, x_2, y_2, x_3, y_3, x_4, y_4, x_5, y_5, x_6, y_6, x_7, y_7, x_8, y_8; //points to
     // construct the various octagons
     int r = 0;
     std::array<double, 9> x{};
     std::array<double, 9> y{};
-    for (auto& cl : prova.world_ref().clusters_ref())
+    for (auto& cl : prova.world().clusters())
     {
-        for (auto& gr : cl.Groups())
+        for (auto& gr : cl.groups())
         {
             for (auto& l : gr.Locations())
             {
@@ -98,7 +98,7 @@ int main()
             }
         }
     }
-    /*for(auto& a: prova.world_ref().Clusters())
+    /*for(auto& a: prova.world().Clusters())
     {
         std::cout << "nth cluster: "
                   << " base: " << a.base() << " height: " << a.height() << " X: " << a.area().get_blh_corner().get_x()
@@ -124,7 +124,7 @@ int main()
         ++counter;
         // Transitioned from RectangleShape to Vertex array
         /*sf::RectangleShape cluster;
-        for (auto& a : prova.world_ref().Clusters())
+        for (auto& a : prova.world().Clusters())
         { // Draw the clusters(as rectangles)
             cluster.setSize(sf::Vector2f(a.base(), a.height()));
             cluster.setPosition(a.cluster_area().get_blh_corner().get_x(), a.cluster_area().get_blh_corner().get_y());
@@ -143,9 +143,9 @@ int main()
         }*/
 
         // Set Cluster Color
-        for (unsigned i = 0; i < prova.world_ref().clusters_ref().size(); ++i)
+        for (unsigned i = 0; i < prova.world().clusters().size(); ++i)
         {
-            auto& cl = prova.world_ref().clusters_ref()[i];
+            auto& cl = prova.world().clusters()[i];
             sf::Color color;
             if (cl.get_zone() == Zone::Green) { color = sf::Color::Green; }
             else if (cl.get_zone() == Zone::Yellow)
@@ -167,7 +167,7 @@ int main()
         // With sf::CircleShape it takes 1.1 seconds with 1000 locations, there is a need to change to vertex array
         /*sf::CircleShape circle;
         circle.setFillColor(sf::Color::Blue);
-        for(auto& a: prova.world_ref().Clusters()){ //Draw the locations
+        for(auto& a: prova.world().Clusters()){ //Draw the locations
             for(auto& b: a.Groups()){
                 for(auto& c: b.Locations()){
                     circle.setRadius(c.get_radius());
@@ -187,7 +187,7 @@ int main()
         /*sf::RectangleShape person(sf::Vector2f(2,2));
         circle.setRadius(1.);
         circle.setFillColor(sf::Color::White);
-        for(auto& a: prova.world_ref().Clusters()){
+        for(auto& a: prova.world().Clusters()){
             for(auto& b: a.population()){
                 if(!b.is_at_home())
                 {
@@ -210,13 +210,13 @@ int main()
         }*/
 
         // with vertex array, should be faster
-        sf::VertexArray people(sf::Quads, prova.world_ref().people_num() * 4);
+        sf::VertexArray people(sf::Quads, prova.world().people_num() * 4);
         double x_0, y_0;
         r = 1;
         count = 0;
-        for (auto& a : prova.world_ref().clusters_ref())
+        for (auto& a : prova.world().clusters())
         {
-            for (auto& b : a.people_ref())
+            for (auto& b : a.people())
             {
                 if (!b.is_at_home())
                 {
@@ -264,7 +264,7 @@ int main()
     }
 
     /*double sum{};
-    for(auto&a : prova.world_ref().Clusters()){
+    for(auto&a : prova.world().Clusters()){
         std::cout << "nth cluster: "
                   << " blh-x: " << a.area().get_blh_corner().get_x() << " blh-y: " << a.area().get_blh_corner().get_y()
     << " trh-x: " << a.area().get_trh_corner().get_x()

@@ -19,7 +19,7 @@ class Simulation
 {
   private:
     Random sim_engine;    // Random engine used for random generation in this class
-    World world;          // World where the simulation takes place,made up of Clusters,Groups,People
+    World wrld;          // World where the simulation takes place,made up of Clusters,Groups,People
     double alpha;         // epidemic parameter: see
     double beta;          // epidemic parameter: see
     double gamma;         // epidemic parameter: see
@@ -53,8 +53,11 @@ class Simulation
     void update_people_status();
 
   public:
-    // return a reference to the current world
-    World& world_ref();
+    // returns a reference to the current world
+    World& world();
+
+    // return current world state
+    World get_world() const;
 
     // get the summary data from i-nth cluster
     Data get_Cluster_data(int i);
@@ -69,8 +72,9 @@ class Simulation
     void spread();
 
     void move();
-    void simulate(); // function that call move, spread and Person::pass_condition for the necessary amount of time, WIP
-                     // concept, will vary based on other addition(as curfew, quarantine, ...)
+
+    // performs the actual simulation
+    void simulate();
     Position person_pos(int cluster_index, int person_index);
     bool at_home(int cluster_index, int person_index);
     // unused   std::vector<Location *> green_loc_list(); // list of locations of non_red clusters

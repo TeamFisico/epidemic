@@ -46,6 +46,7 @@ class Cluster
     // set Status::Exposed,Status::Infected,Status::Recovered in such a way to have the right initial E,I,R individuals
     void set_E_I_R_individuals(int E, int I, int R);
 
+    //return a pointer to a group location by index(used in path generation)
     Location* select_location(int n);
 
   public:
@@ -69,7 +70,7 @@ class Cluster
     int people_num() const;
 
     //returns cluster current zone
-    Zone get_zone() const { return zone; }
+    Zone get_zone() const;
 
     //sets cluster zone
     void set_zone(Zone cluster_zone) { zone = cluster_zone; }
@@ -81,19 +82,19 @@ class Cluster
     std::vector<Mobility_model>& people();
 
     //returns people vector in this cluster
-    std::vector<Mobility_model> get_people();
+    std::vector<Mobility_model> get_people() const;
 
     //returns label of this cluster(index of it into clusters vector(World class)
-    int label() const { return index; }
+    int get_label() const;
 
     // returns reference to groups vector of this cluster
-    std::vector<Group>& groups() { return Groups; }
+    std::vector<Group>& groups();
 
     //returns LATP parameter used by people in this cluster when calling next_location()
-    double get_LATP() const { return LATP_alpha; }
+    double get_LATP() const;
 
     //fills path vector with pointers to location to visit
-    void generate_path(int to_visit, std::vector<Location*>& path, Random& rng);
+    void generate_path(int to_visit, std::vector<Location*>& path);
      // select the nth location and return his pointer, used for generate_path
     //    std::vector<Location*> Location_list(); // get a vector of pointer to all locations in the cluster
     //    std::vector<Person*> Person_list();     // get a vector of pointer to all People in the cluster
