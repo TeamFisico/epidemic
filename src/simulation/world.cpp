@@ -1,6 +1,7 @@
 #include "world.hpp"
 #include "random.hpp"
 #include <random>
+#include <cassert>
 
 namespace smooth_sim
 {

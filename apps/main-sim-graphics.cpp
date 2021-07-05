@@ -11,8 +11,11 @@ int main()
     //    auto start = std::chrono::high_resolution_clock::now();
     //    auto end = std::chrono::high_resolution_clock::now();
     //    std::chrono::duration<float> duration{};
-    Simulation prova{25000, 3, 200, 4, 5, 1500, 1200, 0.1, 0.02, 0.4, 1, 20};
-    sf::RenderWindow window(sf::VideoMode(1200, 1200), "My window");
+    double Sim_side = 1000;
+    double Graph_width = 800;
+    Simulation prova{25000, 3, 200, 4, 5, 1500, Sim_side, 0.1, 0.02, 0.4, 1, 20};
+    std::vector<Data> Result = {prova.get_data()};
+    sf::RenderWindow window(sf::VideoMode(Sim_side+Graph_width, Sim_side), "My window");
     window.display();
 
     sf::VertexArray Clusters(sf::Quads, 4 * prova.world().size());
@@ -98,7 +101,19 @@ int main()
             }
         }
     }
-    /*for(auto& a: prova.world().Clusters())
+    //Initialize the graphs
+    sf::VertexArray Susceptible(sf::LineStrip,1);
+    sf::VertexArray Exposed(sf::LineStrip,1);
+    sf::VertexArray Infected(sf::LineStrip,1);
+    sf::VertexArray Recovered(sf::LineStrip,1);
+    //Initialize the first point
+    double coeff = Sim_side/prova.world().people_num();
+    double dx = Graph_width/100.0; //initially divide the graph x in
+    Susceptible[0].position = sf::Vector2f(Sim_side,Result[0].S*coeff);
+    Exposed[0].position = sf::Vector2f(Sim_side,Result[0].E*coeff);
+    Infected[0].position = sf::Vector2f(Sim_side,Result[0].I*coeff);
+    Recovered[0].position = sf::Vector2f(Sim_side,Result[0].R*coeff);
+    /*for(auto& a: prova.world_ref().Clusters())
     {
         std::cout << "nth cluster: "
                   << " base: " << a.base() << " height: " << a.height() << " X: " << a.area().get_blh_corner().get_x()
@@ -116,6 +131,7 @@ int main()
         window.clear(sf::Color::Black);
         prova.move();
         prova.spread();
+        Result.push_back(prova.get_data());
         if (counter % 10 == 0)
         {
             prova.update_zones();
@@ -259,6 +275,28 @@ int main()
             }
         }
         window.draw(people);
+
+        //If necessary adapt the graphs
+        if(Susceptible[counter - 1].position.x >= 4*Graph_width/5){ //if last graph point x is >= of 4/5 of Graph_width, adapt the graph so that it stay in half Graph_width
+            double k = 1/(2*Susceptible[counter - 1].position.x);
+            for(int i = 1; i < counter; ++i){ //adapt the x axis
+                Susceptible[i].position.x = Sim_side*(1-k) + k*Susceptible[i].position.x;
+                Exposed[i].position.x = Susceptible[i].position.x;
+                Infected[i].position.x = Susceptible[i].position.x;
+                Recovered[i].position.x = Susceptible[i].position.x;
+            }
+            dx *= k; //adapt the delta_x
+        }
+        //Fill points of graphs
+        Susceptible.append(sf::Vertex(sf::Vector2f(Sim_side + counter*dx,Result[counter].S*coeff),sf::Color::Blue));
+        Exposed.append(sf::Vertex(sf::Vector2f(Sim_side + counter*dx,Result[counter].S*coeff),sf::Color::Green));
+        Infected.append(sf::Vertex(sf::Vector2f(Sim_side + counter*dx,Result[counter].S*coeff),sf::Color::Yellow));
+        Recovered.append(sf::Vertex(sf::Vector2f(Sim_side + counter*dx,Result[counter].S*coeff),sf::Color::Red));
+
+        window.draw(Susceptible);
+        window.draw(Exposed);
+        window.draw(Infected);
+        window.draw(Recovered);
 
         window.display();
     }
