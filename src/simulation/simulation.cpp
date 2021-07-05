@@ -280,12 +280,12 @@ void Simulation::update_zones()
     for (unsigned long i = 0; i < wrld.Clusters.size(); ++i)
     {
         Data data = get_Cluster_data(i);
-        if (data.I / data.S >= RED_ZONE_CONDITION)
+        if (static_cast<double>(data.I) / static_cast<double>(data.S) >= RED_ZONE_CONDITION)
         {
             wrld.Clusters[i].set_zone(Zone::Red);
             wrld.Clusters[i].set_LATP(RED_ZONE_LATP_ALPHA);
         }
-        else if (data.I / data.S >= YELLOW_ZONE_CONDITION)
+        else if (static_cast<double>(data.I) / static_cast<double>(data.S) >= YELLOW_ZONE_CONDITION)
         {
             wrld.Clusters[i].set_zone(Zone::Yellow);
             wrld.Clusters[i].set_LATP(YELLOW_ZONE_LATP_ALPHA);
