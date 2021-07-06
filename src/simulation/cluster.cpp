@@ -81,7 +81,6 @@ void Cluster::generate_groups(int locations_num)
         }
         else
         {
-            std::uniform_int_distribution<> rand_num(1, nearbyint(loc_left / 2));
             int rnum = cl_engine.int_uniform(1, nearbyint(loc_left / 2));
             loc_num[i] += rnum;
             loc_left -= rnum;
@@ -163,31 +162,6 @@ Location* Cluster::select_location(int n)
 /////////////////////////////////////           PUBLIC METHODS            /////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-///////////////// SIZE OF THE CLUSTER  /////////////////
-unsigned Cluster::size() const
-{
-    return Groups.size();
-}
-///////////////// AREA OF THE CLUSTER /////////////////
-Rectangle& Cluster::area()
-{
-    return Area;
-}
-int Cluster::locations_num() const
-{
-    auto add_op = [&](unsigned int a, Group b) { return a + b.size(); };
-    return std::accumulate(std::begin(Groups), std::end(Groups), 0, add_op);
-}
-///////////////// REFERENCE TO PEOPLE IN THIS CLUSTER /////////////////
-std::vector<Mobility_model>& Cluster::people()
-{
-    return People;
-}
-///////////////// REFERENCE TO CLUSTER GROUPS /////////////////
-std::vector<Group>& Cluster::groups()
-{
-    return Groups;
-}
 ///////////////// PEOPLE IN THIS CLUSTER /////////////////
 std::vector<Mobility_model> Cluster::get_people() const
 {
@@ -198,21 +172,57 @@ int Cluster::people_num() const
 {
     return People.size();
 }
-///////////////// CLUSTER INDEX IN CLUSTERS VECTOR(WORLD) /////////////////
-int Cluster::get_label() const
+///////////////// SIZE OF THE CLUSTER  /////////////////
+unsigned Cluster::size() const
 {
-    return index;
+    return Groups.size();
 }
-
+int Cluster::locations_num() const
+{
+    auto add_op = [&](unsigned int a, Group b) { return a + b.size(); };
+    return std::accumulate(std::begin(Groups), std::end(Groups), 0, add_op);
+}
 ///////////////// CLUSTER ZONE /////////////////
 Zone Cluster::get_zone() const
 {
     return zone;
 }
+///////////////// CLUSTER INDEX IN CLUSTERS VECTOR(WORLD) /////////////////
+int Cluster::get_label() const
+{
+    return index;
+}
 ///////////////// CLUSTER LATP PARAMETER /////////////////
 double Cluster::get_LATP() const
 {
     return LATP_alpha;
+}
+///////////////// REFERENCE TO PEOPLE IN THIS CLUSTER /////////////////
+std::vector<Mobility_model>& Cluster::people()
+{
+    return People;
+}
+///////////////// AREA OF THE CLUSTER /////////////////
+Rectangle& Cluster::area()
+{
+    return Area;
+}
+
+
+
+
+
+
+
+
+
+void Cluster::set_zone(Zone cluster_zone)
+{
+    zone = cluster_zone;
+}
+void Cluster::set_LATP(double new_LATP_parameter)
+{
+    LATP_alpha = new_LATP_parameter;
 }
 ///////////////// PATH GENERATION FOR A PERSON /////////////////
 void Cluster::generate_path(int to_visit, std::vector<Location*>& path)
