@@ -210,8 +210,8 @@ int main()
                         people[4 * count + 2].color = sf::Color::Black;
                         people[4 * count + 3].color = sf::Color::Black;
                     }
-                    x_0 = b.person_ref().get_pos().get_x();
-                    y_0 = b.person_ref().get_pos().get_y();
+                    x_0 = b.person_ref().pos().get_x();
+                    y_0 = b.person_ref().pos().get_y();
                     people[4 * count].position = sf::Vector2f(x_0 - r, y_0 - r);
                     people[4 * count + 1].position = sf::Vector2f(x_0 + r, y_0 - r);
                     people[4 * count + 2].position = sf::Vector2f(x_0 + r, y_0 + r);
