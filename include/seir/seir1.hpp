@@ -3,6 +3,9 @@
 
 #include <vector>
 
+namespace Euler
+{
+
 struct State
 {
     double S;
@@ -25,5 +28,7 @@ class sim
     bool is_valid();
     std::vector<State> generate_all_points(int time_in_days);
 };
+
+}
 
 #endif

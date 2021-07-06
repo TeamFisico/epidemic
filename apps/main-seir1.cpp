@@ -11,6 +11,8 @@
 
 #include "seir1.hpp"
 
+using namespace Euler;
+
 int main(int argc, char* argv[])
 {
 
