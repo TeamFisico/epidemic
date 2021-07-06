@@ -37,7 +37,7 @@ void Position::move_toward(Position target, double speed, Random& engine)
     y += v_y;
 }
 
-double Position::distance_to(Position& a) const
+double Position::distance_to(Position a) const
 {
     return std::sqrt((x - a.x) * (x - a.x) + (y - a.y) * (y - a.y));
 }

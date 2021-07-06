@@ -106,7 +106,7 @@ Position Cluster::gen_group_center(int num_of_loc)
             rand_pos(Area.get_blh_corner(), Area.get_trh_corner(), cl_engine); // generate random center position
         for (auto& a : Groups)
         { // check if this center is far enough from other groups center
-            if (a.get_center().distance_to(new_center) <= (a.size() + num_of_loc) * TRANSMISSION_RANGE / 10)
+            if (a.get_center().distance_to(new_center) <= (a.locations_num() + num_of_loc) * TRANSMISSION_RANGE / 10)
             {
                 end_loop = false;
                 break;
@@ -146,7 +146,7 @@ Location* Cluster::select_location(int n)
     int group_index;
     for (int j = 0; j < g_size; ++j)
     {
-        int size = Groups[j].size();
+        int size = Groups[j].locations_num();
         if (n < size)
         {
             group_index = j;
@@ -157,7 +157,7 @@ Location* Cluster::select_location(int n)
             n -= size;
         }
     }
-    return &Groups[group_index].Locations()[n];
+    return &Groups[group_index].locations()[n];
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////           PUBLIC METHODS            /////////////////////////////////////////////
@@ -175,7 +175,7 @@ Rectangle& Cluster::area()
 }
 int Cluster::locations_num() const
 {
-    auto add_op = [&](unsigned int a, Group b) { return a + b.size(); };
+    auto add_op = [&](unsigned int a, Group b) { return a + b.locations_num(); };
     return std::accumulate(std::begin(Groups), std::end(Groups), 0, add_op);
 }
 ///////////////// REFERENCE TO PEOPLE IN THIS CLUSTER /////////////////
@@ -220,7 +220,7 @@ void Cluster::generate_path(int to_visit, std::vector<Location*>& path)
     int last_index = -1;
     for (auto& a : Groups)
     {
-        last_index += a.size();
+        last_index += a.locations_num();
     }
     std::vector<int> result_indexes;
     for (int i = 0; i < to_visit; ++i) // select the random indeces

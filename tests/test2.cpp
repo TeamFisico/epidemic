@@ -12,6 +12,6 @@ TEST_CASE("Path generation test")
     Random rng;
     prova.generate_path(5,weights,per.path(),rng);
     for(auto& a: per.path()){
-        std::cout << "X = " << a->get_pos().get_x() << " Y = " << a->get_pos().get_x() << std::endl;
+        std::cout << "X = " << a->pos().get_x() << " Y = " << a->pos().get_x() << std::endl;
     }
 }

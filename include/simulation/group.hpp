@@ -8,17 +8,21 @@ namespace smooth_sim
 class Group
 {
   private:
-    std::vector<Location> locations;
+    std::vector<Location> Locations;
     Position center;
     Random grp_engine;
 
   public:
     Group(int number_of_locations, Position center, int cluster_index);
     Group() = default;
-    // unused   Location* get_location(int i);          // get pointer to i_nth Location
-    unsigned int locations_num(); // function that return pointer to all locations in the Group
-    std::vector<Location>& Locations() { return locations; }
-    unsigned int size() { return locations.size(); }
+
+    // Return the total number of location in the group
+    unsigned int locations_num();
+
+    // Return reference to Locations vector
+    std::vector<Location>& locations() { return Locations; }
+
+    // Return the center of the Group
     Position get_center() { return center; }
 };
 

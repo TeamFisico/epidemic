@@ -5,18 +5,19 @@
 
 namespace smooth_sim
 {
-// Constructor
+////////////////////////////////////////////////////////
+/////           LOCATION CONSTRUCTOR              //////
+////////////////////////////////////////////////////////
 Location::Location(Position location_pos, double location_Radius, int cluster_index)
-    : location_pos{location_pos},
-      location_Radius{location_Radius},
-      cluster_index{cluster_index}
+    : Location_pos{location_pos},
+      Location_Radius{location_Radius},
+      Cluster_index{cluster_index}
 {
 }
-// Default Constructor WIP
-/*Location::Location()
-{
-}*/
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////           EXTERN FUNCTIONS            ////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Location generate_close_loc(Position& pos, double min_distance, double max_distance, int cluster_index,
                             Random& group_engine)
 {

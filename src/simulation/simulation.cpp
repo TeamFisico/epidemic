@@ -149,8 +149,8 @@ void Simulation::close_people(Person& current_person, std::vector<Person*>& clos
         {
             for (auto& p : cl.people())
             {
-                Position const& pos = p.person_ref().get_pos();
-                if (pos.InRadius(current_person.get_pos(), spread_radius) &&
+                Position const& pos = p.person_ref().pos();
+                if (pos.InRadius(current_person.pos(), spread_radius) &&
                     p.person_ref().get_current_status() == Status::Susceptible &&
                     !p.is_at_home()) // check if person is close_enough, Susceptible and not at_home
                 {
@@ -166,8 +166,8 @@ void Simulation::close_cluster_people(Person& current_person, std::vector<Person
     close_people_v.clear();
     for (auto& a : wrld.Clusters[current_person.get_label()].people())
     {
-        const Position& pos = a.person_ref().get_pos();
-        if (pos.InRadius(current_person.get_pos(), spread_radius) &&
+        const Position& pos = a.person_ref().pos();
+        if (pos.InRadius(current_person.pos(), spread_radius) &&
             a.person_ref().get_current_status() == Status::Susceptible && !a.is_at_home())
         { // check if person is close_enough, Susceptible and not at_home
             close_people_v.push_back(
@@ -190,7 +190,6 @@ void Simulation::update_people_status()
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////           PUBLIC METHODS            /////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////// MOVE WHITE /////////////////
 World& Simulation::world()
 {
     return wrld;
@@ -358,7 +357,7 @@ void Simulation::clean_path(Mobility_model& person)
 {
     for (unsigned long i = 0; i < person.path().size(); ++i)
     {
-        if (wrld.Clusters[person.path()[i]->c_index()].get_zone() != Zone::Green)
+        if (wrld.Clusters[person.path()[i]->get_cluster_index()].get_zone() != Zone::Green)
         { // access the vector from opposite size, so you check all the elements correctly
             person.path()[i] =
                 person.path()[person.path().size() - 1]; // copy the last element of the vector to the current
@@ -371,7 +370,7 @@ void Simulation::clean_path(Mobility_model& person)
 /// TODO change this functions
 Position Simulation::person_pos(int cluster_index, int person_index)
 {
-    return wrld.Clusters[cluster_index].people()[person_index].person_ref().get_pos();
+    return wrld.Clusters[cluster_index].people()[person_index].person_ref().pos();
 }
 
 bool Simulation::at_home(int cluster_index, int person_index)
