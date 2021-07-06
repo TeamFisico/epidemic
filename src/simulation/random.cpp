@@ -15,14 +15,21 @@ Random::Random()
     eng = default_engine;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////           PUBLIC METHODS            /////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+///////////////// UNIFORM DISTRIBUTION EXTRACTION /////////////////
 double Random::uniform(double lower, double upper)
 {
     return eng.uniform(lower, upper);
 }
+///////////////// INT UNIFORM DISTRIBUTION EXTRACTION /////////////////
 int Random::int_uniform(int lower, int upper)
 {
     return eng.variate<int, std::uniform_int_distribution>(lower, upper);
 }
+///////////////// NORMAL DISTRIBUTION EXTRACTION /////////////////
 double Random::gauss(double mean, double stddev)
 {
     return eng.variate<double, std::normal_distribution>(mean, stddev);
@@ -31,21 +38,25 @@ int Random::rounded_gauss(double mean, double stddev)
 {
     return round(eng.variate<double, std::normal_distribution>(mean, stddev));
 }
+///////////////// DISCRETE DISTRIBUTION EXTRACTION /////////////////
+// https://en.cppreference.com/w/cpp/numeric/random/discrete_distribution/discrete_distribution
 int Random::discrete(std::vector<double> weights)
 {
     return eng.variate<int, std::discrete_distribution>(weights.begin(), weights.end());
 }
+///////////////// EVENT OCCURENCE DETERMINATION /////////////////
 bool Random::try_event(double probability)
 {
     return uniform(0, 1) <= probability;
 }
+///////////////// RANDOM STAY DETERMINATION /////////////////
 int Random::rand_stay()
 {
-    double t1 = 0.0;
-    double t2 = 0.0;
-    double t3 = 0.0;
-    double t4 = 0.0;
-    double pause_time = 0.0;
+    double t1{};
+    double t2{};
+    double t3{};
+    double t4{};
+    double pause_time{};
 
     double u = uniform(0, 1); // number in range [0,1)
 
@@ -56,9 +67,15 @@ int Random::rand_stay()
     pause_time = t4;
     return round(pause_time);
 }
+///////////////// RANDOM SPEED DETERMINATION /////////////////
 double Random::rand_speed()
 {
     return uniform(MIN_SPEED, MAX_SPEED);
+}
+///////////////// RANDOM LOCATION RADIUS DETERMINATION /////////////////
+double Random::rand_radius()
+{
+    return gauss(LOCATION_RADIUS_MEAN, LOCATION_RADIUS_DEV);
 }
 
 } // namespace smooth_sim

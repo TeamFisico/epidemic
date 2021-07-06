@@ -19,7 +19,7 @@ class Simulation
 {
   private:
     Random sim_engine;    // Random engine used for random generation in this class
-    World wrld;          // World where the simulation takes place,made up of Clusters,Groups,People
+    World wrld;           // World where the simulation takes place,made up of Clusters,Groups,People
     double alpha;         // epidemic parameter: see
     double beta;          // epidemic parameter: see
     double gamma;         // epidemic parameter: see

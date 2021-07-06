@@ -19,8 +19,7 @@ class World
     World() = delete;
 
   private:
-
-    //fill the input vector with the number of locations to be assigned to each cluster(corresponding index)
+    // fill the input vector with the number of locations to be assigned to each cluster(corresponding index)
     void fill_with_locations_num(unsigned clusters_num, int locations_num, std::vector<int>& loc_num);
 
     // fill input vector with S individuals with an index corresponding to their belonging cluster
@@ -32,7 +31,6 @@ class World
                                      std::vector<int>& I_v, std::vector<int>& R_v);
 
   public:
-
     // Let Simulation be a friend, being able to access to private members
     friend class Simulation;
 

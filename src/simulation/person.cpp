@@ -24,7 +24,7 @@ void Person::update_status()
 
 bool Person::at_location(Location* loc)
 {
-    return (pos.InRadius(loc->get_pos(), loc->get_radius()));
+    return (pos.in_radius(loc->get_position(), loc->get_radius()));
 }
 
 } // namespace smooth_sim

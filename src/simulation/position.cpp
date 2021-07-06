@@ -5,21 +5,46 @@
 
 namespace smooth_sim
 {
-// Constructor
+
+//////////////////////////////////////////////
+///////      POSITION CONSTRUCTOR       //////
+//////////////////////////////////////////////
 Position::Position(double X, double Y) : x{X}, y{Y}
 {
 }
-// Default Constructor
+//////////////////////////////////////////////
+/////   POSITION DEFAULT CONSTRUCTOR    //////
+//////////////////////////////////////////////
 Position::Position() : x{0}, y{0}
 {
 }
 
-bool Position::InRadius(Position other, double r) const
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////           PUBLIC METHODS            /////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+///////////////// GET X COORDINATE  /////////////////
+double Position::get_x() const
+{
+    return x;
+}
+///////////////// GET Y COORDINATE  /////////////////
+double Position::get_y() const
+{
+    return y;
+}
+///////////////// DISTANCE TO ANOTHER POSITION  /////////////////
+double Position::distance_to(Position const& a) const
+{
+    return std::sqrt((x - a.x) * (x - a.x) + (y - a.y) * (y - a.y));
+}
+///////////////// IS IN RADIUS WITH OTHER POSITION?  /////////////////
+bool Position::in_radius(Position other, double r) const
 {
     if (((x - other.x) * (x - other.x)) + ((y - other.y) * (y - other.y)) <= r * r) { return true; }
     return false;
 }
-
+///////////////// MOVE POSITION TOWARD A SPECIFIC TARGET  /////////////////
 void Position::move_toward(Position target, double speed, Random& engine)
 {
     double dx = target.x - x;
@@ -36,27 +61,10 @@ void Position::move_toward(Position target, double speed, Random& engine)
     x += v_x;
     y += v_y;
 }
-
-double Position::distance_to(Position& a) const
+///////////////// GENERATE A RANDOM POSITION IN RECTANGLE  /////////////////
+Position rand_pos(Position blh_corner, Position trh_corner, Random& eng)
 {
-    return std::sqrt((x - a.x) * (x - a.x) + (y - a.y) * (y - a.y));
-}
-
-double Position::get_x() const
-{
-    return x;
-}
-
-double Position::get_y() const
-{
-    return y;
-}
-
-Position rand_pos(Position blh_corner, Position trh_corner, Random& engine)
-{
-    Position result{engine.uniform(blh_corner.get_x(), trh_corner.get_x()),
-                    engine.uniform(blh_corner.get_y(), trh_corner.get_y())};
-    return result;
+    return {eng.uniform(blh_corner.get_x(), trh_corner.get_x()), eng.uniform(blh_corner.get_y(), trh_corner.get_y())};
 }
 
 } // namespace smooth_sim

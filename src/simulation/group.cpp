@@ -3,44 +3,66 @@
 namespace smooth_sim
 {
 
-Group::Group(int number_of_locations, Position center, int cluster_index) : grp_engine{}
+Group::Group(int number_of_locations, Position group_centre, int cluster_label)
+       : centre{group_centre},
+         grp_engine{}
 {
-    locations.clear();
-    // generate first locations
-    locations.push_back(generate_close_loc(center, 0, TRANSMISSION_RANGE / 10, cluster_index, grp_engine));
-    // generate other locations with a loop
-    for (int i = 1; i < number_of_locations; ++i)
-    {
-        bool is_ok = false;
-        while (!is_ok)
-        {
-            is_ok = true;
-            Location new_loc =
-                generate_close_loc(center, 0, (i + 1) * TRANSMISSION_RANGE / 10, cluster_index, grp_engine);
-            for (auto a : locations)
-            {
-                if (a.get_pos().distance_to(new_loc.get_pos()) < TRANSMISSION_RANGE / 10)
-                {
-                    ; // make sure the new location close enough to other locations
-                    is_ok = false;
-                    break;
-                }
-            }
-            if (is_ok) { locations.push_back(new_loc); }
-        }
-    }
+    ///////// Group Waypoints plot over the simulation area  /////////
+
+    generate_group_waypoints(number_of_locations,cluster_label);
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////           PRIVATE METHODS           /////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+///////////////// GENERATE GROUPS WAYPOINTS /////////////////
+void Group::generate_group_waypoints(int locations_num,int cluster_label)
+{
+    // generate first location according to location plotting model
+    Locations.push_back(generate_close_loc(centre, 0, TRANSMISSION_RANGE / 10, cluster_label, grp_engine));
+
+    // now generating other group locations
+    for (int i = 1; i < locations_num; ++i)
+    {
+        bool is_ok = false;
+        while (!is_ok)
+        {
+            is_ok = true;
+            Location new_loc =
+                generate_close_loc(centre, 0, (i + 1) * TRANSMISSION_RANGE / 10, cluster_label, grp_engine);
+            for (auto a : Locations)
+            {
+                // make sure the new location close enough to other locations
+                if (a.get_position().distance_to(new_loc.get_position()) < TRANSMISSION_RANGE / 10)
+                {
+                    is_ok = false;
+                    break;
+                }
+            }
+            if (is_ok) { Locations.push_back(new_loc); }
+        }
+    }
+}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////           PUBLIC METHODS            /////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-unsigned int Group::locations_num()
+
+///////////////// CENTRE POSITION OF THIS GROUP  /////////////////
+Position Group::get_centre() const
 {
-    return locations.size();
+    return centre;
+}
+///////////////// NUMBER OF LOCATIONS IN THIS GROUP /////////////////
+unsigned Group::locations_num() const
+{
+    return Locations.size();
+}
+///////////////// REFERENCE TO LOCATIONS VECTOR OF THIS GROUP  /////////////////
+std::vector<Location>& Group::locations()
+{
+    return Locations;
 }
 
 } // namespace smooth_sim
