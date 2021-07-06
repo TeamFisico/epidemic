@@ -30,16 +30,16 @@ add_executable(sim main-sim.cpp)
 target_compile_features(sim PRIVATE cxx_std_17)
 target_compile_options(sim PRIVATE -Wall -Wextra -fsanitize=address)
 target_link_options(sim PRIVATE -fsanitize=address)
-target_link_libraries(sim PRIVATE  random
-                                   position
-                                   location
-                                   rectangle
-                                   group
-                                   cluster
-                                   world
-                                   person
-                                   mobility_model
-                                   simulation)
+target_link_libraries(sim PRIVATE   simulation
+                                    mobility_model
+                                    person
+                                    world
+                                    cluster
+                                    group
+                                    rectangle
+                                    location
+                                    position
+                                    random)
 target_link_libraries(sim PUBLIC ${ROOT_LIBRARIES} ${ROOT_EXE_LINKER_FLAGS})
 target_link_libraries(sim PRIVATE lyra)
 target_include_directories(sim PUBLIC "${PROJECT_BINARY_DIR}"

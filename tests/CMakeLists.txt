@@ -22,16 +22,16 @@ target_include_directories(sim.t PUBLIC ../include/simulation
 target_compile_features(sim.t PRIVATE cxx_std_17)
 target_compile_options(sim.t PRIVATE -Wall -Wextra -fsanitize=address)
 target_link_options(sim.t PRIVATE -fsanitize=address)
-target_link_libraries(sim.t PRIVATE  random
-                                   position
-                                   location
-                                   rectangle
-                                   group
-                                   cluster
-                                   world
-                                   person
-                                   mobility_model
-                                   simulation)
+target_link_libraries(sim.t PRIVATE     simulation
+                                        mobility_model
+                                        person
+                                        world
+                                        cluster
+                                        group
+                                        rectangle
+                                        location
+                                        position
+                                        random)
 add_test(NAME sim.t COMMAND sim.t )
 
 
