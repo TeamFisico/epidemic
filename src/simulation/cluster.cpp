@@ -173,16 +173,6 @@ Rectangle& Cluster::area()
 {
     return Area;
 }
-///////////////// BASE OF CLUSTER RECTANGULAR AREA /////////////////
-double Cluster::base()
-{
-    return Area.get_trh_corner().get_x() - Area.get_blh_corner().get_x();
-}
-///////////////// HEIGHT OF CLUSTER RECTANGULAR AREA /////////////////
-double Cluster::height()
-{
-    return Area.get_trh_corner().get_y() - Area.get_blh_corner().get_y();
-}
 int Cluster::locations_num() const
 {
     auto add_op = [&](unsigned int a, Group b) { return a + b.size(); };
@@ -258,32 +248,5 @@ void Cluster::generate_path(int to_visit, std::vector<Location*>& path)
     }
 }
 
-
-// unused
-// std::vector<Location *> Cluster::Location_list()
-//{
-//    std::vector<Location *> result;
-//    result.clear();
-//    for (unsigned int i = 0; i < groups.size(); ++i)
-//    {
-//        std::vector<Location *> temporary = groups[i].Location_list();
-//        for (unsigned int j = 0; j < temporary.size(); ++j)
-//        {
-//            result.push_back(temporary[j]);
-//        }
-//    }
-//    return result;
-//}
-//
-// std::vector<Person *> Cluster::Person_list()
-//{
-//    std::vector<Person *> result;
-//    result.clear();
-//    for (unsigned int i = 0; i <= People.size(); ++i)
-//    {
-//        result.push_back(&People[i].Person_ref());
-//    }
-//    return result;
-//}
 
 } // namespace smooth_sim

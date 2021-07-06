@@ -42,9 +42,5 @@ unsigned int Group::locations_num()
 {
     return locations.size();
 }
-// unused
-// Location *Group::get_location(int i)
-//{
-//    return &locations[i];
-//}
+
 } // namespace smooth_sim

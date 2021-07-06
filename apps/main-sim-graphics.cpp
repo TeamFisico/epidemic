@@ -57,8 +57,6 @@ int main()
 
     sf::VertexArray locations(sf::Triangles, 24 * prova.world().locations_num());
     int count = 0;
-    // double x_0, y_0, x_1, y_1, x_2, y_2, x_3, y_3, x_4, y_4, x_5, y_5, x_6, y_6, x_7, y_7, x_8, y_8; //points to
-    // construct the various octagons
     int r = 0;
     std::array<double, 9> x{};
     std::array<double, 9> y{};
@@ -143,25 +141,6 @@ int main()
             std::cout << counter / 10 << "nth cycle" << std::endl;
         }
         ++counter;
-        // Transitioned from RectangleShape to Vertex array
-        /*sf::RectangleShape cluster;
-        for (auto& a : prova.world().Clusters())
-        { // Draw the clusters(as rectangles)
-            cluster.setSize(sf::Vector2f(a.base(), a.height()));
-            cluster.setPosition(a.cluster_area().get_blh_corner().get_x(), a.cluster_area().get_blh_corner().get_y());
-            if (a.get_color() == Color::Green) { cluster.setFillColor(sf::Color::Green); }
-            else if (a.get_color() == Color::Yellow)
-            {
-                cluster.setFillColor(sf::Color::Yellow);
-            }
-            else
-            {
-                cluster.setFillColor(sf::Color::Red);
-            }
-            cluster.setOutlineThickness(1);
-            cluster.setOutlineColor(sf::Color::Black);
-            window.draw(cluster);
-        }*/
 
         // Set Cluster Color
         for (unsigned i = 0; i < prova.world().clusters().size(); ++i)
@@ -185,50 +164,12 @@ int main()
         window.draw(Clusters);
         window.draw(Borders);
 
-        // With sf::CircleShape it takes 1.1 seconds with 1000 locations, there is a need to change to vertex array
-        /*sf::CircleShape circle;
-        circle.setFillColor(sf::Color::Blue);
-        for(auto& a: prova.world().Clusters()){ //Draw the locations
-            for(auto& b: a.Groups()){
-                for(auto& c: b.Locations()){
-                    circle.setRadius(c.get_radius());
-                    circle.setPosition(c.get_pos().get_x(),c.get_pos().get_y());
-                    window.draw(circle);
-                }
-            }
-        }*/
         // start = std::chrono::high_resolution_clock::now();
 
         window.draw(locations);
         /*end = std::chrono::high_resolution_clock::now();
         duration = end - start;
         std::cout << "Time: " << duration.count() << std::endl;*/
-
-        // With sf::RectangleShape; it is to slow
-        /*sf::RectangleShape person(sf::Vector2f(2,2));
-        circle.setRadius(1.);
-        circle.setFillColor(sf::Color::White);
-        for(auto& a: prova.world().Clusters()){
-            for(auto& b: a.population()){
-                if(!b.is_at_home())
-                {
-                    if(b.Person_ref().get_condition() == State::S){
-                        person.setFillColor(sf::Color::White);
-                    }
-                    else if(b.Person_ref().get_condition() == State::E){
-                        person.setFillColor(sf::Color::Cyan);
-                    }
-                    else if(b.Person_ref().get_condition() == State::I){
-                        person.setFillColor(sf::Color::Magenta);
-                    }
-                    else{
-                        person.setFillColor(sf::Color::Black);
-                    }
-                    person.setPosition(b.Person_ref().get_pos().get_x() - 1, b.Person_ref().get_pos().get_y() - 1);
-                    window.draw(person);
-                }
-            }
-        }*/
 
         // with vertex array, should be faster
         sf::VertexArray people(sf::Quads, prova.world().people_num() * 4);
@@ -307,15 +248,4 @@ int main()
         window.display();
     }
 
-    /*double sum{};
-    for(auto&a : prova.world().Clusters()){
-        std::cout << "nth cluster: "
-                  << " blh-x: " << a.area().get_blh_corner().get_x() << " blh-y: " << a.area().get_blh_corner().get_y()
-    << " trh-x: " << a.area().get_trh_corner().get_x()
-                  << " trh.y: " << a.area().get_trh_corner().get_y() << std::endl;
-        sum += a.area().get_area();
-    }
-    std::cout << "Area: " << sum << std::endl;
-
-    return 0;*/
 }

@@ -257,23 +257,6 @@ Data Simulation::get_data()
     return {nS, nE, nI, nR};
 }
 
-// std::vector<Location *> Simulation::green_loc_list()
-//{
-//    std::vector<Location *> result;
-//    for (int i = 0; i < world.clusters.size(); ++i)
-//    {
-//        if (world.clusters[i].get_Zone() == Zone::Green)
-//        { // if cluster is green
-//            for (auto a :
-//                 world.clusters[i].Location_list()) // TODO CHECK IF IS SAFE TO DO IT WITH POINTERS
-//            {
-//                result.push_back(a);
-//            }
-//        }
-//    }
-//    return result;
-//}
-
 ///////////////// UPDATE ZONES /////////////////
 void Simulation::update_zones()
 {
