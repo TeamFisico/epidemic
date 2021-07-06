@@ -76,7 +76,6 @@ Position is the class that handle the coordinate of the simulated world. It is c
 members which represent respectively the `x` and the `y` coordinates, and by function to check if two position
 are close and to move a position closer to another
 
-
 ### Location
 The Location class represent a place that a person can visit and where a person will stay for a randomized
 time, it's where usually the virus spread.  
@@ -85,13 +84,50 @@ The class is composed of three private members:
 2. `radius` a double type member which represent the size of the location
 3. `cluster_index` Index of the cluster where the location is located(See Cluster)
 
+###Status
+it's an enum class composed of 4 possible values:
+1. `Susceptible` Can contract the disease if in contact with an infected individual.
+2. `Exposed` It has the disease but cannot spread the disease to other people.
+3. `Infected` It has the disease and can spread the disease to other people.
+4. `Recovered` It has either recovered or died from the disease, it will not be reinfected.
+
 ### Person
+The Person class represent, as the name suggest, the person in the simulation, it is composed of 5 private members:
+1. `position` that represent the person coordinate
+2. `current_status` that represent the current Status of the person
+3. `next_status` that represent the status that the person will have in the next step
+4. `home` an object of the Location class, represent the person's home.
+5. `label` it represent the index of the cluster in which the person's home is located
 
 ### Mobility Model
+This class is used to implement movement in the simulation, it is composed of 7 private members:
+1. `person` an object of the Person class which represent the person that is going to be moved
+2. `path` a vector of pointers to Location, which represent the Locations that the person is going to
+   visit before returning home
+3. `target_location` the current location the person is moving to
+4. `stay` the number of step the person will stay at target_location
+5. `home_probability` the probability that the person will remain home
+6. `at_home` a boolean object which represent if the person is at_home or not
+7. `going_home` a boolean object which represent if the person is going_home
 
+It is then composed of various function, the most important are: 
+* `move()` which move the person closer to the **target_location**.
+* `next_location()` which follows the Least Action Trip Planning algorithm(LATP) to select the next
+location to visit from the **path** vector.
+  
 ### Rectangle
+This class represent a rectangle. The simulation world is in fact represented by a square divided in
+rectangles as it is a very simple shape to handle. It is composed of 2 private members:
+1. `blh_corner` the bottom left-hand corner of the rectangle
+2. `trh_corner` the top right-hand corner of the rectangle
+
+It is then composed of various function, the most important are:
+* `Split()` which split a rectangle in 2 rectangles of different sizes.
+* `Divide(int n)` which divide the rectangle in n rectangles using the Split function. 
 
 ### Groups
+
+###Zone
 
 ### Cluster
 
