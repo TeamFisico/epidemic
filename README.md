@@ -2,7 +2,7 @@
 Modelling the spread of a generic epidemic with SIR model
 
 --------------------------------------------------------------------------------
-##Dependencies
+## Dependencies
 - [Lyra](https://github.com/bfgroup/Lyra) (bundled)
 - [Doctest](https://github.com/onqtam/doctest) (bundled)
 - [SFML](http://www.sfml-dev.org/) (required)
@@ -11,7 +11,7 @@ Modelling the spread of a generic epidemic with SIR model
 
 
 --------------------------------------------------------------------------------
-##Building
+## Building
 Make sure that all the required dependencies are installed.
 
 The first step is to clone the repository:
@@ -49,35 +49,35 @@ The possible apps to build are:
 | sim-graphics | Simulate an pandemic, with graphical output                  |
 
 --------------------------------------------------------------------------------
-##Running
+## Running
 
 
 --------------------------------------------------------------------------------
-##Classes
+## Classes
 
-###Position
+### Position
 
-###Location
+### Location
 
-###Person
+### Person
 
-###Mobility Model
+### Mobility Model
 
-###Rectangle
+### Rectangle
 
-###Groups
+### Groups
 
-###Cluster
+### Cluster
 
-###World
+### World
 
-###Simulation
+### Simulation
 
-###Random
-
---------------------------------------------------------------------------------
-##Tests
+### Random
 
 --------------------------------------------------------------------------------
-##Additional Notes
+## Tests
+
+--------------------------------------------------------------------------------
+## Additional Notes
 
