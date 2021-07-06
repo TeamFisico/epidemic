@@ -182,21 +182,21 @@ int main()
             {
                 if (!b.is_at_home())
                 {
-                    if (b.person_ref().get_current_status() == Status::Susceptible)
+                    if (b.person().get_current_status() == Status::Susceptible)
                     {
                         people[4 * count].color = sf::Color::White;
                         people[4 * count + 1].color = sf::Color::White;
                         people[4 * count + 2].color = sf::Color::White;
                         people[4 * count + 3].color = sf::Color::White;
                     }
-                    else if (b.person_ref().get_current_status() == Status::Exposed)
+                    else if (b.person().get_current_status() == Status::Exposed)
                     {
                         people[4 * count].color = sf::Color::Cyan;
                         people[4 * count + 1].color = sf::Color::Cyan;
                         people[4 * count + 2].color = sf::Color::Cyan;
                         people[4 * count + 3].color = sf::Color::Cyan;
                     }
-                    else if (b.person_ref().get_current_status() == Status::Infected)
+                    else if (b.person().get_current_status() == Status::Infected)
                     {
                         people[4 * count].color = sf::Color::Magenta;
                         people[4 * count + 1].color = sf::Color::Magenta;
@@ -210,8 +210,8 @@ int main()
                         people[4 * count + 2].color = sf::Color::Black;
                         people[4 * count + 3].color = sf::Color::Black;
                     }
-                    x_0 = b.person_ref().pos().get_x();
-                    y_0 = b.person_ref().pos().get_y();
+                    x_0 = b.person().get_position().get_x();
+                    y_0 = b.person().get_position().get_y();
                     people[4 * count].position = sf::Vector2f(x_0 - r, y_0 - r);
                     people[4 * count + 1].position = sf::Vector2f(x_0 + r, y_0 - r);
                     people[4 * count + 2].position = sf::Vector2f(x_0 + r, y_0 + r);

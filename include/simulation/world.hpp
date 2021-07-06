@@ -50,8 +50,7 @@ class World
     std::vector<Cluster>& clusters();
 
     // generates path(locations to visit) by invoking each cluster's path generation
-    void generate_path(int to_visit, const std::vector<double>& weights, std::vector<Location*>& path,
-                       Random& simulation_engine);
+    void generate_path(int to_visit, const std::vector<double>& weights, std::vector<Location*>& path,Random& engine);
 };
 
 // unused functions

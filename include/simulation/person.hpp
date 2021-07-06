@@ -16,44 +16,52 @@ enum class Status
 class Person
 {
   private:
-    Status Current_status;
-    Status New_status;
-    Position Pos;
-    Location Home;
-    int Label;
+    Status status;
+    Status new_status;
+    Position pos;
+    Location home;
+    int cluster_index;
 
   public:
+
     Person(Status current_status, Position pos, Status new_condition, Location home, int cluster_index); // Constructor
     Person() = delete;// Default Constructor
 
-    // Return reference to person position
-    Position& pos() { return Pos; }
+    // Return person current status
+    Status get_current_status() const;
 
     // Return person new Status
-    Status get_new_status() const { return New_status; } //Never Used
+    Status get_new_status() const;
 
-    // Return person current status
-    Status get_current_status() const { return Current_status; }
+    //returns person position
+    Position get_position() const;
+
+    // Function that tell if person is in radius of pointed location
+    bool at_location(Location* loc) const;
 
     //Return person label
-    int get_label() const { return Label; }
+    int get_label() const;
 
-    // Set person new Status
-    void set_new_status(Status new_person_status) { New_status = new_person_status; }
+    // returns a  reference to person position
+    Position& position();
+
+    // returns a pointer to person home location
+    Location* get_home();
 
     // Set person current status
-    void set_current_status(Status current_status) { Current_status = current_status; }
+    void set_current_status(Status current_person_status);
 
-    // Return a pointer to location home
-    Location* get_home_pointer(); // return pointer to Location home
+    // Set person new Status
+    void set_new_status(Status new_person_status);
 
     // Function that assign nex_condition to condition, to be called at the end of the step(or cycle)
     void update_status();
 
-    // Function that tell if person is in radius of pointed location
-    bool at_location(Location* loc);
 };
 
 } // namespace smooth_sim
 
 #endif
+
+//     Return a pointer to location home
+//    Location* get_home_pointer(); // return pointer to Location home

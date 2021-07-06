@@ -10,7 +10,7 @@ namespace smooth_sim
 /////         MOBILITY MODEL CONSTRUCTOR          //////
 ////////////////////////////////////////////////////////
 Mobility_model::Mobility_model(Person person, int stay, double home_probability, bool at_home)
-    : person{person},
+    : pers{person},
       target_location{nullptr},
       stay{stay},
       home_probability{home_probability},
@@ -20,92 +20,147 @@ Mobility_model::Mobility_model(Person person, int stay, double home_probability,
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////           PRIVATE METHODS           /////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////           PUBLIC METHODS            /////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void Mobility_model::next_location(Random& engine, double cluster_LATP_parameter)
+
+///////////////// PERSON OF THE MODEL /////////////////
+Person Mobility_model::get_person() const
 {
+    return pers;
+}
+///////////////// IS THE PERSON AT HIS/HER TARGET LOCATION? /////////////////
+bool Mobility_model::at_target_location() const
+{
+    return pers.at_location(target_location);
+}
+///////////////// STAY COUNTER /////////////////
+int Mobility_model::stay_time() const
+{
+    return stay;
+}
+///////////////// IS THE PERSON AT HOME?  /////////////////
+bool Mobility_model::is_at_home() const
+{
+    return at_home;
+}
+///////////////// PROBABILITY TO BE AT HOME /////////////////
+double Mobility_model::home_prob() const
+{
+    return home_probability;
+}
+///////////////// LABEL OF THE CLUSTER THE PERSON BELONGS TO  /////////////////
+int Mobility_model::get_label() const
+{
+    return pers.get_label();
+}
+///////////////// SET THE PERSON TO BE AT HOME/ NOT AT HOME /////////////////
+void Mobility_model::set_is_at_home(bool is_at_home)
+{
+    at_home = is_at_home;
+}
+
+///////////////// DECREASE PERSON STAY AT A PLACE /////////////////
+void Mobility_model::decrease_stay()
+{
+    --stay;
+}
+///////////////// REFERENCE TO PERSON OF THE MODEL /////////////////
+Person& Mobility_model::person()
+{
+    return pers;
+}
+///////////////// REFERENCE TO PERSON PATH(POINTERS TO TARGET LOCATIONS) /////////////////
+std::vector<Location*>& Mobility_model::path()
+{
+    return Path;
+}
+///////////////// DETERMINE NEXT LOCATION: LATP ALGORITHM /////////////////
+void Mobility_model::next_location(double cluster_LATP_parameter,Random& engine)
+{
+
+    ///////// Case 1 : The person has arrived home /////////
+
     if (going_home)
-    { // called when person is at home with target location home
+    {
         at_home = true;
         going_home = false;
         stay = engine.rand_stay();
+        return;
     }
+
+    //////// Case 2 : The person has no more target locations available /////////
+
     if (Path.empty())
-    { // if Path vector empty select home
-        target_location = person.get_home();
+    {
+        target_location = pers.get_home();
         going_home = true;
+        return;
     }
-    else if (Path.size() == 1)
-    { // if Path ha only one element select that element
-        target_location = Path.operator[](0);
+
+    ///////// Case 3 : The person has just 1 waypoint left to visit /////////
+
+    if (Path.size() == 1)
+    {
+        target_location = Path[0];
         Path.clear();
         stay = engine.rand_stay();
+        return;
     }
-    else // if Path vector has more than one element ran the LATP Algorithm to select next Location
+
+    ///////// Case 4 : The person is ready to move and has more than 1 target available: apply LATP algorithm /////////
+
+    if (Path.size() > 1)
     {
-        std::vector<double> inverse_distances; // vector where we store the inverse_distance elevated to alpha of the
-                                               // pointed location with the same index in Path
-        inverse_distances.clear();
-        for (auto& a : Path)
-        { // fill the inverse_distances vector
-            double dist = 1 / pow(a->get_position().distance_to(person.get_pos()), cluster_LATP_parameter);
-            inverse_distances.push_back(dist);
+        //vector containing weight function values with alpha == cluster_LATP_parameter; the correpondence between
+        // weight functions and location is the following: weight_functions[index] <--> Path[index]
+        std::vector<double> weight_functions{};
+        weight_functions.reserve(Path.size());
+
+        for (auto& a : Path) //filling with LATP weights
+        {
+            double w_i = 1 / pow(a->get_position().distance_to(pers.get_position()), cluster_LATP_parameter);
+            weight_functions.push_back(w_i);
         }
-        std::vector<double> probabilities; // vector where we store the probabilities of the same index in Path
-                                           // calculated with LATP algorithm
-        probabilities.clear();
-        double denom =
-            std::accumulate(inverse_distances.begin(), inverse_distances.end(),
-                            0); // calculate the denominator for the probabilities formula of the LATP algorithm
-        for (auto& a : inverse_distances)
-        { // fill the probabilities vector
-            probabilities.push_back(a / denom);
+
+        // vector containing probability values referring to locations(previous correspondence holds)
+        std::vector<double> probabilities{};
+        probabilities.reserve(Path.size());
+
+        // calculate denominator (sum of all weights)
+        double weights_tot = std::accumulate(std::begin(weight_functions), std::end(weight_functions),0);
+
+        //now filling with the correspondent probability
+        for (auto& a : weight_functions)
+        {
+            probabilities.push_back(a / weights_tot);
         }
-        // select next_location to visit based on the probabilities vector
-        int index_result = engine.discrete(probabilities);
-        target_location =
-            Path.operator[](index_result); // set the target Location to the Location found using LATP algorithm
-        // remove the selected location pointer from the Path vector
-        auto it = Path.begin(); // generate an iterator to the star of the Path vector
-        it = it + index_result; // make sure the iterator point to the selected location
-        Path.erase(it);         // erase the selected Location from the Path vector
+        // select next_location to visit based on the probabilities vector and set it as the new target
+        int chosen_index = engine.discrete(probabilities);
+        target_location = Path[chosen_index];
+
+        //eventually erase the selected location(pointer) from Path vector
+        auto it = Path.begin();
+        it = it + chosen_index;
+        Path.erase(it);
+
+        // generate the stay time for the person
         stay = engine.rand_stay();
+        return;
     }
 }
-
-bool Mobility_model::at_target_location()
-{
-    return person.at_location(target_location);
-}
-
+///////////////// MOVE THE PERSON TOWARD HIS/HER TARGET /////////////////
 void Mobility_model::move(double speed, Random& engine)
 {
-    person.get_pos().move_toward(target_location->get_position(), speed, engine);
+    pers.position().move_toward(target_location->get_position(), speed, engine);
 }
 
+///////////////// HAVE THE PERSON GOING HOME /////////////////
 void Mobility_model::recall_home()
 {
     Path.clear();
     stay = 0;
-    target_location = person.get_home();
+    target_location = pers.get_home();
 }
 
-// void Mobility_model::change_home_prob(double prob)
-//{
-//    home_probability = prob;
-//}
 
-int Mobility_model::cluster_index()
-{
-    return person.get_label();
-}
-
-double rand_speed(double min, double max, Random& engine)
-{
-    return engine.uniform(min, max);
-}
 } // namespace smooth_sim

@@ -37,7 +37,7 @@ class Simulation
     // fill an input vector with the current close people to a person (under spread_radius) from the person Cluster
     void close_cluster_people(Person& current_person, std::vector<Person*>& close_people_v);
 
-    // clean person's path, removing all location that are not in green cluster
+    // clean person's path, removing all target locations which are not in green clusters anymore
     void clean_path(Mobility_model& person);
 
     // move algorithm in the case of a Green Cluster
@@ -71,13 +71,19 @@ class Simulation
     // spread the epidemic across world
     void spread();
 
+    // move step of the simulation
     void move();
 
     // performs the actual simulation
     void simulate();
-    Position person_pos(int cluster_index, int person_index);
-    bool at_home(int cluster_index, int person_index);
+
+    // returns true if the indexed person is at home
+    bool is_person_at_home(int cluster_index, int person_index);
+
+    // returns position of the indexed perosn
+    Position get_person_pos(int cluster_index, int person_index);
     // unused   std::vector<Location *> green_loc_list(); // list of locations of non_red clusters
+
 };
 
 } // namespace smooth_sim

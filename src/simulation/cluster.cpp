@@ -122,18 +122,18 @@ void Cluster::set_E_I_R_individuals(int E, int I, int R)
     {
         if (i < E)
         {
-            People[i].person_ref().set_current_status(Status::Exposed);
-            People[i].person_ref().set_new_status(Status::Exposed);
+            People[i].person().set_current_status(Status::Exposed);
+            People[i].person().set_new_status(Status::Exposed);
         }
         else if (i < E + I)
         {
-            People[i].person_ref().set_current_status(Status::Infected);
-            People[i].person_ref().set_new_status(Status::Infected);
+            People[i].person().set_current_status(Status::Infected);
+            People[i].person().set_new_status(Status::Infected);
         }
         else if (i < E + I + R)
         {
-            People[i].person_ref().set_current_status(Status::Recovered);
-            People[i].person_ref().set_new_status(Status::Recovered);
+            People[i].person().set_current_status(Status::Recovered);
+            People[i].person().set_new_status(Status::Recovered);
         }
     }
 }

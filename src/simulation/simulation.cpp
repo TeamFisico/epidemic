@@ -22,7 +22,7 @@ Simulation::Simulation(int S, int E, int I, int R, int number_of_clusters, int n
 /////////////////////////////////////           PRIVATE METHODS           /////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-///////////////// MOVE WHITE /////////////////
+///////////////// MOVE STEP FOR PEOPLE IN WHITE CLUSTERS /////////////////
 void Simulation::move_white(Cluster& cluster, std::vector<double>& weights_v)
 {
     for (auto& p : cluster.people())
@@ -48,7 +48,7 @@ void Simulation::move_white(Cluster& cluster, std::vector<double>& weights_v)
             if (p.stay_time() <= 0)
             {
                 clean_path(p);
-                p.next_location(sim_engine, cluster.get_LATP());
+                p.next_location(cluster.get_LATP(),sim_engine);
             }
             else
             {
@@ -61,7 +61,7 @@ void Simulation::move_white(Cluster& cluster, std::vector<double>& weights_v)
         }
     }
 }
-///////////////// MOVE YELLOW /////////////////
+///////////////// MOVE STEP FOR PEOPLE IN YELLOW CLUSTERS /////////////////
 void Simulation::move_yellow(Cluster& cluster)
 {
     for (auto& p : cluster.people())
@@ -87,7 +87,7 @@ void Simulation::move_yellow(Cluster& cluster)
             if (p.stay_time() <= 0)
             {
                 clean_path(p);
-                p.next_location(sim_engine, cluster.get_LATP());
+                p.next_location(cluster.get_LATP(),sim_engine);
             }
             else
             {
@@ -100,7 +100,7 @@ void Simulation::move_yellow(Cluster& cluster)
         }
     }
 }
-///////////////// MOVE RED /////////////////
+///////////////// MOVE STEP FOR PEOPLE IN RED CLUSTERS /////////////////
 void Simulation::move_red(Cluster& cluster)
 {
     for (auto& p : cluster.people())
@@ -126,7 +126,7 @@ void Simulation::move_red(Cluster& cluster)
             if (p.stay_time() <= 0)
             {
                 clean_path(p);
-                p.next_location(sim_engine, cluster.get_LATP());
+                p.next_location(cluster.get_LATP(),sim_engine);
             }
             else
             {
@@ -149,12 +149,12 @@ void Simulation::close_people(Person& current_person, std::vector<Person*>& clos
         {
             for (auto& p : cl.people())
             {
-                Position const& pos = p.person_ref().get_pos();
-                if (pos.in_radius(current_person.get_pos(), spread_radius) &&
-                    p.person_ref().get_current_status() == Status::Susceptible &&
+                Position const& pos = p.person().get_position();
+                if (pos.in_radius(current_person.get_position(), spread_radius) &&
+                    p.person().get_current_status() == Status::Susceptible &&
                     !p.is_at_home()) // check if person is close_enough, Susceptible and not at_home
                 {
-                    close_people.push_back(&p.person_ref()); // push a pointer to the current person back
+                    close_people.push_back(&p.person()); // push a pointer to the current person back
                 }
             }
         }
@@ -166,12 +166,12 @@ void Simulation::close_cluster_people(Person& current_person, std::vector<Person
     close_people_v.clear();
     for (auto& a : wrld.Clusters[current_person.get_label()].people())
     {
-        const Position& pos = a.person_ref().get_pos();
-        if (pos.in_radius(current_person.get_pos(), spread_radius) &&
-            a.person_ref().get_current_status() == Status::Susceptible && !a.is_at_home())
+        const Position& pos = a.person().get_position();
+        if (pos.in_radius(current_person.get_position(), spread_radius) &&
+            a.person().get_current_status() == Status::Susceptible && !a.is_at_home())
         { // check if person is close_enough, Susceptible and not at_home
             close_people_v.push_back(
-                &a.person_ref()); // push a pointer to the current person back to the end of the vector
+                &a.person()); // push a pointer to the current person back to the end of the vector
         }
     }
 }
@@ -183,7 +183,7 @@ void Simulation::update_people_status()
     {
         for (auto& p : cl.people()) // set all the people's condition to new_condition
         {
-            p.person_ref().update_status();
+            p.person().update_status();
         }
     }
 }
@@ -289,23 +289,23 @@ void Simulation::spread()
     {
         for (auto& p : cl.people()) // p is the current person
         {
-            if (p.person_ref().get_current_status() == Status::Exposed)
+            if (p.person().get_current_status() == Status::Exposed)
             { // if current person is in dormant Status
-                if (sim_engine.try_event(alpha)) { p.person_ref().set_new_status(Status::Infected); }
+                if (sim_engine.try_event(alpha)) { p.person().set_new_status(Status::Infected); }
             }
-            else if (p.person_ref().get_current_status() == Status::Infected)
+            else if (p.person().get_current_status() == Status::Infected)
             {                        // if current person is infected
                 if (!p.is_at_home()) // if current person is not at home, then spread the virus
                 {
                     if (cl.get_zone() == Zone::Green) // if cluster is Green
                     {
                         // susceptible people in Green Cluster near the infected that are not at home
-                        close_people(p.person_ref(), close_people_v);
+                        close_people(p.person(), close_people_v);
                     }
                     else // if cluster is Yellow or Red
                     {
                         // susceptible people in the same Cluster near the infected that are not at home
-                        close_cluster_people(p.person_ref(), close_people_v);
+                        close_cluster_people(p.person(), close_people_v);
                     }
                     for (auto& b : close_people_v)
                     {
@@ -317,7 +317,7 @@ void Simulation::spread()
                 }
                 if (sim_engine.try_event(gamma)) // determine recovery based on gamma parameter
                 {
-                    p.person_ref().set_new_status(Status::Recovered);
+                    p.person().set_new_status(Status::Recovered);
                 }
             }
         }
@@ -332,14 +332,17 @@ void Simulation::move()
         if (cluster.get_zone() == Zone::Green)
         {
             std::vector<double> weights(wrld.Clusters.size(), 0); // weights for every inth cluster
-            // fill the weight fot the various cluster, except for the current
+            // fill the weight fot the various clusters, except for the current
             for (unsigned long i = 0; i < wrld.Clusters.size(); ++i)
             {
-                if (wrld.Clusters[i].get_zone() == Zone::Green) { weights[i] = wrld.Clusters[i].locations_num(); }
+                if (wrld.Clusters[i].get_zone() == Zone::Green)
+                {
+                    weights[i] = wrld.Clusters[i].locations_num();
+                }
             }
-            // sum of all locations in green cluster except current one
-            double sum = std::accumulate(weights.begin(), weights.end(), 0.) -
-                         wrld.Clusters[cluster.get_label()].locations_num();
+            // get the sum of all locations in green cluster except current one
+            double current =  wrld.Clusters[cluster.get_label()].locations_num();
+            double sum = std::accumulate(std::begin(weights), std::end(weights), 0.) - current;
             // make sure there is a 50 percent probability hat chosen location is from current cluster
             weights[cluster.get_label()] = sum;
             move_white(cluster, weights);
@@ -354,32 +357,22 @@ void Simulation::move()
         }
     }
 }
-
+///////////////// CLEAN PATH OF A MODELED PERSON /////////////////
 void Simulation::clean_path(Mobility_model& person)
 {
     for (unsigned long i = 0; i < person.path().size(); ++i)
     {
         if (wrld.Clusters[person.path()[i]->get_label()].get_zone() != Zone::Green)
-        { // access the vector from opposite size, so you check all the elements correctly
-            person.path()[i] =
-                person.path()[person.path().size() - 1]; // copy the last element of the vector to the current
-            person.path().pop_back();                    // delete the last element of a vector
+        {
+            // access the vector from opposite size, so to check all the elements correctly since erasing element
+            // copy the last element of the vector to the current
+            person.path()[i] = person.path()[person.path().size() - 1];
+            person.path().pop_back();
             --i;
         }
     }
 }
-
-/// TODO change this functions
-Position Simulation::person_pos(int cluster_index, int person_index)
-{
-    return wrld.Clusters[cluster_index].people()[person_index].person_ref().get_pos();
-}
-
-bool Simulation::at_home(int cluster_index, int person_index)
-{
-    return wrld.Clusters[cluster_index].people()[person_index].is_at_home();
-}
-
+///////////////// PERFORM THE SIMULATION /////////////////
 void Simulation::simulate()
 {
     // TODO set the variables based on the total simulation time and the time interval of simulation, as the speed of
@@ -391,5 +384,19 @@ void Simulation::simulate()
         update_people_status();
     }
 }
+
+/////////////////// FUNCTIONS USED FOR TESTING  /////////////////////////////////////////
+Position Simulation::get_person_pos(int cluster_label, int person_index)
+{
+    return wrld.Clusters[cluster_label].people()[person_index].person().get_position();
+}
+
+bool Simulation::is_person_at_home(int cluster_index, int person_index)
+{
+    return wrld.Clusters[cluster_index].people()[person_index].is_at_home();
+
+}
+//////////////////////////////////////////////////////////////////////////////////////////
+
 
 } // namespace smooth_sim
