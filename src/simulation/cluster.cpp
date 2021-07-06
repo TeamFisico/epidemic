@@ -10,8 +10,8 @@ namespace smooth_sim
 //////////////////////////////////////////////
 ///////      CLUSTER CONSTRUCTOR        //////
 //////////////////////////////////////////////
-Cluster::Cluster(int S, int E, int I, int R, int cluster_locations_num, Rectangle Area,
-                 Zone cluster_zone, int cluster_label, double cluster_LATP_parameter)
+Cluster::Cluster(int S, int E, int I, int R, int cluster_locations_num, Rectangle Area, Zone cluster_zone,
+                 int cluster_label, double cluster_LATP_parameter)
     : Area{Area},
       zone{cluster_zone},
       index{cluster_label},
@@ -20,39 +20,38 @@ Cluster::Cluster(int S, int E, int I, int R, int cluster_locations_num, Rectangl
 {
     ///////// Assigning home to families and set everyone to be at home and Status::Susceptible /////////
 
-    int N = S + E + I + R;  //total number of People
-    generate_people(N,cluster_label);
+    int N = S + E + I + R; // total number of People
+    generate_people(N, cluster_label);
 
     ///////// Setting the starting Exposed,Infected,Recovered individuals /////////
 
-    set_E_I_R_individuals(E,I,R);
+    set_E_I_R_individuals(E, I, R);
 
     ///////// Generate and construct groups into this cluster /////////
 
     generate_groups(cluster_locations_num);
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////           PRIVATE METHODS           /////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-///////////////// GENERATE People IN THIS CLUSTER /////////////////
-void Cluster::generate_people(int People_num,int cluster_label)
+///////////////// GENERATE PEOPLE IN THIS CLUSTER /////////////////
+void Cluster::generate_people(int People_num, int cluster_label)
 {
     assert(People.empty());
     People.reserve(People_num);
     int index = 0;
     while (index < People_num)
     {
-        int family_size = cl_engine.rounded_gauss(MEAN_FAMILY_COMPONENTS,MEAN_FAMILY_STDDEV); //determine family_size
-        if (family_size < 1 ) { family_size = 1; }
-
+        int family_size = cl_engine.rounded_gauss(MEAN_FAMILY_COMPONENTS, MEAN_FAMILY_STDDEV); // determine family_size
+        if (family_size < 1) { family_size = 1; }
         Location current_home =
-            rand_loc(Area.get_blh_corner(), Area.get_trh_corner(), HOME_RADIUS, cluster_label, cl_engine);
+            generate_home_loc(Area.get_blh_corner(), Area.get_trh_corner(), HOME_RADIUS, cluster_label, cl_engine);
         for (int j = 0; j < family_size && index < People_num; ++j)
         {
-            Person curr{Status::Susceptible, current_home.get_pos(), Status::Susceptible, current_home, cluster_label};
+            Person curr{Status::Susceptible, current_home.get_position(), Status::Susceptible, current_home,
+                        cluster_label};
             People.emplace_back(curr, 0, HOME_PROBABILITY, true);
             People[index].recall_home(); // set target location as person's home
             ++index;
@@ -64,6 +63,7 @@ void Cluster::generate_groups(int locations_num)
 {
     // Determine groups number
     int number_of_groups = cl_engine.rounded_gauss(locations_num * MEAN_GROUP_SIZE, locations_num * GROUP_SIZE_STDDEV);
+
     // Create a Vector which will have the partition of locations in group,with every group having at least one location
     std::vector<int> loc_num(number_of_groups, 1);
 
@@ -81,7 +81,6 @@ void Cluster::generate_groups(int locations_num)
         }
         else
         {
-            std::uniform_int_distribution<> rand_num(1, nearbyint(loc_left / 2));
             int rnum = cl_engine.int_uniform(1, nearbyint(loc_left / 2));
             loc_num[i] += rnum;
             loc_left -= rnum;
@@ -89,7 +88,7 @@ void Cluster::generate_groups(int locations_num)
     }
     assert(Groups.empty());
     Groups.reserve(number_of_groups);
-    for (int i = 0; i < number_of_groups; ++i) //construct groups vector element by element
+    for (int i = 0; i < number_of_groups; ++i) // construct groups vector element by element
     {
         Groups.emplace_back(loc_num[i], gen_group_center(loc_num[i]), index);
     }
@@ -106,7 +105,7 @@ Position Cluster::gen_group_center(int num_of_loc)
             rand_pos(Area.get_blh_corner(), Area.get_trh_corner(), cl_engine); // generate random center position
         for (auto& a : Groups)
         { // check if this center is far enough from other groups center
-            if (a.get_center().distance_to(new_center) <= (a.locations_num() + num_of_loc) * TRANSMISSION_RANGE / 10)
+            if (a.get_centre().distance_to(new_center) <= (a.locations_num() + num_of_loc) * TRANSMISSION_RANGE / 10)
             {
                 end_loop = false;
                 break;
@@ -163,31 +162,6 @@ Location* Cluster::select_location(int n)
 /////////////////////////////////////           PUBLIC METHODS            /////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-///////////////// SIZE OF THE CLUSTER  /////////////////
-unsigned Cluster::size() const
-{
-    return Groups.size();
-}
-///////////////// AREA OF THE CLUSTER /////////////////
-Rectangle& Cluster::area()
-{
-    return Area;
-}
-int Cluster::locations_num() const
-{
-    auto add_op = [&](unsigned int a, Group b) { return a + b.locations_num(); };
-    return std::accumulate(std::begin(Groups), std::end(Groups), 0, add_op);
-}
-///////////////// REFERENCE TO PEOPLE IN THIS CLUSTER /////////////////
-std::vector<Mobility_model>& Cluster::people()
-{
-    return People;
-}
-///////////////// REFERENCE TO CLUSTER GROUPS /////////////////
-std::vector<Group>& Cluster::groups()
-{
-    return Groups;
-}
 ///////////////// PEOPLE IN THIS CLUSTER /////////////////
 std::vector<Mobility_model> Cluster::get_people() const
 {
@@ -198,21 +172,55 @@ int Cluster::people_num() const
 {
     return People.size();
 }
-///////////////// CLUSTER INDEX IN CLUSTERS VECTOR(WORLD) /////////////////
-int Cluster::get_label() const
+///////////////// SIZE OF THE CLUSTER  /////////////////
+unsigned Cluster::size() const
 {
-    return index;
+    return Groups.size();
 }
-
+int Cluster::locations_num() const
+{
+    auto add_op = [&](unsigned int a, Group b) { return a + b.locations_num(); };
+    return std::accumulate(std::begin(Groups), std::end(Groups), 0, add_op);
+}
 ///////////////// CLUSTER ZONE /////////////////
 Zone Cluster::get_zone() const
 {
     return zone;
 }
+///////////////// CLUSTER INDEX IN CLUSTERS VECTOR(WORLD) /////////////////
+int Cluster::get_label() const
+{
+    return index;
+}
 ///////////////// CLUSTER LATP PARAMETER /////////////////
 double Cluster::get_LATP() const
 {
     return LATP_alpha;
+}
+///////////////// REFERENCE TO PEOPLE IN THIS CLUSTER /////////////////
+std::vector<Mobility_model>& Cluster::people()
+{
+    return People;
+}
+///////////////// REFERENCE TO GROUPS OF THE CLUSTER /////////////////
+std::vector<Group>& Cluster::groups()
+{
+    return Groups;
+}
+///////////////// REFERENCE TO AREA OF THE CLUSTER /////////////////
+Rectangle& Cluster::area()
+{
+    return Area;
+}
+///////////////// SET ZONE OF THE CLUSTER /////////////////
+void Cluster::set_zone(Zone cluster_zone)
+{
+    zone = cluster_zone;
+}
+///////////////// SET LATP PARAMETER OF THE CLUSTER /////////////////
+void Cluster::set_LATP(double new_LATP_parameter)
+{
+    LATP_alpha = new_LATP_parameter;
 }
 ///////////////// PATH GENERATION FOR A PERSON /////////////////
 void Cluster::generate_path(int to_visit, std::vector<Location*>& path)
@@ -247,6 +255,5 @@ void Cluster::generate_path(int to_visit, std::vector<Location*>& path)
         path.push_back(select_location(result_indexes[i]));
     }
 }
-
 
 } // namespace smooth_sim

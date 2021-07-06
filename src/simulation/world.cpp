@@ -1,7 +1,7 @@
 #include "world.hpp"
 #include "random.hpp"
-#include <random>
 #include <cassert>
+#include <random>
 
 namespace smooth_sim
 {
@@ -38,7 +38,7 @@ World::World(double Side_length, int number_of_clusters, int number_of_locations
 
     Clusters.reserve(number_of_clusters);
 
-    for (int i = 0; i < number_of_clusters; ++i) //construct clusters vector element by element
+    for (int i = 0; i < number_of_clusters; ++i) // construct clusters vector element by element
     {
         Clusters.emplace_back(susceptibles[i], exposed[i], infected[i], recovered[i], locations_number[i],
                               cluster_areas[i], Zone::Green, i, WHITE_ZONE_LATP_ALPHA);

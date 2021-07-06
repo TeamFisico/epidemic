@@ -4,27 +4,27 @@ namespace smooth_sim
 {
 // Constructor
 Person::Person(Status current_status, Position position, Status new_status, Location home, int cluster_index)
-    : Current_status{current_status},
-      New_status{new_status},
-      Pos{position},
-      Home{home},
-      Label{cluster_index}
+    : status{current_status},
+      new_status{new_status},
+      pos{position},
+      home{home},
+      label{cluster_index}
 {
 }
 
-Location* Person::get_home_pointer()
+Location* Person::get_home()
 {
-    return &Home;
+    return &home;
 }
 
 void Person::update_status()
 {
-    Current_status = New_status;
+    status = new_status;
 }
 
 bool Person::at_location(Location* loc)
 {
-    return (Pos.InRadius(loc->get_pos(), loc->get_radius()));
+    return (pos.in_radius(loc->get_position(), loc->get_radius()));
 }
 
 } // namespace smooth_sim

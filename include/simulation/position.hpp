@@ -7,20 +7,35 @@ namespace smooth_sim
 class Position
 {
   private:
-    double x;
-    double y;
+    double x; // x coordinate of the point(position)
+    double y; // y coordinate of the point(position)
 
   public:
-    Position(double X, double Y);                                 // Constructor
-    Position();                                                   // Default constructor
-    bool InRadius(Position other, double r) const;                // determine if two position are close enough
-    void move_toward(Position target, double speed, Random& rng); // move position closer to target
-    double distance_to(Position a) const;                        // return the distance from the 2 Position
-    double get_x() const;                                         // return the x coordinate
-    double get_y() const;                                         // return the y coordinate
+    // Constructor
+    Position(double X, double Y);
+    // Default constructor
+    Position();
+
+    // returns x coordinate
+    double get_x() const;
+
+    // returns y coordinate
+    double get_y() const;
+
+    // returns the value of the distance between this position and another position
+    double distance_to(Position const& a) const;
+
+    // returns true if two positions are close enough(within r to each other)
+    bool in_radius(Position other, double r) const;
+
+    // move this position closer to a specific target at a certain speed; do that randomly varying the angle connecting
+    // the two positions(points)
+    void move_toward(Position target, double speed, Random& engine);
 };
 
-Position rand_pos(Position blh_corner, Position trh_corner, Random& engine); // get a random position
+// returns a randomly generated position inside the rectangular area defined by blh and trh borders
+Position rand_pos(Position blh_corner, Position trh_corner, Random& eng);
+
 } // namespace smooth_sim
 
 #endif // POSITION_HPP

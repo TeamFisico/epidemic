@@ -9,30 +9,33 @@ namespace smooth_sim
 class Location
 {
   private:
-    Position Location_pos;
-    double Location_Radius; // size of the location
-    int Cluster_index;
+    Position pos;      // centre position
+    double radius;     // radius taken up by the location on the simulation area
+    int cluster_index; // cluster to which the Location belongs
 
   public:
+    // Constructor
     Location(Position location_pos, double location_Radius, int cluster_index);
+    Location() = delete;
 
-    // Get location position
-    Position get_pos() { return Location_pos; }
+    // returns centre position of this location
+    Position get_position() const;
 
-    // Get location radius
-    const double get_radius()  { return Location_Radius; }
+    // returns radius of this location
+    double get_radius() const;
 
-    //get The index of the cluster in which the location is situated
-    const int get_cluster_index() { return Cluster_index; }
+    // returns index of the cluster to which this location belongs
+    int get_label() const;
 };
 
-// Generate a location in a random position in the circle that has pos as a centre and max_distance as radius
-Location generate_close_loc(Position& pos, double min_distance, double max_distance, int cluster_index,
-                            Random& group_engine);
+///////////////// HELPER FUNCTIONS /////////////////
 
-// Generate a random location inside the specified rectangle
-Location rand_loc(Position blh_corner, Position trh_corner, double radius, int cluster_index,
-                  Random& cluster_engine); // generate a random location inside the specified rectangle
+// returns a randomly generated location within a distance d, min_distance <= d < max_distance, from the input position
+Location generate_close_loc(Position& pos, double min_distance, double max_distance, int cluster_index, Random& engine);
+
+// returns a randomly selected location inside the rectangular area of a specific cluster
+Location generate_home_loc(Position blh_corner, Position trh_corner, double radius, int cluster_index, Random& engine);
+
 } // namespace smooth_sim
 
 #endif // LOCATION_HPP

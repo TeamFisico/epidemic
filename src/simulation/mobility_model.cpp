@@ -36,7 +36,7 @@ void Mobility_model::next_location(Random& engine, double cluster_LATP_parameter
     }
     if (Path.empty())
     { // if Path vector empty select home
-        target_location = person.get_home_pointer();
+        target_location = person.get_home();
         going_home = true;
     }
     else if (Path.size() == 1)
@@ -52,7 +52,7 @@ void Mobility_model::next_location(Random& engine, double cluster_LATP_parameter
         inverse_distances.clear();
         for (auto& a : Path)
         { // fill the inverse_distances vector
-            double dist = 1 / pow(a->get_pos().distance_to(person.pos()), cluster_LATP_parameter);
+            double dist = 1 / pow(a->get_position().distance_to(person.get_pos()), cluster_LATP_parameter);
             inverse_distances.push_back(dist);
         }
         std::vector<double> probabilities; // vector where we store the probabilities of the same index in Path
@@ -84,14 +84,14 @@ bool Mobility_model::at_target_location()
 
 void Mobility_model::move(double speed, Random& engine)
 {
-    person.pos().move_toward(target_location->get_pos(), speed, engine);
+    person.get_pos().move_toward(target_location->get_position(), speed, engine);
 }
 
 void Mobility_model::recall_home()
 {
     Path.clear();
     stay = 0;
-    target_location = person.get_home_pointer();
+    target_location = person.get_home();
 }
 
 // void Mobility_model::change_home_prob(double prob)

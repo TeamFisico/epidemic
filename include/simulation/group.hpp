@@ -9,23 +9,33 @@ class Group
 {
   private:
     std::vector<Location> Locations;
-    Position center;
+    Position centre;
     Random grp_engine;
 
   public:
-    Group(int number_of_locations, Position center, int cluster_index);
+    Group(int number_of_locations, Position group_centre, int cluster_label);
     Group() = default;
 
-    // Return the total number of location in the group
-    unsigned int locations_num();
+  private:
 
-    // Return reference to Locations vector
-    std::vector<Location>& locations() { return Locations; }
+    // plot the waypoints(locations) over the simulation area according to the followed statistical model
+    void generate_group_waypoints(int locations_num,int cluster_label);
 
-    // Return the center of the Group
-    Position get_center() { return center; }
+  public:
+
+    // returns centre position of this group
+    Position get_centre() const;
+
+    // returns number of locations belonging to this group
+    unsigned locations_num() const;
+
+    //returns a reference to the locations vector of this group
+    std::vector<Location>& locations();
+
 };
 
 } // namespace smooth_sim
 
 #endif
+
+// unused   Location* get_location(int i);          // get pointer to i_nth Location
