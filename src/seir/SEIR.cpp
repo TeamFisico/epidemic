@@ -1,5 +1,7 @@
 #include "seir1.hpp"
 
+using namespace Euler;
+
 // Constructor
 sim::sim(const State& initial_state, double alpha, double beta, double gamma)
     : state0{initial_state},
