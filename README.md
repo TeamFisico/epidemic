@@ -116,7 +116,7 @@ It is then composed of various function, the most important are:
 location to visit from the **path** vector.
   
 ### Rectangle
-This class represent a rectangle. The simulation world is in fact represented by a square divided in
+The Rectangle class represent a rectangle. The simulation world is in fact represented by a square divided in
 rectangles as it is a very simple shape to handle. It is composed of 2 private members:
 1. `blh_corner` the bottom left-hand corner of the rectangle
 2. `trh_corner` the top right-hand corner of the rectangle
@@ -125,11 +125,33 @@ It is then composed of various function, the most important are:
 * `Split()` which split a rectangle in 2 rectangles of different sizes.
 * `Divide(int n)` which divide the rectangle in n rectangles using the Split function. 
 
-### Groups
+### Group
+The Group class represent a group of Location object that are generated close to each other; it is composed
+of three private members:
+1. `Locations` a vector of Location object.
+2. `center` the coordinate of the centre around which the Locations are generated.
+3. `grp_engine` an object of the Random class, used to generate random number.
 
 ###Zone
+It's an enum class that represent the color of the cluster, which is dependant on the number of infected;
+there are 3 possible values, which have different restrictions:
+1. `Green` people can go to every other green cluster, big number of location to visit per person.
+2. `Yellow` people can stay only in their cluster, smaller number of location to visit per person.
+3. `Red` people ca stay only in their cluster, very small number of location to visit per person.
 
 ### Cluster
+The Cluster class represent the various part in which the world is divided, it has 7 private members:
+1. `people` vector of Mobility_Model objects, which represent the population that reside in the cluster.
+2. `groups` vector of Group objects.
+3. `Area` an object of the Rectangle class that represent the area of the cluster.
+4. `zone` represent the cluster color.
+5. `index` index of the cluster.
+6. `LATP_alpha` represent the value of the alpha parameter for the LATP algorithm.
+7. `cl_engine` an object of the Random class, used to generate random number
+
+It is then composed of various function, the most important are:
+* `generate_path(vector<Location*>&, int n)` generate a path of n locations selected them from the cluster 
+  and put them in the referenced vector
 
 ### World
 
