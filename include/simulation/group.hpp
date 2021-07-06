@@ -17,21 +17,18 @@ class Group
     Group() = default;
 
   private:
-
     // plot the waypoints(locations) over the simulation area according to the followed statistical model
-    void generate_group_waypoints(int locations_num,int cluster_label);
+    void generate_group_waypoints(int locations_num, int cluster_label);
 
   public:
-
     // returns centre position of this group
     Position get_centre() const;
 
     // returns number of locations belonging to this group
     unsigned locations_num() const;
 
-    //returns a reference to the locations vector of this group
+    // returns a reference to the locations vector of this group
     std::vector<Location>& locations();
-
 };
 
 } // namespace smooth_sim

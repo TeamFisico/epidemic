@@ -18,7 +18,6 @@ Mobility_model::Mobility_model(Person person, int stay, double home_probability,
       going_home{false}
 {
 }
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////           PUBLIC METHODS            /////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -75,7 +74,7 @@ std::vector<Location*>& Mobility_model::path()
     return Path;
 }
 ///////////////// DETERMINE NEXT LOCATION: LATP ALGORITHM /////////////////
-void Mobility_model::next_location(double cluster_LATP_parameter,Random& engine)
+void Mobility_model::next_location(double cluster_LATP_parameter, Random& engine)
 {
 
     ///////// Case 1 : The person has arrived home /////////
@@ -111,12 +110,12 @@ void Mobility_model::next_location(double cluster_LATP_parameter,Random& engine)
 
     if (Path.size() > 1)
     {
-        //vector containing weight function values with alpha == cluster_LATP_parameter; the correpondence between
+        // vector containing weight function values with alpha == cluster_LATP_parameter; the correpondence between
         // weight functions and location is the following: weight_functions[index] <--> Path[index]
         std::vector<double> weight_functions{};
         weight_functions.reserve(Path.size());
 
-        for (auto& a : Path) //filling with LATP weights
+        for (auto& a : Path) // filling with LATP weights
         {
             double w_i = 1 / pow(a->get_position().distance_to(pers.get_position()), cluster_LATP_parameter);
             weight_functions.push_back(w_i);
@@ -127,9 +126,9 @@ void Mobility_model::next_location(double cluster_LATP_parameter,Random& engine)
         probabilities.reserve(Path.size());
 
         // calculate denominator (sum of all weights)
-        double weights_tot = std::accumulate(std::begin(weight_functions), std::end(weight_functions),0);
+        double weights_tot = std::accumulate(std::begin(weight_functions), std::end(weight_functions), 0);
 
-        //now filling with the correspondent probability
+        // now filling with the correspondent probability
         for (auto& a : weight_functions)
         {
             probabilities.push_back(a / weights_tot);
@@ -138,7 +137,7 @@ void Mobility_model::next_location(double cluster_LATP_parameter,Random& engine)
         int chosen_index = engine.discrete(probabilities);
         target_location = Path[chosen_index];
 
-        //eventually erase the selected location(pointer) from Path vector
+        // eventually erase the selected location(pointer) from Path vector
         auto it = Path.begin();
         it = it + chosen_index;
         Path.erase(it);
@@ -161,6 +160,5 @@ void Mobility_model::recall_home()
     stay = 0;
     target_location = pers.get_home();
 }
-
 
 } // namespace smooth_sim

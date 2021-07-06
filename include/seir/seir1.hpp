@@ -29,6 +29,6 @@ class sim
     std::vector<State> generate_all_points(int time_in_days);
 };
 
-}
+} // namespace Euler
 
 #endif

@@ -1,4 +1,6 @@
 # Epidemic simulation
+This project is 
+
 The project is divided in 2 parts:
 1. Solving the SEIR differential equations
 2. Simulating an epidemic
@@ -10,7 +12,7 @@ and implements a division in Clusters which can change color, changing how peopl
 
 --------------------------------------------------------------------------------
 ## Dependencies
-- [Lyra](https://github.com/bfgroup/Lyra) (bundled)
+- [Lyra](https://github.com/bfgroup/Lyra) (bundled) 
 - [Doctest](https://github.com/onqtam/doctest) (bundled)
 - [SFML](http://www.sfml-dev.org/) (required)
 - [Root](https://root.cern) (required)
@@ -55,9 +57,10 @@ The possible apps to build are:
 | sim-graphics | Simulate an pandemic, with graphical output                  |
 
 ### Notes
-If during building it does not detect your ROOT installation, you have to use the -D ROOT_DIR="" argument:
+On certain devices, CMake might not be able to detect ROOT installation. If that is the case, the problem can be solved by manually specifying the
+path to your ROOT installation ,setting the CMake Variable ROOT_DIR:
 ```shell
-cmake .. -D ROOT_DIR="Directory where ROOT is installed"
+cmake -B path-to-build-dir -S path-to-source -DROOT_DIR="path-to-ROOT-installation"
 ```
 
 --------------------------------------------------------------------------------
@@ -69,6 +72,7 @@ If you are on WSL make sure the Xserver is running as it is required for every a
 TO ADD ALL THE PARTS RELATED TO INPUT
 
 --------------------------------------------------------------------------------
+#Implementation
 ## Classes
 
 ### Position
@@ -156,9 +160,16 @@ It is then composed of various function, the most important are:
 ### World
 
 ### Simulation
-
+The Simulation class
 ### Random
+This class implements the neededed features for random generation critical for this project making use of the header library 
+`randutil`. This small library enhances c++11 random-number facilities found in <random> supplying a simple and easy to use
+class. The main purpose of our use of it in our random implementation is the high quality seeding given by the use of multiple
+sources of entropy(see [here][seed_entropy]) which sometimes may not be achieved trough `std::random_device`.
 
+[randutil][randutils_git] 
+which guarantees high entropy seeding which sometimes may not be
+achieved through std::random_device. Additionally it implements some random operations useful for our Simulation.
 --------------------------------------------------------------------------------
 ## Tests
 Testing is enabled by default in cmake; so if you want to run a test you just need to build and run it.
@@ -184,3 +195,6 @@ The test are(TO FILL):
 --------------------------------------------------------------------------------
 ## Additional Notes
 
+[randutils_web]:https://gist.github.com/imneme/540829265469e673d045
+[randutils_git]:https://gist.github.com/imneme/540829265469e673d045
+[seed_entropy]:https://www.pcg-random.org/posts/simple-portable-cpp-seed-entropy.html

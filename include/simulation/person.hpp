@@ -23,9 +23,11 @@ class Person
     int cluster_index;
 
   public:
+    // constructor
+    Person(Status current_status, Position pos, Status new_condition, Location home, int cluster_index);
 
-    Person(Status current_status, Position pos, Status new_condition, Location home, int cluster_index); // Constructor
-    Person() = delete;// Default Constructor
+    // revent the compiler from generating the default constructor since no use of it should be made
+    Person() = delete;
 
     // Return person current status
     Status get_current_status() const;
@@ -33,13 +35,13 @@ class Person
     // Return person new Status
     Status get_new_status() const;
 
-    //returns person position
+    // returns person position
     Position get_position() const;
 
     // Function that tell if person is in radius of pointed location
     bool at_location(Location* loc) const;
 
-    //Return person label
+    // Return person label
     int get_label() const;
 
     // returns a  reference to person position
@@ -56,7 +58,6 @@ class Person
 
     // Function that assign nex_condition to condition, to be called at the end of the step(or cycle)
     void update_status();
-
 };
 
 } // namespace smooth_sim

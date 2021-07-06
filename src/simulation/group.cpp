@@ -3,14 +3,11 @@
 namespace smooth_sim
 {
 
-Group::Group(int number_of_locations, Position group_centre, int cluster_label)
-       : centre{group_centre},
-         grp_engine{}
+Group::Group(int number_of_locations, Position group_centre, int cluster_label) : centre{group_centre}, grp_engine{}
 {
     ///////// Group Waypoints plot over the simulation area  /////////
 
-    generate_group_waypoints(number_of_locations,cluster_label);
-
+    generate_group_waypoints(number_of_locations, cluster_label);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -18,7 +15,7 @@ Group::Group(int number_of_locations, Position group_centre, int cluster_label)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////// GENERATE GROUPS WAYPOINTS /////////////////
-void Group::generate_group_waypoints(int locations_num,int cluster_label)
+void Group::generate_group_waypoints(int locations_num, int cluster_label)
 {
     // generate first location according to location plotting model
     Locations.push_back(generate_close_loc(centre, 0, TRANSMISSION_RANGE / 10, cluster_label, grp_engine));

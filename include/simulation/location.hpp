@@ -16,6 +16,8 @@ class Location
   public:
     // Constructor
     Location(Position location_pos, double location_Radius, int cluster_index);
+
+    // Prevent the compiler from generating the default constructor since no use of it should be made
     Location() = delete;
 
     // returns centre position of this location

@@ -13,6 +13,7 @@ class Position
   public:
     // Constructor
     Position(double X, double Y);
+
     // Default constructor
     Position();
 

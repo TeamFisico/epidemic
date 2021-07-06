@@ -167,7 +167,8 @@ std::vector<Cluster>& World::clusters()
     return Clusters;
 }
 ///////////////// GENERATE PATH  /////////////////
-void World::generate_path(int to_visit, const std::vector<double>& weights, std::vector<Location*>& path,Random& engine)
+void World::generate_path(int to_visit, const std::vector<double>& weights, std::vector<Location*>& path,
+                          Random& engine)
 {
     // the vector weight has to be created in Simulation::move() for every cluster so
     // that the weight of the current cluster is equal the sum of the other weights

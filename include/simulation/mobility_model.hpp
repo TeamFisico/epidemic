@@ -9,7 +9,7 @@ namespace smooth_sim
 class Mobility_model
 {
   private:
-    Person pers;               // person subject to the mobility model
+    Person pers;                 // person subject to the mobility model
     std::vector<Location*> Path; // Vector with pointer to the location the person need to visit, in no particular order
     Location* target_location;   // current target_location
     int stay;                    // How much time people stay at a location
@@ -17,13 +17,13 @@ class Mobility_model
     bool at_home;                // boolean keeping track whether the person subject to the mob model is home or not
     bool going_home;             // boolean keeping track whether the person has target == home
   public:
-
-    //Constructor
+    // Constructor
     Mobility_model(Person person, int stay, double home_probability, bool at_home);
+
     // Prevent the compiler from generating the default constructor since no use of it should be made
     Mobility_model() = delete;
 
-    //Let Person class access Mobility_model members
+    // Let Person class access Mobility_model members
     friend class Person;
 
     // returns the person subject to the model
@@ -42,7 +42,7 @@ class Mobility_model
     double home_prob() const;
 
     // returns the index of the cluster in which the pointed person reside
-    int get_label() const; //TODO maybe unused
+    int get_label() const; // TODO maybe unused
 
     // set the person status as at_home/not at_home
     void set_is_at_home(bool is_at_home);
@@ -58,37 +58,15 @@ class Mobility_model
 
     // Randomly select the new location to visit; or home if you do
     // not have anymore location to visit
-    void next_location(double cluster_LATP_parameter,Random& engine);
+    void next_location(double cluster_LATP_parameter, Random& engine);
 
     // move a person toward his/her target(by moving its position toward target)
     void move(double speed, Random& engine);
 
     // set the person target to be home
     void recall_home();
-
 };
 
 } // namespace smooth_sim
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

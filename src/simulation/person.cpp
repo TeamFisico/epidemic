@@ -22,7 +22,7 @@ Person::Person(Status current_status, Position position, Status new_status, Loca
 ///////////////// REFERENCE TO AREA OF THE CLUSTER /////////////////
 Status Person::get_current_status() const
 {
-        return status;
+    return status;
 }
 ///////////////// NEW PERSON STATUS /////////////////
 Status Person::get_new_status() const
@@ -69,6 +69,5 @@ void Person::update_status()
 {
     status = new_status;
 }
-
 
 } // namespace smooth_sim
