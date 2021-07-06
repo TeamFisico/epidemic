@@ -135,10 +135,10 @@ int main()
         prova.move();
         prova.spread();
         Result.push_back(prova.get_data());
-        if (counter % 10 == 0)
+        if (counter % 30 == 0)
         {
             prova.update_zones();
-            std::cout << counter / 10 << "nth cycle" << std::endl;
+            std::cout << counter / 30 << "nth cycle" << std::endl;
         }
         ++counter;
 

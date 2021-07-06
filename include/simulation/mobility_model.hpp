@@ -36,6 +36,7 @@ class Mobility_model
     std::vector<Location*>& path() { return Path; }
     Person& person_ref() { return person; }
     Person get_person() const { return person; }
+    Location* get_target_location(){ return target_location; }
 };
 
 } // namespace smooth_sim
