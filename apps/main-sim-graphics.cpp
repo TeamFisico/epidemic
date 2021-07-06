@@ -102,10 +102,10 @@ int main()
         }
     }
     //Initialize the graphs
-    sf::VertexArray Susceptible(sf::Points,1);
-    sf::VertexArray Exposed(sf::Points,1);
-    sf::VertexArray Infected(sf::Points,1);
-    sf::VertexArray Recovered(sf::Points,1);
+    sf::VertexArray Susceptible(sf::LineStrip,1);
+    sf::VertexArray Exposed(sf::LineStrip,1);
+    sf::VertexArray Infected(sf::LineStrip,1);
+    sf::VertexArray Recovered(sf::LineStrip,1);
     //Initialize the first point
     double tot_pop = prova.world().people_num();
     double coeff = Sim_side/tot_pop;
@@ -117,7 +117,7 @@ int main()
     Infected[0].position = sf::Vector2f(Sim_side,Sim_side - Result[0].I*coeff);
     Infected[0].color = sf::Color::Magenta;
     Recovered[0].position = sf::Vector2f(Sim_side,Sim_side - Result[0].R*coeff);
-    Recovered[0].color = sf::Color::Black;
+    Recovered[0].color = sf::Color::Red;
     /*for(auto& a: prova.world_ref().Clusters())
     {
         std::cout << "nth cluster: "
@@ -282,8 +282,8 @@ int main()
         window.draw(people);
 
         //If necessary adapt the graphs
-        if(Susceptible[counter - 1].position.x >= 4*Graph_width/5){ //if last graph point x is >= of 4/5 of Graph_width, adapt the graph so that it stay in half Graph_width
-            double k = 1/(2*Susceptible[counter - 1].position.x);
+        if(Susceptible[counter - 1].position.x - Sim_side>= 4*Graph_width/5){ //if last graph point x is >= of 4/5 of Graph_width, adapt the graph so that it stay in half Graph_width
+            double k = Graph_width/(2*(Susceptible[counter - 1].position.x - Sim_side));
             for(int i = 1; i < counter; ++i){ //adapt the x axis
                 Susceptible[i].position.x = Sim_side*(1-k) + k*Susceptible[i].position.x;
                 Exposed[i].position.x = Susceptible[i].position.x;
@@ -293,11 +293,11 @@ int main()
             dx *= k; //adapt the delta_x
         }
         //Fill points of graphs
-        double curr_x = Sim_side + counter*dx;
+        float curr_x = Sim_side + counter*dx;
         Susceptible.append(sf::Vertex(sf::Vector2f(curr_x,Sim_side - Result[counter].S*coeff),sf::Color::White));
         Exposed.append(sf::Vertex(sf::Vector2f(curr_x,Sim_side - Result[counter].E*coeff),sf::Color::Cyan));
-        Infected.append(sf::Vertex(sf::Vector2f(curr_x + counter*dx,Sim_side - Result[counter].I*coeff),sf::Color::Magenta));
-        Recovered.append(sf::Vertex(sf::Vector2f(curr_x + counter*dx,Sim_side - Result[counter].R*coeff),sf::Color::Black));
+        Infected.append(sf::Vertex(sf::Vector2f(curr_x,Sim_side - Result[counter].I*coeff),sf::Color::Magenta));
+        Recovered.append(sf::Vertex(sf::Vector2f(curr_x,Sim_side - Result[counter].R*coeff),sf::Color::Red));
 
         window.draw(Susceptible);
         window.draw(Exposed);
