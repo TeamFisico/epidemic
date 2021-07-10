@@ -1,6 +1,0 @@
-//CONFIGURED OPTIONS AND SETTINGS FOR EPIDEMICS
-
-//passing the version of the project to the source
-#define epidemic_VERSION_MAJOR @epidemic_VERSION_MAJOR@
-#define epidemic_VERSION_MINOR @epidemic_VERSION_MINOR@
-

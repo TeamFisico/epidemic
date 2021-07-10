@@ -1,0 +1,14 @@
+# Copyright 2019 René Ferdinand Rivera Morell
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE.txt or copy at
+# http://www.boost.org/LICENSE_1_0.txt)
+
+project /bfg_lyra_examples
+	: requirements
+		<use>/bfg_lyra
+	;
+
+for local e in [ glob *.cpp ]
+{
+	exe $(e:B) : $(e) ;
+}

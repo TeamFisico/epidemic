@@ -1,0 +1,479 @@
+= Lyra
+:copyright: Copyright 2019 René Ferdinand Rivera Morell
+:author: René Ferdinand Rivera Morell
+:email: grafikrobot@gmail.com
+:revnumber: 1.6
+:version-label!:
+:reproducible:
+:nofooter:
+:sectanchors:
+:sectnums:
+:sectnumlevels: 2
+:stylesheet: amber.css
+:icons: font
+:source-highlighter: pygments
+:pygments-style: friendly
+:source-language: c++
+:toc: left
+:toclevels: 2
+:caution-caption: ⚑
+:important-caption: ‼
+:note-caption: ℹ
+:tip-caption: ☀
+:warning-caption: ⚠
+:CPP: C++
+:PP: ++
+:P: +
+:tabsize: 4
+
+
+== Introduction
+
+Lyra is a simple to use, composing, command line parser for C++ 11 and beyond.
+It provides easy to use command line parsing for most use cases with a minimal
+source footprint. It doesn't aim to provide all features for all users.
+
+=== License
+
+Distributed under the highly permissive Boost Software License, Version 1.0.
+(See accompanying file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+=== Features
+
+* Header only with no external dependencies (except the `std` library).
+* Define your interface once to get parsing, type conversions and usage
+  strings with no redundancy.
+* Composing. Each `opt` or `arg` is an independent parser. Combine these to
+  produce a composite parser -- this can be done in stages across multiple
+  function calls -- or even projects.
+* Bind parsers directly to variables that will receive the results of the parse
+  -- no intermediate dictionaries to worry about.
+* Or can also bind parsers to lambdas for more custom handling.
+* Deduces types from bound variables or lambdas and performs type conversions
+  (via `ostream <<`), with error handling, behind the scenes.
+* Bind parsers to vectors for args that can have multiple values.
+* Uses result types for error propagation, rather than exceptions (doesn't yet
+  build with exceptions disabled, but that will be coming later)
+* Models POSIX standards for short and long opt behavior.
+* Customizable option syntax.
+* Specify cardinality of `arg`-s from one to many.
+* Limit option values to a specified set of values.
+
+== Usage
+
+To use, just `#include <lyra/lyra.hpp>`
+
+=== Single Option
+
+A parser for a single option can be created like this:
+
+[source]
+----
+include::../examples/doc_example1.cpp[tag=part1]
+----
+
+You can use this parser by giving it the program arguments of `main`:
+
+[source]
+----
+include::../examples/doc_example1.cpp[tag=part2]
+----
+
+Which could be used as:
+
+[source,shell]
+----
+> example1 -w 10
+width = 10
+----
+
+=== Multiple Options
+
+It's rare that we are interested in accepting a single option. To parse
+multiple options we compose the options as alternatives with the *or*
+operator (`|`).
+
+[source]
+----
+include::../examples/doc_example2.cpp[tag=part1]
+----
+
+You can use this parser by giving it the program arguments of `main`:
+
+[source]
+----
+include::../examples/doc_example2.cpp[tag=part2]
+----
+
+Which could be used as:
+
+[source,shell]
+----
+> example2 -w 10 --name=Lyra
+width = 10, name = Lyra, doIt = 0
+----
+
+== Alternate Specification
+
+Using operators for specifying the parser argument is not everyone's
+"cup of tea". Like all such interface choices there are advantages and
+disadvantages to any particular API one chooses. Because of this Lyra supports
+both the preceding `operator` model and a "named arguments using methods"
+model for specifying the arguments. Below are the various specification
+operations and corresponding operator and method call equivalents:
+
+[cols="3*"]
+|===
+
+| Help description
+| `parser("Help")`
+| `parser.help("Help")`
+
+| Optional argument
+| `parser.optional()`
+| `parser.optional()`
+
+| Required argument
+| `parser.required()`
+| `parser.required()`
+
+| Range of arguments
+| `parser.cardinality(n,m)`
+| `parser.cardinality(n,m)`
+
+| Value choices
+| `parser.choices(a,b,c)`
+| `parser.choices(a,b,c)`
+
+| Add argument
+| `parser \|= argument`
+| `parser.add_argument(argument)`
+
+| Add option name
+| `option["--name"]`
+| `option.name("--name")`
+
+| Help option description
+| `help.description("Description")`
+| `help.description("Description")`
+
+|===
+
+The method names try to follow the well known Python `argparse` nomenclature
+for familiarity. Using the alternative methods one could rewrite the previous
+two examples. The first one with the single option would be:
+
+[source]
+----
+include::../examples/doc_example1_alt.cpp[tag=doc]
+----
+
+And the second with multiple options would the become:
+
+[source]
+----
+include::../examples/doc_example2_alt.cpp[tag=doc]
+----
+
+== Help Option
+
+From the specified arguments parser we also get convenient help output.
+
+[source]
+----
+include::../examples/doc_example3.cpp[tag=part1]
+----
+<1> Flag variable to indicate if we get the `-h` or `--help` option.
+<2> The help specific option parser.
+
+We need some changes when using the parser to check if the help option was
+specified:
+
+[source]
+----
+include::../examples/doc_example3.cpp[tag=part2]
+----
+<1> We print out the help text on error.
+<2> And we also print it out when specified.
+
+== Value Choices
+
+For value arguments, i.e. `--name=value` or positional arguments, one can
+specify a set of allowed values. You can indicate the choices explicitly by
+specifying them to the `choices()` call:
+
+[source]
+----
+include::../examples/doc_example5.cpp[tag=part1]
+----
+
+Or you can specify a complex set of values by giving `choices()` a function
+that validates if a given value is allowed:
+
+[source]
+----
+include::../examples/doc_example6.cpp[tag=part1]
+----
+
+For either case the default, initial, value is only modified if a valid value
+is given.
+
+== Option Values
+
+For options that are bound to values, and hence that accept a user value on the
+command line, various styles of option+value syntax is allowed for the user as
+follows:
+
+[cols="3*"]
+|===
+
+|Long options
+|`opt(v, "value").name("--option")`
+|`--option VALUE`, `--option=VALUE`
+
+|Short options
+|`opt(v, "value").name("-o")`
+|`-o VALUE`, `--o=VALUE`, `-oVALUE`
+
+|===
+
+:leveloffset: +1
+
+include::../examples/doc_commands.cpp[tag=doc]
+
+include::../examples/doc_groups.cpp[tag=doc]
+
+include::../examples/doc_simple_alt.cpp[tag=doc]
+
+include::../examples/doc_simple.cpp[tag=doc]
+
+include::../examples/count_flag.cpp[tag=doc]
+
+include::../examples/option_styles.cpp[tag=doc]
+
+:leveloffset: -1
+
+== Reference
+
+:leveloffset: +2
+
+include::../include/lyra/arg.hpp[tag=reference]
+include::../include/lyra/args.hpp[tag=reference]
+include::../include/lyra/arguments.hpp[tag=reference]
+include::../include/lyra/cli.hpp[tag=reference]
+include::../include/lyra/command.hpp[tag=reference]
+include::../include/lyra/exe_name.hpp[tag=reference]
+include::../include/lyra/group.hpp[tag=reference]
+include::../include/lyra/help.hpp[tag=reference]
+include::../include/lyra/literal.hpp[tag=reference]
+include::../include/lyra/main.hpp[tag=reference]
+include::../include/lyra/opt.hpp[tag=reference]
+include::../include/lyra/option_style.hpp[tag=reference]
+include::../include/lyra/parser.hpp[tag=reference]
+include::../include/lyra/val.hpp[tag=reference]
+
+:leveloffset: -2
+
+== History
+
+=== 1.6
+
+Changes:
+
+* *New*: Add `lyra::option_style` type to better customize the syntax of
+	options allowed. This replaces the "old" `lyra::parser_customization` as a
+	better way. The `lyra::parser_customization` is now deprecated, and will
+	be removed at some future release.
+	-- _René Ferdinand Rivera Morell_
+* *New*: Add example to show how to count flags with cardinality greater than
+	one (1). Shows how to handle increasing verbosity with `-vvvv`.
+	-- _René Ferdinand Rivera Morell_
+* Fix virtual overload hiding of `parse` method.
+	-- _René Ferdinand Rivera Morell_
+
+=== 1.5.1
+
+Minor change to bring back the missing option argument hints from the usage
+help output.
+
+=== 1.5
+
+This release has some big changes in easy of use and functionality. There are
+now alternate interfaces for specifying and fetching arguments. Also the help
+output is now more compact and clearer. There is also new support for
+sub-commands.
+
+WARNING: The `cli_parser` type was renamed to `cli`. Both the `cli_parser` type
+and the `lyra/cli_parser.hpp` header are deprecated and will be removed in a
+future release.
+
+WARNING: Changed the install CMake target from `BFG::Lyra` to `bfg::lyra`.
+
+Changes:
+
+* *New*: Main encapsulation of common use case of help option handling. With
+	shorthand specification of arguments.
+	-- _René Ferdinand Rivera Morell_
+* *New*: Ability to specify argument values, with default, without specifying
+	a local external to the parser variable. Making it easier to specify
+	command lines. The values can be retrieved from the `cli` as a map from
+	argument names to the value.
+	-- _René Ferdinand Rivera Morell_
+* *New*: Support construction of `lyra::args` from iterators for cases where
+  the arguments come from some existing container.
+	-- _René Ferdinand Rivera Morell_
+* *New*: Add Cmake install support.
+	-- _Jayesh Vinay Badwaik_
+* *New*: Command argument to make it easy to specify sub-commands.
+	-- _René Ferdinand Rivera Morell_
+* *New*: Alternative sequential argument parsing mode.
+	-- _René Ferdinand Rivera Morell_
+* *New*: Grouped arguments to specify and handle sub-command parsers.
+	-- _René Ferdinand Rivera Morell_
+* *New*: `literal` parser to directly match an argument.
+	-- _René Ferdinand Rivera Morell_
+* Fix missing hint text for optional, `lyra::arg`, arguments.
+	-- _René Ferdinand Rivera Morell_
+* Bring back some cleaner and compact formatting of the help text.
+	-- _René Ferdinand Rivera Morell_
+* Tested with
+		Visual Studio 2017, VS 2019,
+		MinGW-64 (gcc 8.1.0),
+		Linux (
+			clang 3.9, 4, 5, 6, 7, 8, 9, 10;
+			gcc 4.9, 5, 6, 7, 8, 9, 10),
+		Xcode (
+			11.1, 11.2.1, 11.3.1, 11.4.1, 11.5, 11.6),
+		on Azure Pipelines;
+	and with
+		VS 2015,
+		MinGW-64 (gcc 6.3, 7.3)
+		on AppVeyor.
+
+=== 1.4
+
+Changes:
+
+* *New*: Allow passing option value choices as an array.
+	-- _René Ferdinand Rivera Morell_
+* Fix sample code in README to be correctly namespaced.
+	-- _Jayesh Badwaik_
+* Fix commands example to actually show help when specified.
+	-- _Shreyas Potnis_
+* Tested with
+		Visual Studio 2017, VS 2019,
+		MinGW-64 (gcc 8.1.0),
+		Linux (
+			clang 3.8, 3.9, 4, 5, 6, 7, 8, 9, 10;
+			gcc 4.8, 4.9, 5, 6, 7, 8, 9, 10),
+		Xcode (
+			10.1, 10.2.1, 10.3, 11.1, 11.2.1, 11.3.1, 11.4),
+		on Azure Pipelines;
+	and with
+		VS 2015,
+		MinGW-64 (gcc 6.3, 7.3)
+		on AppVeyor.
+
+=== 1.3
+
+Changes:
+
+* *New*: Accept `-o2` style option+value arguments.
+	-- _René Ferdinand Rivera Morell_
+* *New*: Accept `-abc` option name spelling as shorthand for `-a`, `-b`, `-c`.
+	-- _René Ferdinand Rivera Morell_
+* Fixed inconsistent handling of option values that look like options, like
+	negative numbers.
+	-- _René Ferdinand Rivera Morell_
+* Rewrote argument token parsing for clarity, to avoid extra token buffer
+	allocation, and to allow for more option & value variations.
+	-- _René Ferdinand Rivera Morell_
+* Fixed allowing junk extra characters after a non-string option value.
+	-- _René Ferdinand Rivera Morell_
+* Support specifying a single value for choices of an argument.
+	-- _René Ferdinand Rivera Morell_
+* Fix various problems with the commands example program. Also now the
+	examples for the documentation are unit tested along with the
+	regular unit tests.
+	-- _René Ferdinand Rivera Morell_
+* Tested with
+	Visual Studio 2015, VS 2017, VS 2019,
+	MinGW-64 (gcc 8.1),
+	Linux (clang 3.5, 3.6, 3.7, 3.8, 3.9, 4, 5, 6, 7, 8, 9; gcc 4.8, 4.9, 5,
+	6, 7, 8, 9),
+	Xcode (9.0, 9.0.1, 9.1, 9.2, 9.3, 9.3.1, 9.4, 9.4.1, 10.0, 10.1, 10.2,
+	10.2.1, 10.3, 11.0, 11.1, 11.2, 11.2.1),
+	on Azure Pipelines.
+
+=== 1.2
+
+Changes:
+
+* *New*: One can now accept 1-or-more on bound container arguments by only
+	specifying `required()` on such arguments.
+	-- _René Ferdinand Rivera Morell_
+* *New*: One can now define a `description` text to display as general command
+	information with the `help::description` method.
+	-- _René Ferdinand Rivera Morell_
+* *New*: Add named methods as alternates for operators to add and specify
+	arguments. They follow the familiar Python `argparse` nomenclature.
+	-- _René Ferdinand Rivera Morell_
+* *New*: Single header file alternative version of the library. For those that
+	need or want such a thing.
+	-- _René Ferdinand Rivera Morell_
+* Improve help for arguments that specify a cardinality.
+	-- _René Ferdinand Rivera Morell_
+* Addition of more complicated use cases to demonstrate flexibility of library.
+	-- _René Ferdinand Rivera Morell_
+* Continued internal clean up of code for stability and easier future
+	enhancements.
+	-- _René Ferdinand Rivera Morell_
+* Tested with
+	Visual Studio 2015, VS 2017, VS 2019,
+	MinGW-64 (gcc 8.1),
+	Linux (clang 3.5, 3.6, 3.7, 3.8, 3.9, 4, 5, 6, 7, 8, 9; gcc 4.8, 4.9, 5,
+	6, 7, 8, 9),
+	Xcode (9.0, 9.0.1, 9.1, 9.2, 9.3, 9.3.1, 9.4, 9.4.1, 10.0, 10.1, 10.2,
+	10.2.1, 10.3, 11.0, 11.1, 11.2, 11.2.1),
+	on Azure Pipelines.
+
+=== 1.1
+
+Changes:
+
+* *New*: Add direct link:https://mesonbuild.com/[Meson Build] use support.
+	-- _Rémi Gastaldi_
+* *New*: Define argument value `choices()` as either a fixed set or checked
+	by a custom lambda function. -- _René Ferdinand Rivera Morell_
+* Fix being able to parse straight from `args` outside of `cli`. Which
+	resulted in misleading parsing behavior. _René Ferdinand Rivera Morell_
+* Fix use of `cardinality()` to correctly constrain bounded cardinality
+	ranges like `[0,n]`, `[n,m]`, `[n,n]`, and `[0,0]` (unbounded).
+	_René Ferdinand Rivera Morell_
+* Fix use of `required()` arguments such that the parse errors if they are
+	absent. -- _girstsf_
+* Remove uses of `assert` macro to avoid internal aborts and make it easier
+	to use as a library. -- _René Ferdinand Rivera Morell_
+* Many documentation improvements. -- _René Ferdinand Rivera Morell_
+* Tested with
+	Visual Studio 2015, VS 2017, VS 2019,
+	MinGW-64 (gcc 8.1),
+	Linux (clang 3.5, 3.6, 3.7, 3.8, 3.9, 4, 5, 6, 7, 8, 9; gcc 4.8, 4.9, 5, 6, 7, 8, 9),
+	Xcode (9.0, 9.0.1, 9.1, 9.2, 9.3, 9.3.1, 9.4, 9.4.1, 10.0, 10.1, 10.2, 10.2.1, 10.3, 11.0),
+	on Azure Pipelines.
+
+=== 1.0
+
+This is the initial base version based on Clara library. Changes from that
+library:
+
+* Documentation.
+* Zero dependencies, even internally, by removing TextFlow and Catch bundled
+  libraries.
+* Conform to Pitchfork Layout R1.
+* Tested with Visual Studio 2015, VS 2017, MinGW (gcc 5.3), MinGW-64 (gcc 6.3,
+  7.3, 8.1), Linux (clang 3.5, 3.8, 3.9, 4, 5; gcc 4.8, 4.9, 5, 6, 7, 8),
+  Xcode (8.3, 9, 9.1, 10.1).
+* Tested with C++ 11, 14, 17, and 2a.
+* *New*: customization of option prefix and separators.
+* *New*: support for repeated arguments, from one to many.

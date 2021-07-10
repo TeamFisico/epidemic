@@ -1,44 +1,61 @@
 
-add_executable(app1.0 main_std1.cpp)
-add_executable(app1.1 main_rks.cpp)
 
 include("${ROOT_USE_FILE}")
-
 separate_arguments(ROOT_EXE_LINKER_FLAGS)
 
-target_compile_features(app1.0 PRIVATE cxx_std_17)
-target_compile_options(app1.0 PRIVATE -Wall -Wextra -fsanitize=address)
-target_link_options(app1.0 PRIVATE -fsanitize=address)
-target_link_libraries(app1.0 PRIVATE standard_solver)
-target_link_libraries(app1.0 PUBLIC ${ROOT_LIBRARIES} ${ROOT_EXE_LINKER_FLAGS})
-
-target_include_directories(app1.0 PUBLIC "${PROJECT_BINARY_DIR}"
-                                         ../include/epidemic1)
-target_clangformat_setup(app1.0) ##allow for code formatting
-
-
-
-target_compile_features(app1.1 PRIVATE cxx_std_17)
-target_compile_options(app1.1 PRIVATE -Wall -Wextra -fsanitize=address)
-target_link_options(app1.1 PRIVATE -fsanitize=address)
-target_link_libraries(app1.1 PRIVATE runge_kutta_solver)
-target_link_libraries(app1.1 PUBLIC ${ROOT_LIBRARIES} ${ROOT_EXE_LINKER_FLAGS})
-
-target_include_directories(app1.1 PUBLIC "${PROJECT_BINARY_DIR}"
-                                          ../include/epidemic1)
-target_clangformat_setup(app1.1) ##allow for code formatting
-
-
-##############################
-##      SECOND PART        ###
-##############################
-#add_executable(app2 main2.cpp)
-#
-#target_compile_features(app2 PRIVATE cxx_std_17)
-#target_compile_options(app2 PRIVATE -Wall -Wextra -fsanitize=address)
-#target_link_options(app2 PRIVATE -fsanitize=address)
-#target_link_libraries(app2 PRIVATE modern_library)
-#target_include_directories(app2 PUBLIC "${PROJECT_BINARY_DIR}")
-
-
+##############################################################################################
+add_executable(seir main-seir.cpp)
+target_compile_features(seir PRIVATE cxx_std_17)
+target_compile_options(seir PRIVATE -Wall -Wextra -fsanitize=address)
+target_link_options(seir PRIVATE -fsanitize=address)
+target_link_libraries(seir PRIVATE numeric)
+target_link_libraries(seir PRIVATE lyra)
+target_link_libraries(seir PUBLIC ${ROOT_LIBRARIES} ${ROOT_EXE_LINKER_FLAGS})
+target_include_directories(seir PUBLIC "${PROJECT_BINARY_DIR}"
+                                         ../include/seir
+                                         ../include/simulation)
+target_clangformat_setup(seir)
+##############################################################################################
+add_executable(sim main-sim.cpp)
+target_compile_features(sim PRIVATE cxx_std_17)
+target_compile_options(sim PRIVATE -Wall -Wextra -fsanitize=address)
+target_link_options(sim PRIVATE -fsanitize=address)
+target_link_libraries(sim PRIVATE   simulation
+                                    mobility_model
+                                    person
+                                    world
+                                    cluster
+                                    group
+                                    rectangle
+                                    location
+                                    position
+                                    random)
+target_link_libraries(sim PUBLIC ${ROOT_LIBRARIES} ${ROOT_EXE_LINKER_FLAGS})
+target_link_libraries(sim PRIVATE lyra)
+target_include_directories(sim PUBLIC "${PROJECT_BINARY_DIR}"
+                                      ../include/simulation)
+target_clangformat_setup(sim) ##allow for code formatting
+##############################################################################################
+add_executable(sim-graphics main-sim-graphics.cpp)
+target_compile_features(sim-graphics PRIVATE cxx_std_17)
+target_compile_options(sim-graphics PRIVATE -Wall -Wextra -fsanitize=address)
+target_link_options(sim-graphics PRIVATE -fsanitize=address)
+target_link_libraries(sim-graphics PRIVATE  graphics
+                                            simulation
+                                            mobility_model
+                                            person
+                                            world
+                                            cluster
+                                            group
+                                            rectangle
+                                            location
+                                            position
+                                            random)
+target_link_libraries(sim-graphics PUBLIC ${ROOT_LIBRARIES} ${ROOT_EXE_LINKER_FLAGS})
+target_link_libraries(sim-graphics PRIVATE lyra)
+target_link_libraries(sim-graphics PRIVATE sfml-graphics)
+target_include_directories(sim-graphics PUBLIC "${PROJECT_BINARY_DIR}"
+                                               ../include/simulation
+                                                ../src/simulation/graphics)
+target_clangformat_setup(sim-graphics) ##allow for code formatting
 
